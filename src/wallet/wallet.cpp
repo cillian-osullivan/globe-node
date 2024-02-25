@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -259,7 +259,7 @@ std::shared_ptr<CWallet> LoadWalletInternal(WalletContext& context, const std::s
         // Write the wallet setting
         UpdateWalletSetting(*context.chain, name, load_on_start, warnings);
 
-        if (wallet->IsParticlWallet()) {
+        if (wallet->IsGlobeWallet()) {
             RestartStakingThreads(context, *context.chain->getChainman());
         }
 
@@ -354,8 +354,8 @@ std::shared_ptr<CWallet> CreateWallet(WalletContext& context, const std::string&
             }
 
             // Set a seed for the wallet
-            if (wallet->IsParticlWallet()) {
-                if (0 != GetParticlWallet(wallet.get())->MakeDefaultAccount()) {
+            if (wallet->IsGlobeWallet()) {
+                if (0 != GetGlobeWallet(wallet.get())->MakeDefaultAccount()) {
                     error = Untranslated("Error: MakeDefaultAccount failed");
                     return nullptr;
                 }
@@ -391,7 +391,7 @@ std::shared_ptr<CWallet> CreateWallet(WalletContext& context, const std::string&
         warnings.push_back(_("Wallet created successfully. The legacy wallet type is being deprecated and support for creating and opening legacy wallets will be removed in the future."));
     }
 
-    if (wallet->IsParticlWallet()) {
+    if (wallet->IsGlobeWallet()) {
         RestartStakingThreads(context, *context.chain->getChainman());
     }
 
@@ -1059,9 +1059,9 @@ CWalletTx* CWallet::AddToWallet(CTransactionRef tx, const TxState& state, const 
 #ifndef WIN32
         // Substituting the wallet name isn't currently supported on windows
         // because windows shell escaping has not been implemented yet:
-        // https://github.com/bitcoin/bitcoin/pull/13339#issuecomment-537384875
+        // https://github.com/globe/globe/pull/13339#issuecomment-537384875
         // A few ways it could be implemented in the future are described in:
-        // https://github.com/bitcoin/bitcoin/pull/13339#issuecomment-461288094
+        // https://github.com/globe/globe/pull/13339#issuecomment-461288094
         ReplaceAll(strCmd, "%w", ShellEscape(GetName()));
 #endif
         std::thread t(runCommand, strCmd);
@@ -1083,7 +1083,7 @@ bool CWallet::LoadToWallet(const uint256& hash, const UpdateWalletTxFn& fill_wtx
     if (!fill_wtx(wtx, ins.second)) {
         return false;
     }
-    // If wallet doesn't have a chain (e.g when using bitcoin-wallet tool),
+    // If wallet doesn't have a chain (e.g when using globe-wallet tool),
     // don't bother to update txn.
     if (HaveChain()) {
         bool active;
@@ -1350,7 +1350,7 @@ void CWallet::transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRe
         //    provide the conflicting block's hash and height, and for backwards
         //    compatibility reasons it may not be not safe to store conflicted
         //    wallet transactions with a null block hash. See
-        //    https://github.com/bitcoin/bitcoin/pull/18600#discussion_r420195993.
+        //    https://github.com/globe/globe/pull/18600#discussion_r420195993.
         // 2. For most of these transactions, the wallet's internal conflict
         //    detection in the blockConnected handler will subsequently call
         //    MarkConflicted and update them with CONFLICTED status anyway. This
@@ -1358,7 +1358,7 @@ void CWallet::transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRe
         //    block, or that has ancestors in the wallet with inputs spent by
         //    the block.
         // 3. Longstanding behavior since the sync implementation in
-        //    https://github.com/bitcoin/bitcoin/pull/9371 and the prior sync
+        //    https://github.com/globe/globe/pull/9371 and the prior sync
         //    implementation before that was to mark these transactions
         //    unconfirmed rather than conflicted.
         //
@@ -1366,7 +1366,7 @@ void CWallet::transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRe
         // when improving this code in the future. The wallet's heuristics for
         // distinguishing between conflicted and unconfirmed transactions are
         // imperfect, and could be improved in general, see
-        // https://github.com/bitcoin-core/bitcoin-devwiki/wiki/Wallet-Transaction-Conflict-Tracking
+        // https://github.com/globe-core/globe-devwiki/wiki/Wallet-Transaction-Conflict-Tracking
         SyncTransaction(tx, TxStateInactive{});
     }
 }
@@ -1592,8 +1592,8 @@ bool DummySignInput(const SigningProvider& provider, CTxIn &tx_in, const CTxOut 
     // to ensure a sufficient fee is attained for the requested feerate.
     const bool use_max_sig = coin_control && (coin_control->fAllowWatchOnly || coin_control->IsExternalSelected(tx_in.prevout));
 
-    if (fParticlMode) {
-        if (!ProduceSignature(provider, DUMMY_SIGNATURE_CREATOR_PARTICL, scriptPubKey, sigdata)) {
+    if (fGlobeMode) {
+        if (!ProduceSignature(provider, DUMMY_SIGNATURE_CREATOR_GLOBE, scriptPubKey, sigdata)) {
             return false;
         }
     } else
@@ -2745,8 +2745,8 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const {
  *   the block time.
  *
  * For more information see CWalletTx::nTimeSmart,
- * https://bitcointalk.org/?topic=54527, or
- * https://github.com/bitcoin/bitcoin/pull/1393.
+ * https://globetalk.org/?topic=54527, or
+ * https://github.com/globe/globe/pull/1393.
  */
 unsigned int CWallet::ComputeTimeSmart(const CWalletTx& wtx, bool rescanning_old_block) const
 {
@@ -2896,7 +2896,7 @@ std::shared_ptr<CWallet> CWallet::Create(WalletContext& context, const std::stri
     const auto start{SteadyClock::now()};
     // TODO: Can't use std::make_shared because we need a custom deleter but
     // should be possible to use std::allocate_shared.
-    const std::shared_ptr<CWallet> walletInstance(fParticlMode
+    const std::shared_ptr<CWallet> walletInstance(fGlobeMode
         ? std::shared_ptr<CWallet>(new CHDWallet(chain, name, args, std::move(database)), ReleaseWallet)
         : std::shared_ptr<CWallet>(new CWallet(chain, name, args, std::move(database)), ReleaseWallet));
 
@@ -2957,12 +2957,12 @@ std::shared_ptr<CWallet> CWallet::Create(WalletContext& context, const std::stri
 
         if ((wallet_creation_flags & WALLET_FLAG_EXTERNAL_SIGNER) || !(wallet_creation_flags & (WALLET_FLAG_DISABLE_PRIVATE_KEYS | WALLET_FLAG_BLANK_WALLET))) {
             LOCK(walletInstance->cs_wallet);
-            if (!walletInstance->IsParticlWallet() && walletInstance->IsWalletFlagSet(WALLET_FLAG_DESCRIPTORS)) {
+            if (!walletInstance->IsGlobeWallet() && walletInstance->IsWalletFlagSet(WALLET_FLAG_DESCRIPTORS)) {
                 walletInstance->SetupDescriptorScriptPubKeyMans();
                 // SetupDescriptorScriptPubKeyMans already calls SetupGeneration for us so we don't need to call SetupGeneration separately
             } else {
                 // Legacy wallets need SetupGeneration here.
-                if (!walletInstance->IsParticlWallet())
+                if (!walletInstance->IsGlobeWallet())
                 for (auto spk_man : walletInstance->GetActiveScriptPubKeyMans()) {
                     if (!spk_man->SetupGeneration()) {
                         error = _("Unable to generate initial keys");
@@ -3152,7 +3152,7 @@ bool CWallet::AttachChain(const std::shared_ptr<CWallet>& walletInstance, interf
             // Wallet is assumed to be from another chain, if genesis block in the active
             // chain differs from the genesis block known to the wallet.
             if (chain.getBlockHash(0) != locator.vHave.back()) {
-                error = Untranslated("Wallet files should not be reused across chains. Restart bitcoind with -walletcrosschain to override.");
+                error = Untranslated("Wallet files should not be reused across chains. Restart globed with -walletcrosschain to override.");
                 return false;
             }
         }
@@ -3351,7 +3351,7 @@ int CWallet::GetTxBlocksToMaturity(const CWalletTx& wtx) const
     int chain_depth = GetTxDepthInMainChain(wtx);
     assert(chain_depth >= 0); // coinbase tx should not be conflicted
 
-    if (IsParticlWallet()) {
+    if (IsGlobeWallet()) {
         int last_processed = m_last_block_processed_height;
         if (last_processed < COINBASE_MATURITY * 2) {
             if (const auto* conf = wtx.state<TxStateConfirmed>()) {

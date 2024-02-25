@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2015 The ShadowCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1267,14 +1267,14 @@ int AppendPath(const CStoredExtKey *pc, std::vector<uint32_t> &vPath)
 
 std::string HDAccIDToString(const CKeyID &id)
 {
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     addr.Set(id, CChainParams::EXT_ACC_HASH);
     return addr.ToString();
 };
 
 std::string HDKeyIDToString(const CKeyID &id)
 {
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     addr.Set(id, CChainParams::EXT_KEY_HASH);
     return addr.ToString();
 };

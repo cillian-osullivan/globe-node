@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 The Bitcoin Core developers
+// Copyright (c) 2018-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -82,7 +82,7 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
     for (const auto& txin : wtx.tx->vin) {
         result.txin_is_mine.emplace_back(InputIsMine(wallet, txin));
     }
-    if (wtx.tx->IsParticlVersion()) {
+    if (wtx.tx->IsGlobeVersion()) {
         size_t nv = wtx.tx->GetNumVOuts();
         result.txout_is_mine.reserve(nv);
         result.txout_address.reserve(nv);
@@ -218,8 +218,8 @@ class WalletImpl : public Wallet
 public:
     explicit WalletImpl(WalletContext& context, const std::shared_ptr<CWallet>& wallet) : m_context(context), m_wallet(wallet)
     {
-        if (::IsParticlWallet(wallet.get())) {
-            m_wallet_part = GetParticlWallet(wallet.get());
+        if (::IsGlobeWallet(wallet.get())) {
+            m_wallet_part = GetGlobeWallet(wallet.get());
         }
     }
 
@@ -314,7 +314,7 @@ public:
     {
         LOCK(m_wallet->cs_wallet);
         std::vector<WalletAddress> result;
-        if (::IsParticlWallet(m_wallet.get())) {
+        if (::IsGlobeWallet(m_wallet.get())) {
             for (const auto& item : m_wallet->m_address_book) {
                 if (item.second.IsChange()) continue;
                 std::string str_path;
@@ -409,7 +409,7 @@ public:
         CAmount& new_fee,
         CMutableTransaction& mtx) override
     {
-        if (::IsParticlWallet(m_wallet.get())) {
+        if (::IsGlobeWallet(m_wallet.get())) {
             return feebumper::CreateTotalBumpTransaction(m_wallet.get(), txid, coin_control, errors, old_fee, new_fee, mtx) ==
                 feebumper::Result::OK;
         } else {
@@ -742,7 +742,7 @@ public:
         return MakeHandler(m_wallet_part->NotifyReservedBalanceChanged.connect(fn));
     }
 
-    bool IsParticlWallet() override
+    bool IsGlobeWallet() override
     {
         return m_wallet_part;
     }
@@ -782,7 +782,7 @@ public:
         return m_wallet_part->GetAvailableBlindBalance(&coin_control);
     }
 
-    CHDWallet *getParticlWallet() override
+    CHDWallet *getGlobeWallet() override
     {
         return m_wallet_part;
     }

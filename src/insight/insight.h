@@ -1,11 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2015 The Bitcoin Core developers
-// Copyright (c) 2017-2021 The Particl Core developers
+// Copyright (c) 2009-2015 The Globe Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_INSIGHT_INSIGHT_H
-#define BITCOIN_INSIGHT_INSIGHT_H
+#ifndef GLOBE_INSIGHT_INSIGHT_H
+#define GLOBE_INSIGHT_INSIGHT_H
 
 #include <threadsafety.h>
 
@@ -50,4 +50,4 @@ bool GetBlockBalances(ChainstateManager &chainman, const uint256 &block_hash, Bl
 
 bool getAddressFromIndex(const int &type, const uint256 &hash, std::string &address);
 
-#endif // BITCOIN_INSIGHT_INSIGHT_H
+#endif // GLOBE_INSIGHT_INSIGHT_H

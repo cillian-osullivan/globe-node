@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # Copyright (c) 2010 ArtForz -- public domain half-a-node
 # Copyright (c) 2012 Jeff Garzik
-# Copyright (c) 2010-2021 The Bitcoin Core developers
+# Copyright (c) 2010-2021 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Bitcoin test framework primitive and message structures
+"""Globe test framework primitive and message structures
 
 CBlock, CTransaction, CBlockHeader, CTxIn, CTxOut, etc....:
     data structures that should map to corresponding structures in
-    bitcoin/primitives
+    globe/primitives
 
 msg_block, msg_tx, msg_headers, etc.:
     data structures that represent network messages
@@ -74,9 +74,9 @@ MAX_OP_RETURN_RELAY = 83
 DEFAULT_MEMPOOL_EXPIRY_HOURS = 336  # hours
 
 
-PARTICL_BLOCK_VERSION = 0xa0
-PARTICL_TX_VERSION = 0xa0
-PARTICL_TX_ANON_MARKER = 0xffffffa0
+GLOBE_BLOCK_VERSION = 0xa0
+GLOBE_TX_VERSION = 0xa0
+GLOBE_TX_ANON_MARKER = 0xffffffa0
 OUTPUT_TYPE_STANDARD = 1
 OUTPUT_TYPE_CT = 2
 OUTPUT_TYPE_RINGCT = 3
@@ -239,13 +239,13 @@ def from_binary(cls, stream):
     return obj
 
 
-# Objects that map to bitcoind objects, which can be serialized/deserialized
+# Objects that map to globed objects, which can be serialized/deserialized
 
 
 class CAddress:
     __slots__ = ("net", "ip", "nServices", "port", "time")
 
-    # see https://github.com/bitcoin/bips/blob/master/bip-0155.mediawiki
+    # see https://github.com/globe/bips/blob/master/bip-0155.mediawiki
     NET_IPV4 = 1
     NET_I2P = 5
 
@@ -386,7 +386,7 @@ class CBlockLocator:
 
     def serialize(self):
         r = b""
-        r += struct.pack("<i", 0)  # Bitcoin Core ignores version field. Set it to 0.
+        r += struct.pack("<i", 0)  # Globe Core ignores version field. Set it to 0.
         r += ser_uint256_vector(self.vHave)
         return r
 
@@ -606,7 +606,7 @@ class CTransaction:
 
     def deserialize(self, f):
         self.nVersion = int(struct.unpack("<B", f.read(1))[0])
-        if self.nVersion == PARTICL_TX_VERSION:
+        if self.nVersion == GLOBE_TX_VERSION:
             self.nVersion |= int(struct.unpack("<B", f.read(1))[0]) << 8
 
             self.nLockTime = struct.unpack("<I", f.read(4))[0]
@@ -637,7 +637,7 @@ class CTransaction:
         if len(self.vin) == 0:
             flags = struct.unpack("<B", f.read(1))[0]
             # Not sure why flags can't be zero, but this
-            # matches the implementation in bitcoind
+            # matches the implementation in globed
             if (flags != 0):
                 self.vin = deser_vector(f, CTxIn)
                 self.vout = deser_vector(f, CTxOut)
@@ -653,7 +653,7 @@ class CTransaction:
         self.hash = None
 
     def serialize_without_witness(self, include_rangeproof=False):
-        if self.nVersion & 0xff == PARTICL_TX_VERSION:
+        if self.nVersion & 0xff == GLOBE_TX_VERSION:
             r = struct.pack("<H", self.nVersion)
             r += struct.pack("<I", self.nLockTime)
             r += ser_vector(self.vin)
@@ -671,7 +671,7 @@ class CTransaction:
 
     # Only serialize with witness when explicitly called for
     def serialize_with_witness(self):
-        if self.nVersion & 0xff == PARTICL_TX_VERSION:
+        if self.nVersion & 0xff == GLOBE_TX_VERSION:
             r = self.serialize_without_witness(include_rangeproof=True)
             while len(self.wit.vtxinwit) < len(self.vin):
                 self.wit.vtxinwit.append(CTxInWitness())
@@ -784,7 +784,7 @@ class CBlockHeader:
         self.nVersion = struct.unpack("<i", f.read(4))[0]
         self.hashPrevBlock = deser_uint256(f)
         self.hashMerkleRoot = deser_uint256(f)
-        self.is_part = self.is_part or self.nVersion == PARTICL_BLOCK_VERSION
+        self.is_part = self.is_part or self.nVersion == GLOBE_BLOCK_VERSION
         if self.is_part:
             self.hashWitnessMerkleRoot = deser_uint256(f)
         self.nTime = struct.unpack("<I", f.read(4))[0]
@@ -844,7 +844,7 @@ class CBlock(CBlockHeader):
         super().deserialize(f)
         self.vtx = deser_vector(f, CTransaction)
 
-        if self.nVersion == PARTICL_BLOCK_VERSION:
+        if self.nVersion == GLOBE_BLOCK_VERSION:
             self.blocksig = deser_string(f)
 
     def serialize(self, with_witness=True, with_pos_sig=True):
@@ -856,7 +856,7 @@ class CBlock(CBlockHeader):
             r += ser_vector(self.vtx, "serialize_without_witness")
 
         # Block with no txns is likely being sent as a header
-        if len(self.vtx) > 0 and with_pos_sig and self.nVersion == PARTICL_BLOCK_VERSION:
+        if len(self.vtx) > 0 and with_pos_sig and self.nVersion == GLOBE_BLOCK_VERSION:
             r += ser_string(self.blocksig)
         return r
 
@@ -1224,7 +1224,7 @@ class msg_version:
         self.nStartingHeight = struct.unpack("<i", f.read(4))[0]
 
         # Relay field is optional for version 70001 onwards
-        # But, unconditionally check it to match behaviour in bitcoind
+        # But, unconditionally check it to match behaviour in globed
         try:
             self.relay = struct.unpack("<b", f.read(1))[0]
         except struct.error:
@@ -1611,7 +1611,7 @@ class msg_headers:
         self.headers = headers if headers is not None else []
 
     def deserialize(self, f):
-        # comment in bitcoind indicates these should be deserialized as blocks
+        # comment in globed indicates these should be deserialized as blocks
         blocks = deser_vector(f, CBlock)
         for x in blocks:
             self.headers.append(CBlockHeader(x))

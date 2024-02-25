@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -87,7 +87,7 @@ static RPCHelpMan smsgenable()
         sFindWallet = request.params[0].get_str();
     }
     for (const auto &pw : vpwallets) {
-        CHDWallet *const ppartw = GetParticlWallet(pw.get());
+        CHDWallet *const ppartw = GetGlobeWallet(pw.get());
         if (!ppartw) {
             continue;
         }
@@ -404,7 +404,7 @@ static RPCHelpMan smsglocalkeys()
         std::string addr = request.params[2].get_str();
 
         CKeyID keyID;
-        CBitcoinAddress coinAddress(addr);
+        CGlobeAddress coinAddress(addr);
         if (!coinAddress.IsValid()) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address.");
         }
@@ -435,7 +435,7 @@ static RPCHelpMan smsglocalkeys()
         std::string addr = request.params[2].get_str();
 
         CKeyID keyID;
-        CBitcoinAddress coinAddress(addr);
+        CGlobeAddress coinAddress(addr);
         if (!coinAddress.IsValid()) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address.");
         }
@@ -468,7 +468,7 @@ static RPCHelpMan smsglocalkeys()
                     continue;
                 }
 
-                CBitcoinAddress coinAddress(entry.first);
+                CGlobeAddress coinAddress(entry.first);
                 if (!coinAddress.IsValid()) {
                     continue;
                 }
@@ -685,7 +685,7 @@ static RPCHelpMan smsgimportprivkey()
 {
     EnsureSMSGIsEnabled();
 
-    CBitcoinSecret vchSecret;
+    CGlobeSecret vchSecret;
     if (!request.params[0].isStr()
         || !vchSecret.SetString(request.params[0].get_str())) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
@@ -711,7 +711,7 @@ static RPCHelpMan smsgdumpprivkey()
     return RPCHelpMan{"smsgdumpprivkey",
         "\nReveals the private key corresponding to 'address'.\n",
         {
-            {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The particl address for the private key"},
+            {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The globe address for the private key"},
         },
         RPCResult{
             RPCResult::Type::STR, "key", "The private key"
@@ -726,7 +726,7 @@ static RPCHelpMan smsgdumpprivkey()
     std::string strAddress = request.params[0].get_str();
     CTxDestination dest = DecodeDestination(strAddress);
     if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Particl address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Globe address");
     }
 
     if (dest.index() != DI::_PKHash) {
@@ -784,7 +784,7 @@ static RPCHelpMan smsggetpubkey()
             throw JSONRPCError(RPC_INTERNAL_ERROR, smsg::GetString(rv));
     }
 
-    CBitcoinAddress coinAddress(address);
+    CGlobeAddress coinAddress(address);
     CKeyID keyID;
     if (!coinAddress.GetKeyID(keyID)) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid address.");
@@ -841,7 +841,7 @@ static RPCHelpMan smsgsend()
                         "options"},
                     {"coin_control", RPCArg::Type::OBJ, RPCArg::Default{UniValue::VOBJ}, "",
                         {
-                            {"changeaddress", RPCArg::Type::STR, RPCArg::Default{""}, "The particl address to receive the change"},
+                            {"changeaddress", RPCArg::Type::STR, RPCArg::Default{""}, "The globe address to receive the change"},
                             {"inputs", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of json objects",
                                 {
                                     {"", RPCArg::Type::OBJ, RPCArg::Default{UniValue::VOBJ}, "",
@@ -964,7 +964,7 @@ static RPCHelpMan smsgsend()
     }
 
     CKeyID kiFrom, kiTo;
-    CBitcoinAddress coinAddress(addrFrom);
+    CGlobeAddress coinAddress(addrFrom);
     if (!coinAddress.IsValid() || !coinAddress.GetKeyID(kiFrom)) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid from address.");
     }
@@ -987,7 +987,7 @@ static RPCHelpMan smsgsend()
         if (!smsgModule.pactive_wallet) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Active wallet must be set to send a paid smsg.");
         }
-        CHDWallet *const pw = GetParticlWallet(smsgModule.pactive_wallet.get());
+        CHDWallet *const pw = GetGlobeWallet(smsgModule.pactive_wallet.get());
         if (!fTestFee) {
             EnsureWalletIsUnlocked(pw);
         }
@@ -1067,7 +1067,7 @@ static RPCHelpMan smsgfund()
                 "options"},
             {"coin_control", RPCArg::Type::OBJ, RPCArg::Default{UniValue::VOBJ}, "",
                 {
-                    {"changeaddress", RPCArg::Type::STR, RPCArg::Default{""}, "The particl address to receive the change"},
+                    {"changeaddress", RPCArg::Type::STR, RPCArg::Default{""}, "The globe address to receive the change"},
                     {"inputs", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of json objects",
                         {
                             {"", RPCArg::Type::OBJ, RPCArg::Default{UniValue::VOBJ}, "",
@@ -1194,7 +1194,7 @@ static RPCHelpMan smsgfund()
     if (!smsgModule.pactive_wallet) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Active wallet must be set.");
     }
-    CHDWallet *const pw = GetParticlWallet(smsgModule.pactive_wallet.get());
+    CHDWallet *const pw = GetGlobeWallet(smsgModule.pactive_wallet.get());
     if (!test_fee) {
         EnsureWalletIsUnlocked(pw);
     }
@@ -1271,7 +1271,7 @@ static RPCHelpMan smsgsendanon()
     std::string msg       = request.params[1].get_str();
 
     CKeyID kiFrom, kiTo;
-    CBitcoinAddress coinAddress(addrTo);
+    CGlobeAddress coinAddress(addrTo);
     if (!coinAddress.IsValid() || !coinAddress.GetKeyID(kiTo)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid to address.");
     }
@@ -1921,7 +1921,7 @@ static RPCHelpMan smsgview()
         }
 
         if (!fMatchAll) {
-            CBitcoinAddress checkValid(sTemp);
+            CGlobeAddress checkValid(sTemp);
 
             if (checkValid.IsValid()) {
                 CKeyID ki;
@@ -1947,7 +1947,7 @@ static RPCHelpMan smsgview()
                     LOCK(pw->cs_wallet);
                     for (itl = pw->m_address_book.begin(); itl != pw->m_address_book.end(); ++itl) {
                         if (part::stringsMatchI(itl->second.GetLabel(), sTemp, matchType)) {
-                            CBitcoinAddress checkValid(itl->first);
+                            CGlobeAddress checkValid(itl->first);
                             if (checkValid.IsValid()) {
                                 CKeyID ki;
                                 checkValid.GetKeyID(ki);
@@ -2054,7 +2054,7 @@ static RPCHelpMan smsgview()
                     }
 
                     CKeyID kiFrom;
-                    CBitcoinAddress addrFrom(msg.sFromAddress);
+                    CGlobeAddress addrFrom(msg.sFromAddress);
                     if (addrFrom.IsValid()) {
                         addrFrom.GetKeyID(kiFrom);
                     }
@@ -2280,7 +2280,7 @@ static RPCHelpMan smsgone()
     result.pushKV("location", sType);
     PushTime(result, "received", smsgStored.timeReceived);
     result.pushKV("to", EncodeDestination(PKHash(smsgStored.addrTo)));
-    //result.pushKV("addressoutbox", CBitcoinAddress(smsgStored.addrOutbox).ToString());
+    //result.pushKV("addressoutbox", CGlobeAddress(smsgStored.addrOutbox).ToString());
     result.pushKV("read", UniValue(bool(!(smsgStored.status & SMSG_MASK_UNREAD))));
 
     PushTime(result, "sent", psmsg->timestamp);
@@ -2490,7 +2490,7 @@ static RPCHelpMan smsggetfeerate()
                 return result;
             }
 
-            result.pushKV("currentrate", particl::GetSmsgFeeRate(chainman, nullptr));
+            result.pushKV("currentrate", globe::GetSmsgFeeRate(chainman, nullptr));
             int fee_height = (chain_height / consensusParams.smsg_fee_period) * consensusParams.smsg_fee_period;
             result.pushKV("currentrateblockheight", fee_height);
 
@@ -2511,7 +2511,7 @@ static RPCHelpMan smsggetfeerate()
         pblockindex = chainman.ActiveChain()[nHeight];
     }
 
-    return particl::GetSmsgFeeRate(chainman, pblockindex);
+    return globe::GetSmsgFeeRate(chainman, pblockindex);
 },
     };
 }
@@ -2545,7 +2545,7 @@ static RPCHelpMan smsggetdifficulty()
         }
     }
 
-    uint32_t target_compact = particl::GetSmsgDifficulty(chainman, chain_time);
+    uint32_t target_compact = globe::GetSmsgDifficulty(chainman, chain_time);
     return smsg::GetDifficulty(target_compact);
 },
     };

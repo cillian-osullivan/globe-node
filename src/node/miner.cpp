@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -155,7 +155,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     // Create coinbase transaction.
     CMutableTransaction coinbaseTx;
     if (!fTestBlockValidity) {
-        pblock->nVersion = PARTICL_BLOCK_VERSION;
+        pblock->nVersion = GLOBE_BLOCK_VERSION;
         pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     } else {
         coinbaseTx.vin.resize(1);

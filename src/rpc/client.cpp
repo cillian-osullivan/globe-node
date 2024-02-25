@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -190,7 +190,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "bumpfee", 1, "options" },
     { "psbtbumpfee", 1, "options" },
 
-    // Particl
+    // Globe
     { "importstealthaddress", 3, "num_prefix_bits" },
     { "liststealthaddresses", 0, "show_secrets" },
     { "deriverangekeys", 4, "save" },
@@ -282,7 +282,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "mnemonictoentropy", 0, "parameters" },
     { "mnemonicfromentropy", 0, "parameters" },
 
-    // Particl: SMSG
+    // Globe: SMSG
     { "smsgsend", 3, "paid_msg" },
     { "smsgsend", 4, "days_retention" },
     { "smsgsend", 5, "testfee" },
@@ -301,7 +301,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "smsgpeers", 0, "index" },
     { "smsgzmqpush", 0, "options" },
 
-    // Particl: Hardware Device
+    // Globe: Hardware Device
     { "devicesignrawtransaction", 1, "prevtxs" },
     { "devicesignrawtransaction", 2, "paths" },
     { "devicesignrawtransactionwithwallet", 1, "prevtxs" },
@@ -315,7 +315,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "devicegetnewstealthaddress", 1, "num_prefix_bits" },
     { "devicegetnewstealthaddress", 3, "bech32" },
 
-    // Particl: Insight
+    // Globe: Insight
     { "getblockhashes", 0 , "high"},
     { "getblockhashes", 1, "low"},
     { "getblockhashes", 2, "options" },

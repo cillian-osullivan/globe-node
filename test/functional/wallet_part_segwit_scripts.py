@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-# Copyright (c) 2019 The Particl Core developers
+# Copyright (c) 2019 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-from test_framework.test_particl import ParticlTestFramework
+from test_framework.test_globe import GlobeTestFramework
 
 
-class SegwitScriptsTest(ParticlTestFramework):
+class SegwitScriptsTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3
@@ -34,12 +34,12 @@ class SegwitScriptsTest(ParticlTestFramework):
         addr_part_native = nodes[2].getnewaddress('addr_part_native')
         nodes[1].sendtoaddress(addr_part_native, 1)
 
-        self.log.info('Test Bitcoin native segwit, p2wpkh')
+        self.log.info('Test Globe native segwit, p2wpkh')
         addr_sw_bech32 = nodes[2].getnewaddress('btc native segwit', False, False, False, 'bech32')
         nodes[2].manageaddressbook('newsend', addr_sw_bech32)
         nodes[1].sendtoaddress(addr_sw_bech32, 2)
 
-        self.log.info('Test Bitcoin embedded segwit')
+        self.log.info('Test Globe embedded segwit')
         try:
             nodes[2].getnewaddress('segwit script', False, False, False, 'p2sh-segwit')
             assert (False)

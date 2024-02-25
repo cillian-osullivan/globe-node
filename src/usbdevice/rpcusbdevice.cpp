@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 The Particl Core developers
+// Copyright (c) 2018-2021 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -376,7 +376,7 @@ static RPCHelpMan getdevicepublickey()
 
     UniValue rv(UniValue::VOBJ);
     rv.pushKV("publickey", HexStr(pk));
-    rv.pushKV("address", CBitcoinAddress(PKHash(pk)).ToString());
+    rv.pushKV("address", CGlobeAddress(PKHash(pk)).ToString());
     rv.pushKV("path", sPath);
 
     return rv;
@@ -394,7 +394,7 @@ static RPCHelpMan getdevicexpub()
                     {"accountpath", RPCArg::Type::STR, RPCArg::Default{GetDefaultAccountPath()}, "Account path, set to empty string to ignore."},
                 },
                 RPCResult{
-                    RPCResult::Type::STR, "address", "The particl extended public key"
+                    RPCResult::Type::STR, "address", "The globe extended public key"
                 },
                 RPCExamples{
             HelpExampleCli("getdevicexpub", "\"0\"") +
@@ -415,7 +415,7 @@ static RPCHelpMan getdevicexpub()
         throw JSONRPCError(RPC_INTERNAL_ERROR, strprintf("GetXPub failed %s.", sError));
     }
 
-    return CBitcoinExtPubKey(ekp).ToString();
+    return CGlobeExtPubKey(ekp).ToString();
 },
     };
 };
@@ -429,7 +429,7 @@ static RPCHelpMan devicesignmessage()
             "                           The full path is \"accountpath\"/\"path\"."},
                     {"message", RPCArg::Type::STR, RPCArg::Optional::NO, "The message to sign for."},
                     {"accountpath", RPCArg::Type::STR, RPCArg::Default{GetDefaultAccountPath()}, "Account path, set to empty string to ignore."},
-                    {"message_magic", RPCArg::Type::STR, RPCArg::Default{"Particl Signed Message:\\n"}, "The magic string to use."},
+                    {"message_magic", RPCArg::Type::STR, RPCArg::Default{"Globe Signed Message:\\n"}, "The magic string to use."},
                 },
                 RPCResult{
                     RPCResult::Type::STR, "signature", "The signature of the message encoded in base 64"
@@ -790,7 +790,7 @@ static RPCHelpMan initaccountfromdevice()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return NullUniValue;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
 
     RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VSTR, UniValue::VBOOL, UniValue::VNUM}, true);
@@ -906,10 +906,10 @@ static RPCHelpMan initaccountfromdevice()
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "GetFullChainPath failed.");
             }
 
-            // Use BTC_MESSAGE_MAGIC for backwards compatibility
+            // Use GLB_MESSAGE_MAGIC for backwards compatibility
             vSigPath.push_back(0);
             uiInterface.NotifyWaitingForDevice(false);
-            if (0 != pDevice->SignMessage(vSigPath, msg, BTC_MESSAGE_MAGIC, vchSig, sError)) {
+            if (0 != pDevice->SignMessage(vSigPath, msg, GLB_MESSAGE_MAGIC, vchSig, sError)) {
                 sea->FreeChains();
                 uiInterface.NotifyWaitingForDevice(true);
                 throw JSONRPCError(RPC_INTERNAL_ERROR, strprintf("Could not generate scan chain seed from signed message %s.", sError));
@@ -1005,7 +1005,7 @@ static RPCHelpMan initaccountfromdevice()
     }
     UniValue result(UniValue::VOBJ);
 
-    result.pushKV("extkey", CBitcoinExtPubKey(ekp).ToString());
+    result.pushKV("extkey", CGlobeExtPubKey(ekp).ToString());
     result.pushKV("path", sPath);
     result.pushKV("scanfrom", nScanFrom);
 
@@ -1017,7 +1017,7 @@ static RPCHelpMan initaccountfromdevice()
 static RPCHelpMan devicegetnewstealthaddress()
 {
     return RPCHelpMan{"devicegetnewstealthaddress",
-                "\nReturns a new Particl stealth address for receiving payments." +
+                "\nReturns a new Globe stealth address for receiving payments." +
                     HELP_REQUIRING_PASSPHRASE,
                 {
                     {"label", RPCArg::Type::STR, RPCArg::Default{""}, "If \"label\" is specified the new address will be added to the address book."},
@@ -1030,7 +1030,7 @@ static RPCHelpMan devicegetnewstealthaddress()
                     {"bech32", RPCArg::Type::BOOL, RPCArg::Default{true}, "Use Bech32 encoding."},
                 },
                 RPCResult{
-                    RPCResult::Type::STR, "address", "The generated particl stealth address"
+                    RPCResult::Type::STR, "address", "The generated globe stealth address"
                 },
                 RPCExamples{
              HelpExampleCli("devicegetnewstealthaddress", "\"lblTestSxAddrPrefix\" 3 \"0b101\"") +
@@ -1041,7 +1041,7 @@ static RPCHelpMan devicegetnewstealthaddress()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return NullUniValue;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -1235,7 +1235,7 @@ static RPCHelpMan devicesignrawtransactionwithwallet()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return NullUniValue;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     LOCK(pwallet ? &pwallet->cs_wallet : nullptr);
     RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VARR, UniValue::VARR, UniValue::VSTR, UniValue::VSTR}, true);

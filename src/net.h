@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NET_H
-#define BITCOIN_NET_H
+#ifndef GLOBE_NET_H
+#define GLOBE_NET_H
 
 #include <chainparams.h>
 #include <common/bloom.h>
@@ -367,7 +367,7 @@ public:
      * `shared_ptr` (instead of `unique_ptr`) is used to avoid premature close of
      * the underlying file descriptor by one thread while another thread is
      * poll(2)-ing it for activity.
-     * @see https://github.com/bitcoin/bitcoin/issues/21744 for details.
+     * @see https://github.com/globe/globe/issues/21744 for details.
      */
     std::shared_ptr<Sock> m_sock GUARDED_BY(m_sock_mutex);
 
@@ -631,7 +631,7 @@ public:
     std::unique_ptr<i2p::sam::Session> m_i2p_sam_session GUARDED_BY(m_sock_mutex);
 
     /**
-     * Particl
+     * Globe
      */
     SecMsgNode smsgData;
 };
@@ -665,7 +665,7 @@ public:
     */
     virtual bool SendMessages(CNode* pnode) EXCLUSIVE_LOCKS_REQUIRED(pnode->cs_sendProcessing) = 0;
 
-    /** Particl */
+    /** Globe */
     virtual void CheckUnreceivedHeaders(int64_t now) EXCLUSIVE_LOCKS_REQUIRED(cs_main) = 0;
     virtual void DecMisbehaving(NodeId nodeid, int howmuch) = 0;
 protected:
@@ -1196,4 +1196,4 @@ extern std::function<void(const CAddress& addr,
                           bool is_incoming)>
     CaptureMessage;
 
-#endif // BITCOIN_NET_H
+#endif // GLOBE_NET_H

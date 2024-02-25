@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_SPANISH_H
 #define _WORDLIST_SPANISH_H 1
 
-// https://github.com/bitcoin/bips/blob/master/bip-0039/spanish.txt
+// https://github.com/globe/bips/blob/master/bip-0039/spanish.txt
 
 unsigned char spanish_txt[] = {
   0x61, 0xcc, 0x81, 0x62, 0x61, 0x63, 0x6f, 0x0a, 0x61, 0x62, 0x64, 0x6f,

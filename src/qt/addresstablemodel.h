@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2020 The Bitcoin Core developers
+// Copyright (c) 2011-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_ADDRESSTABLEMODEL_H
-#define BITCOIN_QT_ADDRESSTABLEMODEL_H
+#ifndef GLOBE_QT_ADDRESSTABLEMODEL_H
+#define GLOBE_QT_ADDRESSTABLEMODEL_H
 
 #include <QAbstractTableModel>
 #include <QStringList>
@@ -30,7 +30,7 @@ public:
 
     enum ColumnIndex {
         Label = 0,   /**< User specified label */
-        Address = 1,  /**< Bitcoin address */
+        Address = 1,  /**< Globe address */
         Path = 2
     };
 
@@ -46,7 +46,7 @@ public:
         DUPLICATE_ADDRESS,      /**< Address already in address book */
         WALLET_UNLOCK_FAILURE,  /**< Wallet could not be unlocked to create new receiving address */
         KEY_GENERATION_FAILURE, /**< Generating a new public key for a receiving address failed */
-        RPC_ERROR               /**< Particl: Error was raised from rpc function */
+        RPC_ERROR               /**< Globe: Error was raised from rpc function */
     };
 
     enum AddrType {
@@ -116,4 +116,4 @@ public Q_SLOTS:
     friend class AddressTablePriv;
 };
 
-#endif // BITCOIN_QT_ADDRESSTABLEMODEL_H
+#endif // GLOBE_QT_ADDRESSTABLEMODEL_H

@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/globe-config.h>
 #endif
 
 #include <net.h>
@@ -119,9 +119,9 @@ std::map<CNetAddr, LocalServiceInfo> mapLocalHost GUARDED_BY(g_maplocalhost_mute
 static bool vfLimited[NET_MAX] GUARDED_BY(g_maplocalhost_mutex) = {};
 std::string strSubVersion;
 
-namespace particl {
+namespace globe {
 extern void UpdateNumPeers(int num_peers);
-} // namespace particl
+} // namespace globe
 
 void CConnman::AddAddrFetch(const std::string& strDest)
 {
@@ -1148,7 +1148,7 @@ void CConnman::NotifyNumConnectionsChanged()
         if (m_client_interface) {
             m_client_interface->NotifyNumConnectionsChanged(nodes_size);
         }
-        particl::UpdateNumPeers(nodes_size);
+        globe::UpdateNumPeers(nodes_size);
     }
 }
 
@@ -1665,7 +1665,7 @@ void CConnman::ThreadOpenConnections(const std::vector<std::string> connect)
                 // peers.dat will contain only peers of unreachable networks and
                 // manual intervention will be needed (either delete peers.dat after
                 // configuration change or manually add some reachable peer using addnode),
-                // see <https://github.com/bitcoin/bitcoin/issues/26035> for details.
+                // see <https://github.com/globe/globe/issues/26035> for details.
                 seed_addrs.erase(std::remove_if(seed_addrs.begin(), seed_addrs.end(),
                                                [](const CAddress& addr) { return !IsReachable(addr); }),
                                 seed_addrs.end());

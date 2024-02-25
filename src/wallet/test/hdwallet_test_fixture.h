@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2021 The Particl Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_WALLET_TEST_HDWALLET_TEST_FIXTURE_H
-#define PARTICL_WALLET_TEST_HDWALLET_TEST_FIXTURE_H
+#ifndef GLOBE_WALLET_TEST_HDWALLET_TEST_FIXTURE_H
+#define GLOBE_WALLET_TEST_HDWALLET_TEST_FIXTURE_H
 
 #include <test/util/setup_common.h>
 
@@ -12,7 +12,7 @@
 
 class CHDWallet;
 
-/** Testing setup and teardown for particl wallet.
+/** Testing setup and teardown for globe wallet.
  */
 struct HDWalletTestingSetup: public TestingSetup {
     explicit HDWalletTestingSetup(const std::string& chainName = CBaseChainParams::MAIN);
@@ -35,5 +35,5 @@ void StakeNBlocks(CHDWallet *pwallet, size_t nBlocks);
 bool CreateValidBlock(CHDWallet *pwallet, CBlock &block_out);
 uint256 AddTxn(CHDWallet *pwallet, CTxDestination &dest, OutputTypes input_type, OutputTypes output_type, CAmount amount, CAmount exploit_amount=0, std::string expect_error="");
 
-#endif // PARTICL_WALLET_TEST_HDWALLET_TEST_FIXTURE_H
+#endif // GLOBE_WALLET_TEST_HDWALLET_TEST_FIXTURE_H
 

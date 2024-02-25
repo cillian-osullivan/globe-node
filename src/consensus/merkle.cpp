@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2020 The Bitcoin Core developers
+// Copyright (c) 2015-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -77,7 +77,7 @@ uint256 BlockWitnessMerkleRoot(const CBlock& block, bool* mutated)
     std::vector<uint256> leaves;
     leaves.resize(block.vtx.size());
 
-    if (block.nVersion == PARTICL_BLOCK_VERSION)
+    if (block.nVersion == GLOBE_BLOCK_VERSION)
     {
         for (size_t s = 0; s < block.vtx.size(); s++)
             leaves[s] = block.vtx[s]->GetWitnessHash();

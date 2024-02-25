@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -467,7 +467,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 strErr = "Error reading wallet database: LegacyScriptPubKeyMan::LoadKey failed";
                 return false;
             }
-        } else if (strType == DBKeys::MASTER_KEY && !fParticlMode) {
+        } else if (strType == DBKeys::MASTER_KEY && !fGlobeMode) {
             // Master encryption key is loaded into only the wallet and not any of the ScriptPubKeyMans.
             unsigned int nID;
             ssKey >> nID;
@@ -523,7 +523,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             if (keyMeta.nVersion >= CKeyMetadata::VERSION_WITH_HDDATA && !keyMeta.hd_seed_id.IsNull() && keyMeta.hdKeypath.size() > 0) {
                 // Get the path from the key origin or from the path string
                 // Not applicable when path is "s" or "m" as those indicate a seed
-                // See https://github.com/bitcoin/bitcoin/pull/12924
+                // See https://github.com/globe/globe/pull/12924
                 bool internal = false;
                 uint32_t index = 0;
                 if (keyMeta.hdKeypath != "s" && keyMeta.hdKeypath != "m") {
@@ -783,7 +783,7 @@ bool WalletBatch::IsKeyType(const std::string& strType)
 {
     return (strType == DBKeys::KEY ||
             strType == DBKeys::MASTER_KEY || strType == DBKeys::CRYPTED_KEY)
-            || (fParticlMode &&
+            || (fGlobeMode &&
                 (strType == DBKeys::PART_EXTACC || strType == DBKeys::PART_EXTKEY
                 || strType == DBKeys::PART_EXTKEYNAMED || strType == DBKeys::PART_SXADDR || strType == DBKeys::PART_SXADDRKEYPACK));
 }

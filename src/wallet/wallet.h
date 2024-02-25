@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_WALLET_H
-#define BITCOIN_WALLET_WALLET_H
+#ifndef GLOBE_WALLET_WALLET_H
+#define GLOBE_WALLET_WALLET_H
 
 #include <consensus/amount.h>
 #include <fs.h>
@@ -88,7 +88,7 @@ static const CAmount DEFAULT_FALLBACK_FEE = 0;
 static const CAmount DEFAULT_DISCARD_FEE = 10000;
 //! -mintxfee default
 static const CAmount DEFAULT_TRANSACTION_MINFEE = 200000;
-static const CAmount DEFAULT_TRANSACTION_MINFEE_BTC = 1000;
+static const CAmount DEFAULT_TRANSACTION_MINFEE_GLB = 1000;
 //! -consolidatefeerate default
 static const CAmount DEFAULT_CONSOLIDATE_FEERATE{10000}; // 10 sat/vbyte
 /**
@@ -116,7 +116,7 @@ static const bool DEFAULT_DISABLE_WALLET = false;
 static const bool DEFAULT_WALLETCROSSCHAIN = false;
 //! -maxtxfee default
 constexpr CAmount DEFAULT_TRANSACTION_MAXFEE{COIN / 2};
-constexpr CAmount DEFAULT_TRANSACTION_MAXFEE_BTC{COIN / 10};
+constexpr CAmount DEFAULT_TRANSACTION_MAXFEE_GLB{COIN / 10};
 //! Discourage users to set fees higher than this amount (in satoshis) per kB
 constexpr CAmount HIGH_TX_FEE_PER_KB{COIN / 100};
 //! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
@@ -404,7 +404,7 @@ private:
     static int64_t GetDefaultNextResend();
 
 public:
-    bool IsParticlWallet() const override { return false; };
+    bool IsGlobeWallet() const override { return false; };
     /**
      * Main wallet lock.
      * This lock protects all the fields added by CWallet.
@@ -432,9 +432,9 @@ public:
           m_name(name),
           m_database(std::move(database))
     {
-        if (!fParticlMode) {
-            m_min_fee = CFeeRate(DEFAULT_TRANSACTION_MINFEE_BTC);
-            m_default_max_tx_fee = DEFAULT_TRANSACTION_MAXFEE_BTC;
+        if (!fGlobeMode) {
+            m_min_fee = CFeeRate(DEFAULT_TRANSACTION_MINFEE_GLB);
+            m_default_max_tx_fee = DEFAULT_TRANSACTION_MAXFEE_GLB;
         }
     }
 
@@ -559,7 +559,7 @@ public:
     int64_t IncOrderPosNext(WalletBatch *batch = nullptr) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     DBErrors ReorderTransactions();
 
-    //! For ParticlWallet, clear cached balances from wallet called at new block and adding new transaction
+    //! For GlobeWallet, clear cached balances from wallet called at new block and adding new transaction
     virtual void ClearCachedBalances() {};
     void MarkDirty();
 
@@ -1011,7 +1011,7 @@ public:
     //! and where needed, moves tx and address book entries to watchonly_wallet or solvable_wallet
     bool ApplyMigrationData(MigrationData& data, bilingual_str& error) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
-    //! Particl
+    //! Globe
     bool HaveKey(const CKeyID &address) const override { return false; };
     bool GetKey(const CKeyID &address, CKey &keyOut) const override { return false; };
     bool GetPubKey(const CKeyID &address, CPubKey &pkOut) const override { return false; };
@@ -1098,4 +1098,4 @@ struct MigrationResult {
 util::Result<MigrationResult> MigrateLegacyToDescriptor(std::shared_ptr<CWallet>&& wallet, WalletContext& context);
 } // namespace wallet
 
-#endif // BITCOIN_WALLET_WALLET_H
+#endif // GLOBE_WALLET_WALLET_H

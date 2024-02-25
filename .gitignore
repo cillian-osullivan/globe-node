@@ -2,18 +2,18 @@
 
 *.exe
 *.pdb
-src/particl
-src/particld
-src/particl-cli
-src/particl-gui
-src/particl-node
-src/particl-tx
-src/particl-util
-src/particl-chainstate
-src/particl-wallet
+src/globe
+src/globed
+src/globe-cli
+src/globe-gui
+src/globe-node
+src/globe-tx
+src/globe-util
+src/globe-chainstate
+src/globe-wallet
 src/test/fuzz/fuzz
-src/test/test_particl
-src/qt/test/test_particl-qt
+src/test/test_globe
+src/qt/test/test_globe-qt
 
 # autoreconf
 src/Makefile.in
@@ -38,8 +38,8 @@ config.log
 config.status
 configure
 libtool
-src/config/bitcoin-config.h
-src/config/bitcoin-config.h.in
+src/config/globe-config.h
+src/config/globe-config.h.in
 src/config/stamp-h1
 src/obj
 share/setup.nsi
@@ -51,17 +51,17 @@ src/qt/forms/ui_*.h
 
 src/qt/test/moc*.cpp
 
-src/qt/bitcoin-qt.config
-src/qt/bitcoin-qt.creator
-src/qt/bitcoin-qt.creator.user
-src/qt/bitcoin-qt.files
-src/qt/bitcoin-qt.includes
+src/qt/globe-qt.config
+src/qt/globe-qt.creator
+src/qt/globe-qt.creator.user
+src/qt/globe-qt.files
+src/qt/globe-qt.includes
 
-src/qt/particl-qt.config
-src/qt/particl-qt.creator
-src/qt/particl-qt.creator.user
-src/qt/particl-qt.files
-src/qt/particl-qt.includes
+src/qt/globe-qt.config
+src/qt/globe-qt.creator
+src/qt/globe-qt.creator.user
+src/qt/globe-qt.files
+src/qt/globe-qt.includes
 
 .deps
 .dirstamp
@@ -99,15 +99,15 @@ src/qt/particl-qt.includes
 *.qm
 Makefile
 !depends/Makefile
-src/qt/particl-qt
-Particl-Qt.app
+src/qt/globe-qt
+Globe-Qt.app
 
 # Qt Creator
 Makefile.am.user
 
 # Unit-tests
 Makefile.test
-particl-qt_test
+globe-qt_test
 
 # Resources cpp
 qrc_*.cpp
@@ -123,7 +123,7 @@ releases
 *.gcno
 *.gcda
 /*.info
-test_particl.coverage/
+test_globe.coverage/
 total.coverage/
 fuzz.coverage/
 coverage_percent.txt
@@ -142,7 +142,7 @@ test/.mypy_cache/
 
 /doc/doxygen/
 
-libparticlconsensus.pc
+libglobeconsensus.pc
 contrib/devtools/split-debug.sh
 
 # Output from running db4 installation
@@ -162,3 +162,9 @@ dist/
 sanitizer-output
 *~
 src/secp256k1-zkp/
+
+.cproject
+.project
+.settings/language.settings.yml
+src/test/buildenv.py
+Debug

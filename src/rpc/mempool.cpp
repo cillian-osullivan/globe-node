@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -71,7 +71,7 @@ static RPCHelpMan sendrawtransaction()
             CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 
             const CFeeRate max_raw_tx_fee_rate = request.params[1].isNull() ?
-                                                     fParticlMode ? node::DEFAULT_MAX_RAW_TX_FEE_RATE : node::DEFAULT_MAX_RAW_TX_FEE_RATE_BTC :
+                                                     fGlobeMode ? node::DEFAULT_MAX_RAW_TX_FEE_RATE : node::DEFAULT_MAX_RAW_TX_FEE_RATE_GLB :
                                                      CFeeRate(AmountFromValue(request.params[1]));
 
             int64_t virtual_size = GetVirtualTransactionSize(*tx);
@@ -154,7 +154,7 @@ static RPCHelpMan testmempoolaccept()
             }
 
             const CFeeRate max_raw_tx_fee_rate = request.params[1].isNull() ?
-                                                     fParticlMode ? node::DEFAULT_MAX_RAW_TX_FEE_RATE : node::DEFAULT_MAX_RAW_TX_FEE_RATE_BTC :
+                                                     fGlobeMode ? node::DEFAULT_MAX_RAW_TX_FEE_RATE : node::DEFAULT_MAX_RAW_TX_FEE_RATE_GLB :
                                                      CFeeRate(AmountFromValue(request.params[1]));
 
             bool ignore_locks = !request.params[2].isNull() ? request.params[2].get_bool() : false;

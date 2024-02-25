@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TXMEMPOOL_H
-#define BITCOIN_TXMEMPOOL_H
+#ifndef GLOBE_TXMEMPOOL_H
+#define GLOBE_TXMEMPOOL_H
 
 #include <atomic>
 #include <map>
@@ -33,7 +33,7 @@
 #include <boost/multi_index/sequenced_index.hpp>
 #include <boost/multi_index_container.hpp>
 
-// Particl
+// Globe
 #include <insight/addressindex.h>
 #include <insight/spentindex.h>
 
@@ -604,7 +604,7 @@ public:
 
     const Limits m_limits;
 
-    std::map<CCmpPubKey, uint256> mapKeyImages;  // Particl
+    std::map<CCmpPubKey, uint256> mapKeyImages;  // Globe
 
     /** Create a new CTxMemPool.
      * Sanity checks will be off by default for performance, because otherwise
@@ -1051,4 +1051,4 @@ struct DisconnectedBlockTransactions {
     }
 };
 
-#endif // BITCOIN_TXMEMPOOL_H
+#endif // GLOBE_TXMEMPOOL_H

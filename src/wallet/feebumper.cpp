@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 The Bitcoin Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -190,8 +190,8 @@ namespace feebumper {
 bool TransactionCanBeBumped(const CWallet& wallet, const uint256& txid)
 {
     LOCK(wallet.cs_wallet);
-    if (fParticlMode) {
-        const CHDWallet *pw = GetParticlWallet(&wallet);
+    if (fGlobeMode) {
+        const CHDWallet *pw = GetGlobeWallet(&wallet);
         if (!pw) {
             return false;
         }
@@ -224,14 +224,14 @@ bool TransactionCanBeBumped(const CWallet& wallet, const uint256& txid)
 Result CreateTotalBumpTransaction(const CWallet* wallet, const uint256& txid, const CCoinControl& coin_control, std::vector<bilingual_str>& errors,
                                   CAmount& old_fee, CAmount& new_fee, CMutableTransaction& mtx)
 {
-    // Particl TODO: Remove CreateTotalBumpTransaction, convert CreateRateBumpTransaction
+    // Globe TODO: Remove CreateTotalBumpTransaction, convert CreateRateBumpTransaction
     new_fee = 0;
     errors.clear();
 
-    if (!IsParticlWallet(wallet)) {
+    if (!IsGlobeWallet(wallet)) {
         return Result::WALLET_ERROR;
     }
-    const CHDWallet *pw = GetParticlWallet(wallet);
+    const CHDWallet *pw = GetGlobeWallet(wallet);
     LOCK(pw->cs_wallet);
     auto it = pw->mapWallet.find(txid);
     if (it != pw->mapWallet.end()) {
@@ -329,7 +329,7 @@ Result CreateTotalBumpTransaction(const CWallet* wallet, const uint256& txid, co
 
         // If the output would become dust, discard it (converting the dust to fee)
         poutput->SetValue(poutput->GetValue() - nDelta);
-        if (poutput->GetValue() <= particl::GetDustThreshold((CTxOutStandard*)poutput, GetDiscardRate(*wallet))) {
+        if (poutput->GetValue() <= globe::GetDustThreshold((CTxOutStandard*)poutput, GetDiscardRate(*wallet))) {
             LogPrint(BCLog::RPC, "Bumping fee and discarding dust output\n");
             new_fee += poutput->GetValue();
             mtx.vpout.erase(mtx.vpout.begin() + nOutput);
@@ -420,7 +420,7 @@ Result CreateRateBumpTransaction(CWallet& wallet, const uint256& txid, const CCo
     // While we're here, calculate the output amount
     std::vector<CRecipient> recipients;
     CAmount output_value = 0;
-    if (IsParticlWallet(&wallet)) {
+    if (IsGlobeWallet(&wallet)) {
         assert(false);
     }
     for (const auto& output : wtx.tx->vout) {

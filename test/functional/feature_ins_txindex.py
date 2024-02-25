@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2015 The Bitcoin Core developers
+# Copyright (c) 2014-2015 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,11 +7,11 @@
 # Test txindex generation and fetching
 #
 
-from test_framework.test_particl import ParticlTestFramework
+from test_framework.test_globe import GlobeTestFramework
 from test_framework.util import assert_equal
 
 
-class TxIndexTest(ParticlTestFramework):
+class TxIndexTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 4

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -83,8 +83,8 @@ void EnsureWalletIsUnlocked(const CWallet& wallet)
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
     }
 
-    if (IsParticlWallet(&wallet) &&
-        GetParticlWallet(&wallet)->fUnlockForStakingOnly) {
+    if (IsGlobeWallet(&wallet) &&
+        GetGlobeWallet(&wallet)->fUnlockForStakingOnly) {
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Wallet is unlocked for staking only.");
     }
 }

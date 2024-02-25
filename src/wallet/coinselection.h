@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2021 The Bitcoin Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_COINSELECTION_H
-#define BITCOIN_WALLET_COINSELECTION_H
+#ifndef GLOBE_WALLET_COINSELECTION_H
+#define GLOBE_WALLET_COINSELECTION_H
 
 #include <consensus/amount.h>
 #include <policy/feerate.h>
@@ -66,10 +66,10 @@ public:
     /** The fee required to spend this output at the consolidation feerate. */
     CAmount long_term_fee{0};
 
-    /** Particl: If the output is mature. */
+    /** Globe: If the output is mature. */
     bool mature = false;
 
-    /** Particl: If the output requires a signature from a key on a hardware device. */
+    /** Globe: If the output requires a signature from a key on a hardware device. */
     bool need_hardware_key = false;
 
     COutput(const COutPoint& outpoint, const CTxOut& txout, int depth, int input_bytes, bool spendable, bool solvable, bool safe, int64_t time, bool from_me, const std::optional<CFeeRate> feerate = std::nullopt, bool mature=true, bool need_hardware_key=false)
@@ -371,4 +371,4 @@ std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, 
                                               CAmount change_target, FastRandomContext& rng);
 } // namespace wallet
 
-#endif // BITCOIN_WALLET_COINSELECTION_H
+#endif // GLOBE_WALLET_COINSELECTION_H

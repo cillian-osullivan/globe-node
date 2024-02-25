@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_ITALIAN_H
 #define _WORDLIST_ITALIAN_H 1
 
-// https://github.com/bitcoin/bips/blob/master/bip-0039/italian.txt
+// https://github.com/globe/bips/blob/master/bip-0039/italian.txt
 
 unsigned char italian_txt[] = {
   0x61, 0x62, 0x61, 0x63, 0x6f, 0x0a, 0x61, 0x62, 0x62, 0x61, 0x67, 0x6c,

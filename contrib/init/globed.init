@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+#  globed The globe core server.
+#
+#
+# chkconfig: 345 80 20
+# description: globed
+# processname: globed
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/globed, see below
+if [ -f /etc/sysconfig/globed ]; then
+        . /etc/sysconfig/globed
+fi
+
+RETVAL=0
+
+prog=globed
+# you can override the lockfile via GLOBED_LOCKFILE in /etc/sysconfig/globed
+lockfile=${GLOBED_LOCKFILE-/var/lock/subsys/globed}
+
+# globed defaults to /usr/bin/globed, override with GLOBED_BIN
+globed=${GLOBED_BIN-/usr/bin/globed}
+
+# globed opts default to -disablewallet, override with GLOBED_OPTS
+globed_opts=${GLOBED_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $globed $globed_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog -t600
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

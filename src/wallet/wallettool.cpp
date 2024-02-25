@@ -1,9 +1,9 @@
-// Copyright (c) 2016-2021 The Bitcoin Core developers
+// Copyright (c) 2016-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/globe-config.h>
 #endif
 
 #include <wallet/wallettool.h>
@@ -21,7 +21,7 @@ namespace wallet {
 namespace WalletTool {
 
 // The standard wallet deleter function blocks on the validation interface
-// queue, which doesn't exist for the bitcoin-wallet. Define our own
+// queue, which doesn't exist for the globe-wallet. Define our own
 // deleter here.
 static void WalletToolReleaseWallet(CWallet* wallet)
 {
@@ -34,7 +34,7 @@ static void WalletCreate(CWallet* wallet_instance, uint64_t wallet_creation_flag
 {
     LOCK(wallet_instance->cs_wallet);
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         wallet_instance->InitWalletFlags(wallet_creation_flags);
         return;
     }
@@ -64,7 +64,7 @@ static const std::shared_ptr<CWallet> MakeWallet(const std::string& name, const 
     }
 
     // dummy chain interface
-    std::shared_ptr<CWallet> wallet_instance(fParticlMode
+    std::shared_ptr<CWallet> wallet_instance(fGlobeMode
         ? std::shared_ptr<CWallet>(new CHDWallet(nullptr /* chain */, name, args, std::move(database)), WalletToolReleaseWallet)
         : std::shared_ptr<CWallet>(new CWallet(nullptr /* chain */, name, args, std::move(database)), WalletToolReleaseWallet));
     DBErrors load_wallet_ret;
@@ -151,10 +151,10 @@ bool ExecuteWalletToolFunc(const ArgsManager& args, const std::string& command)
         ReadDatabaseArgs(args, options);
         options.require_create = true;
         // If -legacy is set, use it. Otherwise default to false.
-        bool make_legacy = args.GetBoolArg("-legacy", fParticlMode ? true : false);
+        bool make_legacy = args.GetBoolArg("-legacy", fGlobeMode ? true : false);
         // If neither -legacy nor -descriptors is set, default to true. If -descriptors is set, use its value.
         bool make_descriptors = (!args.IsArgSet("-descriptors") && !args.IsArgSet("-legacy")) || (args.IsArgSet("-descriptors") && args.GetBoolArg("-descriptors", true));
-        if (fParticlMode) {
+        if (fGlobeMode) {
             make_descriptors = false;
         }
         if (make_legacy && make_descriptors) {
@@ -213,7 +213,7 @@ bool ExecuteWalletToolFunc(const ArgsManager& args, const std::string& command)
             tfm::format(std::cerr, "%s\n", error.original);
             return ret;
         }
-        tfm::format(std::cout, "The dumpfile may contain private keys. To ensure the safety of your Particl, do not share the dumpfile.\n");
+        tfm::format(std::cout, "The dumpfile may contain private keys. To ensure the safety of your Globe, do not share the dumpfile.\n");
         return ret;
     } else if (command == "createfromdump") {
         bilingual_str error;

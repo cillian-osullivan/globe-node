@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -555,7 +555,7 @@ void CTxMemPool::addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewC
     LOCK(cs);
     const CTransaction& tx = entry.GetTx();
 
-    if (!tx.IsParticlVersion()) {
+    if (!tx.IsGlobeVersion()) {
         return;
     }
 
@@ -655,7 +655,7 @@ void CTxMemPool::addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCac
 
     const CTransaction& tx = entry.GetTx();
 
-    if (!tx.IsParticlVersion()) {
+    if (!tx.IsGlobeVersion()) {
         return;
     }
 
@@ -974,7 +974,7 @@ void CTxMemPool::check(const CCoinsViewCache& active_coins_tip, int64_t spendhei
             indexed_transaction_set::const_iterator it2 = mapTx.find(txin.prevout.hash);
             if (it2 != mapTx.end()) {
                 const CTransaction& tx2 = it2->GetTx();
-                if (fParticlMode) {
+                if (fGlobeMode) {
                     assert(tx2.vpout.size() > txin.prevout.n && tx2.vpout[txin.prevout.n] != nullptr
                         && (tx2.vpout[txin.prevout.n]->IsStandardOutput() || tx2.vpout[txin.prevout.n]->IsType(OUTPUT_CT)));
                 } else {
@@ -1039,7 +1039,7 @@ void CTxMemPool::check(const CCoinsViewCache& active_coins_tip, int64_t spendhei
         assert(it->GetSizeWithDescendants() >= child_sizes + it->GetTxSize());
 
         TxValidationState dummy_state; // Not used. CheckTxInputs() should always pass
-        dummy_state.SetStateInfo(GetTime(), spendheight, Params().GetConsensus(), fParticlMode, false);
+        dummy_state.SetStateInfo(GetTime(), spendheight, Params().GetConsensus(), fGlobeMode, false);
         CAmount txfee = 0;
         assert(!tx.IsCoinBase());
         assert(Consensus::CheckTxInputs(tx, dummy_state, mempoolDuplicate, spendheight, txfee));
@@ -1266,7 +1266,7 @@ bool CCoinsViewMemPool::GetCoin(const COutPoint &outpoint, Coin &coin) const {
     CTransactionRef ptx = mempool.get(outpoint.hash);
     if (ptx) {
 
-        if (ptx->IsParticlVersion()) {
+        if (ptx->IsGlobeVersion()) {
             if (outpoint.n < ptx->vpout.size()) {
                 const CTxOutBase *out = ptx->vpout[outpoint.n].get();
                 const CScript *ps = out->GetPScriptPubKey();

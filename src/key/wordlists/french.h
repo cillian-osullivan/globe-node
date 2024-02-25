@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_FRENCH_H
 #define _WORDLIST_FRENCH_H 1
 
-// https://github.com/bitcoin/bips/blob/master/bip-0039/french.txt
+// https://github.com/globe/bips/blob/master/bip-0039/french.txt
 
 unsigned char french_txt[] = {
   0xef, 0xbb, 0xbf, 0x61, 0x62, 0x61, 0x69, 0x73, 0x73, 0x65, 0x72, 0x0a,

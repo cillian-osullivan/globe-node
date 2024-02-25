@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -800,7 +800,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
 
     // Disallowed nVersion
     t.nVersion = -1;
-    //CheckIsNotStandard(t, "version"); // Particl
+    //CheckIsNotStandard(t, "version"); // Globe
 
     t.nVersion = 0;
     CheckIsNotStandard(t, "version");

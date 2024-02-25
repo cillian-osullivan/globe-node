@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2014-2021 The Bitcoin Core developers
+# Copyright (c) 2014-2021 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,8 +7,8 @@ export LC_ALL=C
 set -e
 
 ROOTDIR=dist
-BUNDLE="${ROOTDIR}/Particl-Qt.app"
-BINARY="${BUNDLE}/Contents/MacOS/Particl-Qt"
+BUNDLE="${ROOTDIR}/Globe-Qt.app"
+BINARY="${BUNDLE}/Contents/MacOS/Globe-Qt"
 SIGNAPPLE=signapple
 TEMPDIR=sign.temp
 ARCH=$(${SIGNAPPLE} info ${BINARY} | head -n 1 | cut -d " " -f 1)

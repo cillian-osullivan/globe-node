@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -92,7 +92,7 @@ public:
                 if (pk_hash_only && !std::holds_alternative<PKHash>(address.dest)) {
                     continue;
                 }
-                const CBitcoinAddress addr(address.dest, address.fBech32);
+                const CGlobeAddress addr(address.dest, address.fBech32);
                 AddressTableEntry::Type addressType = translateTransactionType(
                         QString::fromStdString(address.purpose), address.is_mine);
                 cachedAddressTable.append(AddressTableEntry(addressType,
@@ -353,7 +353,7 @@ QModelIndex AddressTableModel::index(int row, int column, const QModelIndex &par
 void AddressTableModel::updateEntry(const QString &address,
         const QString &label, bool isMine, const QString &purpose, const QString &path, int status)
 {
-    // Update address book model from Bitcoin core
+    // Update address book model from Globe core
     priv->updateEntry(address, label, isMine, purpose, path, status);
 }
 
@@ -386,7 +386,7 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
     }
     else if(type == Receive)
     {
-        QString label_escaped = GUIUtil::particl::escapeQString(label);
+        QString label_escaped = GUIUtil::globe::escapeQString(label);
         // Generate a new address to associate with given label
         QString sCommand;
         switch (addrType) {
@@ -419,7 +419,7 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
             return QString();
         }
         return QString::fromStdString(rv.get_str());
-        /* Particl TODO: unlock request
+        /* Globe TODO: unlock request
         auto op_dest = walletModel->wallet().getNewDestination(address_type, strLabel);
         if (!op_dest) {
             WalletModel::UnlockContext ctx(walletModel->requestUnlock());

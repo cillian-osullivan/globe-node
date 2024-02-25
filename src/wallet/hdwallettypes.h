@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2021 The Particl Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_WALLET_HDWALLETTYPES_H
-#define PARTICL_WALLET_HDWALLETTYPES_H
+#ifndef GLOBE_WALLET_HDWALLETTYPES_H
+#define GLOBE_WALLET_HDWALLETTYPES_H
 
 #include <key_io.h>
 #include <key/extkey.h>
@@ -316,4 +316,4 @@ public:
     }
 };
 
-#endif // PARTICL_WALLET_HDWALLETTYPES_H
+#endif // GLOBE_WALLET_HDWALLETTYPES_H

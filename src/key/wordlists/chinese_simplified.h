@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_CHINESE_S_H
 #define _WORDLIST_CHINESE_S_H 1
 
-// https://github.com/bitcoin/bips/blob/master/bip-0039/chinese_simplified.txt
+// https://github.com/globe/bips/blob/master/bip-0039/chinese_simplified.txt
 
 unsigned char chinese_simplified_txt[] = {
   0xe7, 0x9a, 0x84, 0x0a, 0xe4, 0xb8, 0x80, 0x0a, 0xe6, 0x98, 0xaf, 0x0a,

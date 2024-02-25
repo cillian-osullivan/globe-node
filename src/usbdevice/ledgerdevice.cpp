@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 The Particl Core developers
+// Copyright (c) 2018-2019 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -121,8 +121,8 @@ int CLedgerDevice::GetFirmwareVersion(std::string &sFirmware, std::string &sErro
     uint8_t in[260];
     uint8_t out[260];
     size_t apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_GET_FIRMWARE_VERSION;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_GET_FIRMWARE_VERSION;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
@@ -152,8 +152,8 @@ int CLedgerDevice::GetInfo(UniValue &info, std::string &sError)
     uint8_t in[260];
     uint8_t out[260];
     size_t apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_GET_COIN_VER;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_GET_COIN_VER;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
@@ -190,8 +190,8 @@ int CLedgerDevice::GetInfo(UniValue &info, std::string &sError)
     }
 
     apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_GET_OPERATION_MODE;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_GET_OPERATION_MODE;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
@@ -200,12 +200,12 @@ int CLedgerDevice::GetInfo(UniValue &info, std::string &sError)
     if (sw == SW_OK) {
         int om = out[0];
         info.pushKV("operation_mode", strprintf("%.2x %s", om,
-            om == BTCHIP_MODE_ISSUER            ? "issuer" :
-            om == BTCHIP_MODE_SETUP_NEEDED      ? "setup needed" :
-            om == BTCHIP_MODE_WALLET            ? "wallet" :
-            om == BTCHIP_MODE_RELAXED_WALLET    ? "relaxed wallet" :
-            om == BTCHIP_MODE_SERVER            ? "server" :
-            om == BTCHIP_MODE_DEVELOPER         ? "developer" :
+            om == GLBHIP_MODE_ISSUER            ? "issuer" :
+            om == GLBHIP_MODE_SETUP_NEEDED      ? "setup needed" :
+            om == GLBHIP_MODE_WALLET            ? "wallet" :
+            om == GLBHIP_MODE_RELAXED_WALLET    ? "relaxed wallet" :
+            om == GLBHIP_MODE_SERVER            ? "server" :
+            om == GLBHIP_MODE_DEVELOPER         ? "developer" :
             "unknown"));
     } else {
         errors.push_back("Get operation mode failed.");
@@ -233,8 +233,8 @@ int CLedgerDevice::GetPubKey(const std::vector<uint32_t> &vPath, CPubKey &pk, bo
     uint8_t in[260];
     uint8_t out[260];
     size_t apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_GET_WALLET_PUBLIC_KEY;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_GET_WALLET_PUBLIC_KEY;
     if (display) { // show on device
         in[apduSize++] = 0x01;
     } else {
@@ -286,8 +286,8 @@ int CLedgerDevice::GetXPub(const std::vector<uint32_t> &vPath, CExtPubKey &ekp, 
     uint8_t out[260];
     uint8_t outB[260];
     size_t apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_GET_WALLET_PUBLIC_KEY;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_GET_WALLET_PUBLIC_KEY;
     in[apduSize++] = 0x00;      // show on device
     in[apduSize++] = 0x00;      // segwit
     in[apduSize++] = 1 + 4 * lenPath; // num bytes to follow
@@ -368,8 +368,8 @@ int CLedgerDevice::SignMessage(const std::vector<uint32_t> &vPath, const std::st
     uint8_t in[260];
     uint8_t out[260];
     size_t apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_SIGN_MESSAGE;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_SIGN_MESSAGE;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
@@ -404,8 +404,8 @@ int CLedgerDevice::SignMessage(const std::vector<uint32_t> &vPath, const std::st
     }
 
     apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_SIGN_MESSAGE;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_SIGN_MESSAGE;
     in[apduSize++] = 0x80;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
@@ -459,8 +459,8 @@ int CLedgerDevice::PrepareTransaction(CMutableTransaction &tx, const CCoinsViewC
     uint8_t out[260];
     size_t apduSize = 0;
 
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_HASH_INPUT_START;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_HASH_INPUT_START;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x02; // segwit
     in[apduSize++] = 4 + GetSizeOfVarInt<VarIntMode::DEFAULT>(tx.vin.size());
@@ -488,8 +488,8 @@ int CLedgerDevice::PrepareTransaction(CMutableTransaction &tx, const CCoinsViewC
         part::SetAmount(vchAmount, coin.out.nValue);
 
         apduSize = 0;
-        in[apduSize++] = BTCHIP_CLA;
-        in[apduSize++] = BTCHIP_INS_HASH_INPUT_START;
+        in[apduSize++] = GLBHIP_CLA;
+        in[apduSize++] = GLBHIP_INS_HASH_INPUT_START;
         in[apduSize++] = 0x80;
         in[apduSize++] = 0x00;
         size_t ofslen = apduSize++;
@@ -530,8 +530,8 @@ int CLedgerDevice::PrepareTransaction(CMutableTransaction &tx, const CCoinsViewC
                 ? blockLength : scriptCode.size() - offset;
 
             apduSize = 0;
-            in[apduSize++] = BTCHIP_CLA;
-            in[apduSize++] = BTCHIP_INS_HASH_INPUT_START;
+            in[apduSize++] = GLBHIP_CLA;
+            in[apduSize++] = GLBHIP_INS_HASH_INPUT_START;
             in[apduSize++] = 0x80;
             in[apduSize++] = 0x00;
             size_t ofslen = apduSize++;
@@ -562,8 +562,8 @@ int CLedgerDevice::PrepareTransaction(CMutableTransaction &tx, const CCoinsViewC
             return errorN(1, m_error, __func__, "Change path too long %d.", change_path.size());
         }
         apduSize = 0;
-        in[apduSize++] = BTCHIP_CLA;
-        in[apduSize++] = BTCHIP_INS_HASH_INPUT_FINALIZE_FULL;
+        in[apduSize++] = GLBHIP_CLA;
+        in[apduSize++] = GLBHIP_INS_HASH_INPUT_FINALIZE_FULL;
         in[apduSize++] = 0xFF;
         in[apduSize++] = 0x00;
         in[apduSize++] = 1 + 4 * change_path.size(); // num bytes to follow
@@ -621,8 +621,8 @@ int CLedgerDevice::PrepareTransaction(CMutableTransaction &tx, const CCoinsViewC
         }
 
         apduSize = 0;
-        in[apduSize++] = BTCHIP_CLA;
-        in[apduSize++] = BTCHIP_INS_HASH_INPUT_FINALIZE_FULL;
+        in[apduSize++] = GLBHIP_CLA;
+        in[apduSize++] = GLBHIP_INS_HASH_INPUT_FINALIZE_FULL;
         in[apduSize++] = p1;
         in[apduSize++] = 0x00;
         in[apduSize++] = dataLength;
@@ -656,8 +656,8 @@ int CLedgerDevice::SignTransaction(const std::vector<uint32_t> &vPath, const std
 
     // startUntrustedTransaction
     apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_HASH_INPUT_START;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_HASH_INPUT_START;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x80; // !newTransaction
     in[apduSize++] = 4 + 1; // GetSizeOfVarInt(1);
@@ -674,8 +674,8 @@ int CLedgerDevice::SignTransaction(const std::vector<uint32_t> &vPath, const std
     }
 
     apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_HASH_INPUT_START;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_HASH_INPUT_START;
     in[apduSize++] = 0x80;
     in[apduSize++] = 0x00;
     size_t ofslen = apduSize++;
@@ -708,8 +708,8 @@ int CLedgerDevice::SignTransaction(const std::vector<uint32_t> &vPath, const std
             ? blockLength : scriptCode.size() - offset;
 
         apduSize = 0;
-        in[apduSize++] = BTCHIP_CLA;
-        in[apduSize++] = BTCHIP_INS_HASH_INPUT_START;
+        in[apduSize++] = GLBHIP_CLA;
+        in[apduSize++] = GLBHIP_INS_HASH_INPUT_START;
         in[apduSize++] = 0x80;
         in[apduSize++] = 0x00;
         size_t ofslen = apduSize++;
@@ -732,8 +732,8 @@ int CLedgerDevice::SignTransaction(const std::vector<uint32_t> &vPath, const std
     // untrustedHashSign
 
     apduSize = 0;
-    in[apduSize++] = BTCHIP_CLA;
-    in[apduSize++] = BTCHIP_INS_HASH_SIGN;
+    in[apduSize++] = GLBHIP_CLA;
+    in[apduSize++] = GLBHIP_INS_HASH_SIGN;
     in[apduSize++] = 0x00;
     in[apduSize++] = 0x00;
     ofslen = apduSize++;

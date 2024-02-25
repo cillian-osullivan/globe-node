@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,7 +28,7 @@
 
 #include <univalue.h>
 
-// Particl
+// Globe
 #include <wallet/hdwallet.h>
 
 
@@ -215,7 +215,7 @@ RPCHelpMan importaddress()
             "Note: Use \"getwalletinfo\" to query the scanning progress.\n"
             "Note: This command is only compatible with legacy wallets. Use \"importdescriptors\" with \"addr(X)\" for descriptor wallets.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The Particl address (or hex-encoded script)"},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The Globe address (or hex-encoded script)"},
                     {"label", RPCArg::Type::STR, RPCArg::Default{""}, "An optional label"},
                     {"rescan", RPCArg::Type::BOOL, RPCArg::Default{true}, "Scan the chain and mempool for wallet transactions."},
                     {"p2sh", RPCArg::Type::BOOL, RPCArg::Default{false}, "Add the P2SH version of the script as well"},
@@ -290,7 +290,7 @@ RPCHelpMan importaddress()
 
             pwallet->ImportScriptPubKeys(strLabel, scripts, false /* have_solving_data */, true /* apply_label */, 1 /* timestamp */);
         } else {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Particl address or script");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Globe address or script");
         }
     }
     if (fRescan)
@@ -562,10 +562,10 @@ RPCHelpMan importwallet()
                     UniValue inj;
                     inj.read(sJson);
 
-                    if (!IsParticlWallet(pwallet.get())) {
+                    if (!IsGlobeWallet(pwallet.get())) {
                         throw JSONRPCError(RPC_INVALID_PARAMETER, "Legacy wallet");
                     }
-                    if (!GetParticlWallet(pwallet.get())->LoadJson(inj, sError)) {
+                    if (!GetGlobeWallet(pwallet.get())->LoadJson(inj, sError)) {
                         throw JSONRPCError(RPC_WALLET_ERROR, "LoadJson failed " + sError);
                     }
                 }
@@ -675,7 +675,7 @@ RPCHelpMan dumpprivkey()
                 "\nReveals the private key corresponding to 'address'.\n"
                 "Then the importprivkey can be used with this output\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The particl address for the private key"},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The globe address for the private key"},
                 },
                 {
                     RPCResult{"Default", RPCResult::Type::STR, "", "The private key"},
@@ -703,13 +703,13 @@ RPCHelpMan dumpprivkey()
     std::string strAddress = request.params[0].get_str();
     CTxDestination dest = DecodeDestination(strAddress);
     if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Particl address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Globe address");
     }
 
-    if (IsParticlWallet(pwallet.get())) {
+    if (IsGlobeWallet(pwallet.get())) {
         CExtPubKey *pek = std::get_if<CExtPubKey>(&dest);
         if (pek) {
-            CHDWallet *phdw = GetParticlWallet(pwallet.get());
+            CHDWallet *phdw = GetGlobeWallet(pwallet.get());
             LOCK_ASSERTION(phdw->cs_wallet);
             CKeyID id = pek->GetID();
             CStoredExtKey sek;
@@ -731,7 +731,7 @@ RPCHelpMan dumpprivkey()
 
         CStealthAddress *psx = std::get_if<CStealthAddress>(&dest);
         if (psx) {
-            const CHDWallet *phdw = GetParticlWallet(pwallet.get());
+            const CHDWallet *phdw = GetGlobeWallet(pwallet.get());
             CKey kSpend;
             CStealthAddress sx = *psx;
             bool have_scan = phdw->GetStealthAddressScanKey(sx);
@@ -806,7 +806,7 @@ RPCHelpMan dumpwallet()
 
     /* Prevent arbitrary files from being overwritten. There have been reports
      * that users have overwritten wallet files this way:
-     * https://github.com/bitcoin/bitcoin/issues/9934
+     * https://github.com/globe/globe/issues/9934
      * It may also avoid other security issues.
      */
     if (fs::exists(filepath)) {
@@ -884,12 +884,12 @@ RPCHelpMan dumpwallet()
         }
     }
 
-    if (IsParticlWallet(pwallet.get())) {
+    if (IsGlobeWallet(pwallet.get())) {
         std::string sError;
         file << "\n# --- Begin JSON --- \n";
 
         UniValue rv(UniValue::VOBJ);
-        if (!GetParticlWallet(pwallet.get())->DumpJson(rv, sError)) {
+        if (!GetGlobeWallet(pwallet.get())->DumpJson(rv, sError)) {
             throw JSONRPCError(RPC_WALLET_ERROR, "DumpJson failed " + sError);
         }
         file << rv.write(1);
@@ -1531,7 +1531,7 @@ RPCHelpMan importmulti()
                                       "block from time %d, which is after or within %d seconds of key creation, and "
                                       "could contain transactions pertaining to the key. As a result, transactions "
                                       "and coins using this key may not appear in the wallet. This error could be "
-                                      "caused by pruning or data corruption (see particld log for details) and could "
+                                      "caused by pruning or data corruption (see globed log for details) and could "
                                       "be dealt with by downloading and rescanning the relevant blocks (see -reindex "
                                       "option and rescanblockchain RPC).",
                                 GetImportTimestamp(request, now), scannedTime - TIMESTAMP_WINDOW - 1, TIMESTAMP_WINDOW)));
@@ -1826,7 +1826,7 @@ RPCHelpMan importdescriptors()
                                       "block from time %d, which is after or within %d seconds of key creation, and "
                                       "could contain transactions pertaining to the desc. As a result, transactions "
                                       "and coins using this desc may not appear in the wallet. This error could be "
-                                      "caused by pruning or data corruption (see particld log for details) and could "
+                                      "caused by pruning or data corruption (see globed log for details) and could "
                                       "be dealt with by downloading and rescanning the relevant blocks (see -reindex "
                                       "option and rescanblockchain RPC).",
                                 GetImportTimestamp(request, now), scanned_time - TIMESTAMP_WINDOW - 1, TIMESTAMP_WINDOW)));

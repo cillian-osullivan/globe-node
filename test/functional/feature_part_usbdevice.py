@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2018-2020 The Particl Core developers
+# Copyright (c) 2018-2020 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,8 +7,8 @@ import os
 import json
 import configparser
 
-from test_framework.test_particl import (
-    ParticlTestFramework,
+from test_framework.test_globe import (
+    GlobeTestFramework,
     isclose,
     getIndexAtProperty,
 )
@@ -17,7 +17,7 @@ from test_framework.util import assert_raises_rpc_error
 from test_framework.authproxy import JSONRPCException
 
 
-class USBDeviceTest(ParticlTestFramework):
+class USBDeviceTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3
@@ -37,14 +37,14 @@ class USBDeviceTest(ParticlTestFramework):
 
     def run_test(self):
 
-        # Check that particl has been built with USB device enabled
+        # Check that globe has been built with USB device enabled
         config = configparser.ConfigParser()
         if not self.options.configfile:
             self.options.configfile = os.path.dirname(__file__) + "/../config.ini"
         config.read_file(open(self.options.configfile))
 
         if not config["components"].getboolean("ENABLE_USBDEVICE"):
-            raise SkipTest("particld has not been built with usb device enabled.")
+            raise SkipTest("globed has not been built with usb device enabled.")
 
         nodes = self.nodes
 
@@ -73,7 +73,7 @@ class USBDeviceTest(ParticlTestFramework):
         sig = nodes[1].devicesignmessage('0/1', message)
         assert (nodes[1].verifymessage('peWvjy33QptC2Gz3ww7jTTLPjC2QJmifBR', sig, message))
 
-        btc_message_magic = 'Bitcoin Signed Message:\n'
+        btc_message_magic = 'Globe Signed Message:\n'
         sig = nodes[1].devicesignmessage('0/1', message, "m/44'/1'/0'", btc_message_magic)
         assert (not nodes[1].verifymessage('peWvjy33QptC2Gz3ww7jTTLPjC2QJmifBR', sig, message))
         assert (nodes[1].verifymessage('peWvjy33QptC2Gz3ww7jTTLPjC2QJmifBR', sig, message, btc_message_magic))

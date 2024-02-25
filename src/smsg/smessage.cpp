@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -686,7 +686,7 @@ int CSMSG::AddWalletAddresses()
 
             // TODO: skip addresses for stealth transactions
             CKeyID keyID;
-            CBitcoinAddress coinAddress(entry.first);
+            CGlobeAddress coinAddress(entry.first);
             if (!coinAddress.IsValid()
                 || !coinAddress.GetKeyID(keyID)) {
                 continue;
@@ -794,7 +794,7 @@ int CSMSG::ReadIni()
             int rv = sscanf(pValue, "%63[^|]|%d|%d", cAddress, &addrRecv, &addrRecvAnon);
             if (rv == 3) {
                 CKeyID k;
-                CBitcoinAddress(cAddress).GetKeyID(k);
+                CGlobeAddress(cAddress).GetKeyID(k);
 
                 if (k.IsNull()) {
                     LogPrintf("Could not parse key line %s, rv %d.\n", pValue, rv);
@@ -853,7 +853,7 @@ int CSMSG::WriteIni()
     for (std::vector<SecMsgAddress>::iterator it = addresses.begin(); it != addresses.end(); ++it) {
         errno = 0;
 
-        CBitcoinAddress cAddress(PKHash(it->address));
+        CGlobeAddress cAddress(PKHash(it->address));
 
         if (!cAddress.IsValid()) {
             LogPrintf("%s: Error saving address - invalid.\n", __func__);
@@ -902,7 +902,7 @@ bool CSMSG::Start(std::shared_ptr<wallet::CWallet> pwalletIn, std::vector<std::s
     UnloadAllWallets();
 
     for (const auto &pw : vpwallets) {
-        CHDWallet *const ppartw = GetParticlWallet(pw.get());
+        CHDWallet *const ppartw = GetGlobeWallet(pw.get());
         if (!ppartw || !ppartw->m_smsg_enabled) {
             continue;
         }
@@ -1987,7 +1987,7 @@ static bool ScanBlock(CSMSG &smsg, const CBlock &block, SecMsgDB &addrpkdb,
     for (const auto &tx : block.vtx) {
         // Harvest public keys from coinstake txns
 
-        if (!tx->IsParticlVersion()) {
+        if (!tx->IsGlobeVersion()) {
             continue;
         }
 
@@ -2693,7 +2693,7 @@ int CSMSG::GetLocalKey(const CKeyID &key_id, CKey &key_out)
 
 int CSMSG::GetLocalPublicKey(const std::string &strAddress, std::string &strPublicKey)
 {
-    CBitcoinAddress address;
+    CGlobeAddress address;
     CKeyID keyID;
     if (!address.SetString(strAddress) || !address.GetKeyID(keyID)) {
         return SMSG_INVALID_ADDRESS;
@@ -2735,7 +2735,7 @@ int CSMSG::GetStoredKey(const CKeyID &ckid, CPubKey &cpkOut)
   */
 int CSMSG::AddAddress(std::string &address, std::string &publicKey)
 {
-    CBitcoinAddress coinAddress(address);
+    CGlobeAddress coinAddress(address);
     if (!coinAddress.IsValid()) {
         return errorN(SMSG_INVALID_ADDRESS, "%s - Address is not valid: %s.", __func__, address);
     }
@@ -2774,7 +2774,7 @@ int CSMSG::AddLocalAddress(const std::string &sAddress)
 #ifdef ENABLE_WALLET
     LogPrintf("%s: %s\n", __func__, sAddress);
 
-    CBitcoinAddress addr(sAddress);
+    CGlobeAddress addr(sAddress);
     if (!addr.IsValid(CChainParams::PUBKEY_ADDRESS)) {
         return errorN(SMSG_INVALID_ADDRESS, "%s - Address is not valid: %s.", __func__, sAddress);
     }
@@ -2802,7 +2802,7 @@ int CSMSG::AddLocalAddress(const std::string &sAddress)
 #endif
 };
 
-int CSMSG::ImportPrivkey(const CBitcoinSecret &vchSecret, const std::string &sLabel)
+int CSMSG::ImportPrivkey(const CGlobeSecret &vchSecret, const std::string &sLabel)
 {
     SecMsgKey key;
     key.key = vchSecret.GetKey();
@@ -3128,7 +3128,7 @@ int CSMSG::Receive(PeerManager *peerLogic, CNode *pfrom, std::vector<uint8_t> &v
                 GetPowHash(&smsg, pPayload, smsg.nPayload, msg_hash);
                 {
                     LOCK(cs_main);
-                    target.SetCompact(particl::GetSmsgDifficulty(*m_node->chainman, now, true));
+                    target.SetCompact(globe::GetSmsgDifficulty(*m_node->chainman, now, true));
                 }
 
                 if (UintToArith256(msg_hash) > target) {
@@ -3552,7 +3552,7 @@ int CSMSG::CheckFundingTx(const Consensus::Params &consensusParams, const Secure
             pindex = &mi->second;
             if (pindex && m_node->chainman->ActiveChain().Contains(pindex)) {
                 blockDepth = m_node->chainman->ActiveChain().Height() - pindex->nHeight + 1;
-                nMsgFeePerKPerDay = particl::GetSmsgFeeRate(*m_node->chainman, pindex);
+                nMsgFeePerKPerDay = globe::GetSmsgFeeRate(*m_node->chainman, pindex);
             }
         }
     }
@@ -3575,7 +3575,7 @@ int CSMSG::CheckFundingTx(const Consensus::Params &consensusParams, const Secure
                 // Grace period after fee period transition where prev fee is still allowed
                 bool matched_last_fee = false;
                 if (pindex->nHeight % consensusParams.smsg_fee_period < 10) {
-                    int64_t nMsgFeePerKPerDayLast = particl::GetSmsgFeeRate(*m_node->chainman, pindex, true);
+                    int64_t nMsgFeePerKPerDayLast = globe::GetSmsgFeeRate(*m_node->chainman, pindex, true);
                     int64_t nExpectFeeLast = ((nMsgFeePerKPerDayLast * nMsgBytes) / 1000) * nDaysRetention;
 
                     if (nAmount >= nExpectFeeLast) {
@@ -3788,7 +3788,7 @@ int CSMSG::Validate(const SecureMessage *psmsg, const uint8_t *pPayload, uint32_
     arith_uint256 target;
     {
     LOCK(cs_main);
-    target.SetCompact(particl::GetSmsgDifficulty(*m_node->chainman, psmsg->timestamp, true));
+    target.SetCompact(globe::GetSmsgDifficulty(*m_node->chainman, psmsg->timestamp, true));
     }
 
     if (UintToArith256(msg_hash) <= target) {
@@ -3815,7 +3815,7 @@ int CSMSG::SetHash(SecureMessage *psmsg, uint8_t *pPayload, uint32_t nPayload)
     arith_uint256 target_difficulty;
     {
     LOCK(cs_main);
-    target_difficulty.SetCompact(particl::GetSmsgDifficulty(*m_node->chainman, psmsg->timestamp));
+    target_difficulty.SetCompact(globe::GetSmsgDifficulty(*m_node->chainman, psmsg->timestamp));
     }
 
     unsigned char header_buffer[SMSG_HDR_LEN];
@@ -3891,7 +3891,7 @@ int CSMSG::Encrypt(SecureMessage &smsg, const CKeyID &addressFrom, const CKeyID 
         smsg.timestamp = GetTime();
     }
 
-    CBitcoinAddress coinAddrFrom;
+    CGlobeAddress coinAddrFrom;
     CKeyID ckidFrom;
     CKey keyFrom;
 
@@ -3902,7 +3902,7 @@ int CSMSG::Encrypt(SecureMessage &smsg, const CKeyID &addressFrom, const CKeyID 
         }
     }
 
-    CBitcoinAddress coinAddrDest;
+    CGlobeAddress coinAddrDest;
     CKeyID ckidDest = addressTo;
 
     // Public key K is the destination address
@@ -3997,7 +3997,7 @@ int CSMSG::Encrypt(SecureMessage &smsg, const CKeyID &addressFrom, const CKeyID 
         keyFrom.SignCompact(Hash(message), vchSignature);
 
         // Save some bytes by sending address raw
-        vchPayload[0] = (static_cast<CBitcoinAddress*>(&coinAddrFrom))->getVersion(); // vchPayload[0] = coinAddrDest.nVersion;
+        vchPayload[0] = (static_cast<CGlobeAddress*>(&coinAddrFrom))->getVersion(); // vchPayload[0] = coinAddrDest.nVersion;
         memcpy(&vchPayload[1], ckidFrom.begin(), 20); // memcpy(&vchPayload[1], ckidDest.pn, 20);
 
         memcpy(&vchPayload[1+20], &vchSignature[0], vchSignature.size());
@@ -4365,7 +4365,7 @@ int CSMSG::FundMsgs(std::vector<SecureMessage*> v_smsgs, std::string &sError, bo
         tr.vData = vData;
         vec_send.push_back(tr);
 
-        CHDWallet *const pw = GetParticlWallet(pactive_wallet.get());
+        CHDWallet *const pw = GetGlobeWallet(pactive_wallet.get());
         CTransactionRef tx_new;
         wallet::CWalletTx wtx(tx_new, TxStateInactive{});
 
@@ -4619,7 +4619,7 @@ int CSMSG::Decrypt(bool fTestOnly, const CKey &keyDest, const CKeyID &address, c
         uint160 ui160(vchUint160);
         CKeyID ckidFrom(ui160);
 
-        CBitcoinAddress coinAddrFrom;
+        CGlobeAddress coinAddrFrom;
         coinAddrFrom.Set(ckidFrom);
         if (!coinAddrFrom.IsValid()) {
             return errorN(SMSG_INVALID_ADDRESS, "%s: From Address is invalid.", __func__);
@@ -4637,7 +4637,7 @@ int CSMSG::Decrypt(bool fTestOnly, const CKey &keyDest, const CKeyID &address, c
         }
 
         // Get address for the compressed public key
-        CBitcoinAddress coinAddrFromSig;
+        CGlobeAddress coinAddrFromSig;
         coinAddrFromSig.Set(cpkFromSig.GetID());
 
         if (!(coinAddrFrom == coinAddrFromSig)) {

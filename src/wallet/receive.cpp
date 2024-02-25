@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,8 +14,8 @@ isminetype InputIsMine(const CWallet& wallet, const CTxIn& txin)
 {
     AssertLockHeld(wallet.cs_wallet);
 
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK(phdw->cs_wallet); // LockAssertion
         if (txin.IsAnonInput()) {
             return ISMINE_NO;
@@ -59,8 +59,8 @@ bool AllInputsMine(const CWallet& wallet, const CTransaction& tx, const isminefi
 {
     LOCK(wallet.cs_wallet);
 
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         return phdw->IsAllFromMe(tx, filter);
     }
 
@@ -81,8 +81,8 @@ CAmount OutputGetCredit(const CWallet& wallet, const CTxOut& txout, const ismine
 CAmount TxGetCredit(const CWallet& wallet, const CTransaction& tx, const isminefilter& filter)
 {
     CAmount nCredit = 0;
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK(phdw->cs_wallet);
         for (const auto &txout : tx.vpout) {
             nCredit += phdw->GetCredit(txout.get(), filter);
@@ -229,14 +229,14 @@ CAmount CachedTxGetAvailableCredit(const CWallet& wallet, const CWalletTx& wtx, 
     uint256 hashTx = wtx.GetHash();
     for (unsigned int i = 0; i < wtx.tx->GetNumVOuts(); i++) {
         const CScript *pscript = nullptr;
-        if (wallet.IsParticlWallet()) {
+        if (wallet.IsGlobeWallet()) {
             pscript = wtx.tx->vpout[i]->GetPScriptPubKey();
         } else {
             pscript = &wtx.tx->vout[i].scriptPubKey;
         }
 
         if (!wallet.IsSpent(COutPoint(hashTx, i)) && (allow_used_addresses || (pscript && !wallet.IsSpentKey(*pscript)))) {
-            nCredit += wallet.IsParticlWallet()
+            nCredit += wallet.IsGlobeWallet()
                        ? wallet.GetCredit(wtx.tx->vpout[i].get(), filter)
                        : OutputGetCredit(wallet, wtx.tx->vout[i], filter);
             if (!MoneyRange(nCredit))
@@ -322,7 +322,7 @@ void CachedTxGetAmounts(const CWallet& wallet, const CWalletTx& wtx,
     }
 
     // Sent/received.
-    if (wtx.tx->IsParticlVersion()) {
+    if (wtx.tx->IsGlobeVersion()) {
         for (unsigned int i = 0; i < wtx.tx->vpout.size(); ++i) {
             const CTxOutBase *txout = wtx.tx->vpout[i].get();
             if (!txout->IsStandardOutput()) {
@@ -438,7 +438,7 @@ bool CachedTxIsTrusted(const CWallet& wallet, const CWalletTx& wtx, std::set<uin
         // Transactions not sent by us: not trusted
         const CWalletTx* parent = wallet.GetWalletTx(txin.prevout.hash);
         if (parent == nullptr) return false;
-        if (wtx.tx->IsParticlVersion()) {
+        if (wtx.tx->IsGlobeVersion()) {
             const CTxOutBase *parentOut = parent->tx->vpout[txin.prevout.n].get();
             if (!(wallet.IsMine(parentOut) & ISMINE_SPENDABLE)) {
                 return false;
@@ -468,8 +468,8 @@ Balance GetBalance(const CWallet& wallet, const int min_depth, bool avoid_reuse)
 {
     Balance ret;
 
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK(phdw->cs_wallet);
         bool allow_used_addresses = avoid_reuse || !phdw->IsWalletFlagSet(WALLET_FLAG_AVOID_REUSE);
         for (const auto &ri : phdw->mapRecords) {
@@ -535,8 +535,8 @@ Balance GetBalance(const CWallet& wallet, const int min_depth, bool avoid_reuse)
 
 std::map<CTxDestination, CAmount> GetAddressBalances(const CWallet& wallet)
 {
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         return phdw->GetAddressBalances();
     }
 
@@ -579,8 +579,8 @@ std::map<CTxDestination, CAmount> GetAddressBalances(const CWallet& wallet)
 std::set< std::set<CTxDestination> > GetAddressGroupings(const CWallet& wallet)
 {
     AssertLockHeld(wallet.cs_wallet);
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK(phdw->cs_wallet); // LockAssertion
         return phdw->GetAddressGroupings();
     }

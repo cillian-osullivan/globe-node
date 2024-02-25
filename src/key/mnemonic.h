@@ -1,10 +1,10 @@
 // Copyright (c) 2014-2015 The ShadowCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_KEY_MNEMONIC_H
-#define PARTICL_KEY_MNEMONIC_H
+#ifndef GLOBE_KEY_MNEMONIC_H
+#define GLOBE_KEY_MNEMONIC_H
 
 #include <string>
 #include <vector>
@@ -63,5 +63,5 @@ int splitmnemonic(const std::string mnemonic_in, int language_ind, size_t num_sh
 int combinemnemonic(const std::vector<std::string> &mnemonics_in, int language_ind, std::string &mnemonic_out, std::string &sError);
 }
 
-#endif // PARTICL_KEY_MNEMONIC_H
+#endif // GLOBE_KEY_MNEMONIC_H
 

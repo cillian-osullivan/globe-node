@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -595,7 +595,7 @@ static RPCHelpMan getblockheader()
                             {RPCResult::Type::STR_HEX, "chainwork", "Expected number of hashes required to produce the current chain"},
                             {RPCResult::Type::NUM, "nTx", "The number of transactions in the block"},
                             {RPCResult::Type::NUM, "anonoutputs", /*optional=*/true, "The number of RCT outputs in the chain at this block"},
-                            {RPCResult::Type::STR_AMOUNT, "moneysupply", "The total amount of particl in the chain at this block"},
+                            {RPCResult::Type::STR_AMOUNT, "moneysupply", "The total amount of globe in the chain at this block"},
                             {RPCResult::Type::STR_HEX, "previousblockhash", /*optional=*/true, "The hash of the previous block (if available)"},
                             {RPCResult::Type::STR_HEX, "nextblockhash", /*optional=*/true, "The hash of the next block (if available)"},
                         }},
@@ -689,7 +689,7 @@ const RPCResult getblock_vin{
                     {RPCResult::Type::STR, "asm", "Disassembly of the public key script"},
                     {RPCResult::Type::STR, "desc", "Inferred descriptor for the output"},
                     {RPCResult::Type::STR_HEX, "hex", "The raw public key script bytes, hex-encoded"},
-                    {RPCResult::Type::STR, "address", /*optional=*/true, "The Particl address (only if a well-defined address exists)"},
+                    {RPCResult::Type::STR, "address", /*optional=*/true, "The Globe address (only if a well-defined address exists)"},
                     {RPCResult::Type::STR, "type", "The type (one of: " + GetAllOutputTypes() + ")"},
                 }},
             }},
@@ -1030,7 +1030,7 @@ static RPCHelpMan gettxoutsetinfo()
         ret.pushKV("height", (int64_t)stats.nHeight);
         ret.pushKV("bestblock", stats.hashBlock.GetHex());
         ret.pushKV("txouts", (int64_t)stats.nTransactionOutputs);
-        if (fParticlMode) {
+        if (fGlobeMode) {
             ret.pushKV("txouts_blinded", (int64_t)stats.nBlindTransactionOutputs);
         }
         ret.pushKV("bogosize", (int64_t)stats.nBogoSize);
@@ -1100,8 +1100,8 @@ static RPCHelpMan gettxout()
                     {RPCResult::Type::STR, "desc", "Inferred descriptor for the output"},
                     {RPCResult::Type::STR_HEX, "hex", "The raw public key script bytes, hex-encoded"},
                     {RPCResult::Type::STR, "type", "The type, eg pubkeyhash"},
-                    {RPCResult::Type::STR, "address", /*optional=*/true, "The Particl address (only if a well-defined address exists)"},
-                    {RPCResult::Type::STR, "stakeaddress", /*optional=*/true, "The Particl stake address (only if a well-defined stakeaddress exists)"},
+                    {RPCResult::Type::STR, "address", /*optional=*/true, "The Globe address (only if a well-defined address exists)"},
+                    {RPCResult::Type::STR, "stakeaddress", /*optional=*/true, "The Globe stake address (only if a well-defined stakeaddress exists)"},
                 }},
                 {RPCResult::Type::BOOL, "coinbase", "Coinbase or not"},
             }},
@@ -1326,10 +1326,10 @@ RPCHelpMan getblockchaininfo()
     obj.pushKV("blocks", height);
     obj.pushKV("headers", chainman.m_best_header ? chainman.m_best_header->nHeight : -1);
     obj.pushKV("bestblockhash", tip.GetBlockHash().GetHex());
-    if (fParticlMode) {
+    if (fGlobeMode) {
         obj.pushKV("moneysupply", ValueFromAmount(tip.nMoneySupply));
         obj.pushKV("blockindexsize", (int)chainman.BlockIndex().size());
-        obj.pushKV("delayedblocks", (int)particl::CountDelayedBlocks());
+        obj.pushKV("delayedblocks", (int)globe::CountDelayedBlocks());
     }
     obj.pushKV("difficulty", GetDifficulty(&tip));
     PushTime(obj, "time", tip.GetBlockTime());
@@ -1974,7 +1974,7 @@ static RPCHelpMan getblockstats()
 
         if (loop_inputs) {
             CAmount tx_total_in = 0;
-            const auto& txundo = blockUndo.vtxundo.at(fParticlMode ? i : i - 1); // Particl includes coinbase/coinstake in undo data
+            const auto& txundo = blockUndo.vtxundo.at(fGlobeMode ? i : i - 1); // Globe includes coinbase/coinstake in undo data
             for (const Coin& coin: txundo.vprevout) {
                 const CTxOut& prevoutput = coin.out;
 
@@ -2500,7 +2500,7 @@ UniValue CreateUTXOSnapshot(
         // use below this block.
         //
         // See discussion here:
-        //   https://github.com/bitcoin/bitcoin/pull/15606#discussion_r274479369
+        //   https://github.com/globe/globe/pull/15606#discussion_r274479369
         //
         LOCK(::cs_main);
 

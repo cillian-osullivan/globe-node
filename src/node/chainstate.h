@@ -1,9 +1,9 @@
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_CHAINSTATE_H
-#define BITCOIN_NODE_CHAINSTATE_H
+#ifndef GLOBE_NODE_CHAINSTATE_H
+#define GLOBE_NODE_CHAINSTATE_H
 
 #include <util/translation.h>
 #include <validation.h>
@@ -64,10 +64,10 @@ using ChainstateLoadResult = std::tuple<ChainstateLoadStatus, bilingual_str>;
 ChainstateLoadResult LoadChainstate(ChainstateManager& chainman, const CacheSizes& cache_sizes,
                                     const ChainstateLoadOptions& options);
 ChainstateLoadResult VerifyLoadedChainstate(ChainstateManager& chainman, const ChainstateLoadOptions& options);
-namespace particl {
+namespace globe {
 /** Returns true if the block index needs to be reindexed. */
 bool ShouldAutoReindex(ChainstateManager &chainman, const CacheSizes& cache_sizes, const ChainstateLoadOptions& options);
-} // namespace particl
+} // namespace globe
 } // namespace node
 
-#endif // BITCOIN_NODE_CHAINSTATE_H
+#endif // GLOBE_NODE_CHAINSTATE_H

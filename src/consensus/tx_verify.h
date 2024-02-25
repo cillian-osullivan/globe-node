@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2021 The Bitcoin Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CONSENSUS_TX_VERIFY_H
-#define BITCOIN_CONSENSUS_TX_VERIFY_H
+#ifndef GLOBE_CONSENSUS_TX_VERIFY_H
+#define GLOBE_CONSENSUS_TX_VERIFY_H
 
 #include <consensus/amount.h>
 
@@ -77,4 +77,4 @@ bool SequenceLocks(const CTransaction &tx, int flags, std::vector<int>& prevHeig
 
 bool CheckTransaction(const CTransaction& tx, TxValidationState& state);
 
-#endif // BITCOIN_CONSENSUS_TX_VERIFY_H
+#endif // GLOBE_CONSENSUS_TX_VERIFY_H

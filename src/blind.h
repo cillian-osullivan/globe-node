@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2021 The Particl Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_BLIND_H
-#define PARTICL_BLIND_H
+#ifndef GLOBE_BLIND_H
+#define GLOBE_BLIND_H
 
 #include <secp256k1.h>
 #include <secp256k1_bulletproofs.h>
@@ -32,9 +32,9 @@ bool IsFrozenBlindOutput(const uint256 &txid);  // tainted && !whitelisted
 bool IsBlacklistedAnonOutput(int64_t anon_index);
 bool IsWhitelistedAnonOutput(int64_t anon_index, int64_t time, const Consensus::Params &consensus_params);
 
-namespace particl {
+namespace globe {
 void ECC_Start_Blinding();
 void ECC_Stop_Blinding();
-} // namespace particl
+} // namespace globe
 
-#endif // PARTICL_BLIND_H
+#endif // GLOBE_BLIND_H

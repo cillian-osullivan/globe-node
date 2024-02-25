@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020 The Particl Core developers
+// Copyright (c) 2017-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -36,8 +36,8 @@ public:
 
 
 std::vector<Test1> vTestVector1 = {
-    Test1("crazy horse battery staple", "Bitcoin seed", 50000, "xprv9s21ZrQH143K2JF8RafpqtKiTbsbaxEeUaMnNHsm5o6wCW3z8ySyH4UxFVSfZ8n7ESu7fgir8imbZKLYVBxFPND1pniTZ81vKfd45EHKX73"),
-    Test1("doesn'tneedtobewords",       "Bitcoin seed", 50000, "xprv9s21ZrQH143K24uheQvx9etuBgxXfGZrBuHdmmZXQ1Gv9n1sXE2BE85PHRmSFixb1i8ngZFV6n4mufebUEg55n1epDFsFXKhQ4abU7gvThb")
+    Test1("crazy horse battery staple", "Globe seed", 50000, "xprv9s21ZrQH143K2JF8RafpqtKiTbsbaxEeUaMnNHsm5o6wCW3z8ySyH4UxFVSfZ8n7ESu7fgir8imbZKLYVBxFPND1pniTZ81vKfd45EHKX73"),
+    Test1("doesn'tneedtobewords",       "Globe seed", 50000, "xprv9s21ZrQH143K24uheQvx9etuBgxXfGZrBuHdmmZXQ1Gv9n1sXE2BE85PHRmSFixb1i8ngZFV6n4mufebUEg55n1epDFsFXKhQ4abU7gvThb")
 };
 
 static void AddKey(CWallet& wallet, const CKey& key)
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(new_ext_key)
 
         CExtKeyPair ekp(ekTest);
         CExtKey58 ek58;
-        ek58.SetKey(ekp, CChainParams::EXT_SECRET_KEY_BTC);
+        ek58.SetKey(ekp, CChainParams::EXT_SECRET_KEY_GLB);
         BOOST_CHECK(ek58.ToString() == it->sOutput);
     }
 }
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(stealth)
     BOOST_REQUIRE(51 == vecSend[1].vData.size());
     BOOST_REQUIRE(vecSend[1].vData[34] == DO_NARR_CRYPT);
 
-    CBitcoinSecret bsecret1;
+    CGlobeSecret bsecret1;
     BOOST_CHECK(bsecret1.SetString(strSecret1C));
 
     CKey sShared, sScan = bsecret1.GetKey();
@@ -351,8 +351,8 @@ BOOST_AUTO_TEST_CASE(test_TxOutRingCT)
     BOOST_MESSAGE("---------------- Serialize Transaction with No Segwit ---------------------\n");
     CMutableTransaction tx;
     tx.vpout.emplace_back(txout);
-    tx.nVersion = 2|PARTICL_TXN_VERSION;
-    BOOST_CHECK_MESSAGE(tx.IsParticlVersion(), "failed IsParticlVersion");
+    tx.nVersion = 2|GLOBE_TXN_VERSION;
+    BOOST_CHECK_MESSAGE(tx.IsGlobeVersion(), "failed IsGlobeVersion");
 
     //The peer that sends the block sets the version that the data stream will use!
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION|SERIALIZE_TRANSACTION_NO_WITNESS);
@@ -559,7 +559,7 @@ BOOST_AUTO_TEST_CASE(opiscoinstake_test)
     SignatureData sigdataA, sigdataB, sigdataC;
 
     CMutableTransaction txn;
-    txn.nVersion = PARTICL_TXN_VERSION;
+    txn.nVersion = GLOBE_TXN_VERSION;
     txn.SetType(TXN_COINSTAKE);
     txn.nLockTime = 0;
 
@@ -592,7 +592,7 @@ BOOST_AUTO_TEST_CASE(opiscoinstake_test)
     BOOST_CHECK(VerifyScript(scriptSig, script, &sigdataA.scriptWitness, nFlags, MutableTransactionSignatureChecker(&txn, 0, vchAmount, MissingDataBehavior::ASSERT_FAIL), &serror));
 
 
-    txn.nVersion = PARTICL_TXN_VERSION;
+    txn.nVersion = GLOBE_TXN_VERSION;
     txn.SetType(TXN_STANDARD);
     BOOST_CHECK(!txn.IsCoinStake());
 

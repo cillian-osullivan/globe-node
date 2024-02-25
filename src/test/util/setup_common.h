@@ -1,9 +1,9 @@
-// Copyright (c) 2015-2021 The Bitcoin Core developers
+// Copyright (c) 2015-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_SETUP_COMMON_H
-#define BITCOIN_TEST_UTIL_SETUP_COMMON_H
+#ifndef GLOBE_TEST_UTIL_SETUP_COMMON_H
+#define GLOBE_TEST_UTIL_SETUP_COMMON_H
 
 #include <chainparamsbase.h>
 #include <fs.h>
@@ -103,7 +103,7 @@ static inline void InsecureRandBytes(uint8_t *p, size_t n)
 struct BasicTestingSetup {
     node::NodeContext m_node; // keep as first member to be destructed last
 
-    explicit BasicTestingSetup(const std::string& chainName = CBaseChainParams::MAIN, const std::vector<const char*>& extra_args = {}, bool fParticlModeIn = false);
+    explicit BasicTestingSetup(const std::string& chainName = CBaseChainParams::MAIN, const std::vector<const char*>& extra_args = {}, bool fGlobeModeIn = false);
     ~BasicTestingSetup();
 
     const fs::path m_path_root;
@@ -120,14 +120,14 @@ CTxMemPool::Options MemPoolOptionsForTest(const node::NodeContext& node);
 struct ChainTestingSetup : public BasicTestingSetup {
     node::CacheSizes m_cache_sizes{};
 
-    explicit ChainTestingSetup(const std::string& chainName = CBaseChainParams::MAIN, const std::vector<const char*>& extra_args = {}, bool fParticlModeIn = false);
+    explicit ChainTestingSetup(const std::string& chainName = CBaseChainParams::MAIN, const std::vector<const char*>& extra_args = {}, bool fGlobeModeIn = false);
     ~ChainTestingSetup();
 };
 
 /** Testing setup that configures a complete environment.
  */
 struct TestingSetup : public ChainTestingSetup {
-    explicit TestingSetup(const std::string& chainName = CBaseChainParams::MAIN, const std::vector<const char*>& extra_args = {}, bool fParticlModeIn = false);
+    explicit TestingSetup(const std::string& chainName = CBaseChainParams::MAIN, const std::vector<const char*>& extra_args = {}, bool fGlobeModeIn = false);
 };
 
 /** Identical to TestingSetup, but chain set to regtest */
@@ -254,8 +254,8 @@ CBlock getBlock13b8a();
 std::ostream& operator<<(std::ostream& os, const uint256& num);
 
 
-struct ParticlBasicTestingSetup : public BasicTestingSetup {
-    ParticlBasicTestingSetup() : BasicTestingSetup(CBaseChainParams::MAIN, {}, true) {}
+struct GlobeBasicTestingSetup : public BasicTestingSetup {
+    GlobeBasicTestingSetup() : BasicTestingSetup(CBaseChainParams::MAIN, {}, true) {}
 };
 
 /**
@@ -276,4 +276,4 @@ private:
     const std::string m_reason;
 };
 
-#endif // BITCOIN_TEST_UTIL_SETUP_COMMON_H
+#endif // GLOBE_TEST_UTIL_SETUP_COMMON_H

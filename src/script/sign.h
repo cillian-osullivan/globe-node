@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_SCRIPT_SIGN_H
-#define BITCOIN_SCRIPT_SIGN_H
+#ifndef GLOBE_SCRIPT_SIGN_H
+#define GLOBE_SCRIPT_SIGN_H
 
 #include <attributes.h>
 #include <coins.h>
@@ -29,7 +29,7 @@ public:
     virtual ~BaseSignatureCreator() {}
     virtual const BaseSignatureChecker& Checker() const =0;
 
-    virtual bool IsParticlVersion() const { return false; }
+    virtual bool IsGlobeVersion() const { return false; }
     virtual bool IsCoinStake() const { return false; }
 
     /** Create a singular (non-script) signature. */
@@ -56,7 +56,7 @@ public:
     bool CreateSig(const SigningProvider& provider, std::vector<unsigned char>& vchSig, const CKeyID& keyid, const CScript& scriptCode, SigVersion sigversion) const override;
     bool CreateSchnorrSig(const SigningProvider& provider, std::vector<unsigned char>& sig, const XOnlyPubKey& pubkey, const uint256* leaf_hash, const uint256* merkle_root, SigVersion sigversion) const override;
 
-    bool IsParticlVersion() const override { return m_txto.IsParticlVersion(); }
+    bool IsGlobeVersion() const override { return m_txto.IsGlobeVersion(); }
     bool IsCoinStake() const override { return m_txto.IsCoinStake(); }
 };
 
@@ -66,7 +66,7 @@ extern const BaseSignatureChecker& DUMMY_CHECKER;
 extern const BaseSignatureCreator& DUMMY_SIGNATURE_CREATOR;
 /** A signature creator that just produces 72-byte empty signatures. */
 extern const BaseSignatureCreator& DUMMY_MAXIMUM_SIGNATURE_CREATOR;
-extern const BaseSignatureCreator& DUMMY_SIGNATURE_CREATOR_PARTICL;
+extern const BaseSignatureCreator& DUMMY_SIGNATURE_CREATOR_GLOBE;
 
 typedef std::pair<CPubKey, std::vector<unsigned char>> SigPair;
 
@@ -116,4 +116,4 @@ bool IsSegWitOutput(const SigningProvider& provider, const CScript& script);
 /** Sign the CMutableTransaction */
 bool SignTransaction(CMutableTransaction& mtx, const SigningProvider* provider, const std::map<COutPoint, Coin>& coins, int sighash, std::map<int, bilingual_str>& input_errors);
 
-#endif // BITCOIN_SCRIPT_SIGN_H
+#endif // GLOBE_SCRIPT_SIGN_H

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// Particl
+// Globe
 #include <insight/insight.h>
 
 namespace node {
@@ -88,7 +88,7 @@ ChainstateLoadResult LoadChainstate(ChainstateManager& chainman, const CacheSize
         return {ChainstateLoadStatus::FAILURE_INCOMPATIBLE_DB, _("Incorrect or no genesis block found. Wrong datadir for network?")};
     }
 
-    // Particl: Check for changed index states
+    // Globe: Check for changed index states
     if (fAddressIndex != options.args.address_index) {
         return {ChainstateLoadStatus::FAILURE, _("You need to rebuild the database using -reindex to change -addressindex.  This will redownload the entire blockchain")};
     }
@@ -157,7 +157,7 @@ ChainstateLoadResult LoadChainstate(ChainstateManager& chainman, const CacheSize
 
     }
     // Initialise temporary indices if required
-    if (!::particl::RebuildRollingIndices(chainman, options.mempool)) {
+    if (!::globe::RebuildRollingIndices(chainman, options.mempool)) {
         return {ChainstateLoadStatus::FAILURE, _("Rebuilding rolling indices failed")};
     }
     LOCK(cs_main);
@@ -186,7 +186,7 @@ ChainstateLoadResult VerifyLoadedChainstate(ChainstateManager& chainman, const C
         if (!is_coinsview_empty(chainstate)) {
             const CBlockIndex* tip = chainstate->m_chain.Tip();
             if (tip &&
-                tip != chainstate->m_chain.Genesis() && // Particl: Genesis block can be set in the future
+                tip != chainstate->m_chain.Genesis() && // Globe: Genesis block can be set in the future
                 tip->nTime > GetTime() + MAX_FUTURE_BLOCK_TIME) {
                 return {ChainstateLoadStatus::FAILURE, _("The block database contains a block which appears to be from the future. "
                                                          "This may be due to your computer's date and time being set incorrectly. "
@@ -205,7 +205,7 @@ ChainstateLoadResult VerifyLoadedChainstate(ChainstateManager& chainman, const C
     return {ChainstateLoadStatus::SUCCESS, {}};
 }
 
-namespace particl {
+namespace globe {
 bool ShouldAutoReindex(ChainstateManager &chainman, const CacheSizes& cache_sizes, const ChainstateLoadOptions& options)
 {
     LOCK(cs_main);
@@ -228,5 +228,5 @@ bool ShouldAutoReindex(ChainstateManager &chainman, const CacheSizes& cache_size
     pblocktree.reset();
     return false;
 };
-} // namespace particl
+} // namespace globe
 } // namespace node

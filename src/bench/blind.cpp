@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Particl Core developers
+// Copyright (c) 2017 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,7 +17,7 @@
 static void Blind(benchmark::Bench& bench)
 {
     ECC_Start();
-    particl::ECC_Start_Blinding();
+    globe::ECC_Start_Blinding();
 
     secp256k1_pedersen_commitment commitment;
     std::vector<uint8_t> vchRangeproof;
@@ -58,7 +58,7 @@ static void Blind(benchmark::Bench& bench)
             nullptr, 0, secp256k1_generator_h));
     });
 
-    particl::ECC_Stop_Blinding();
+    globe::ECC_Stop_Blinding();
     ECC_Stop();
 }
 

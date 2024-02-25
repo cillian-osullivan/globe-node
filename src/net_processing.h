@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NET_PROCESSING_H
-#define BITCOIN_NET_PROCESSING_H
+#ifndef GLOBE_NET_PROCESSING_H
+#define GLOBE_NET_PROCESSING_H
 
 #include <net.h>
 #include <validationinterface.h>
@@ -41,7 +41,7 @@ struct CNodeStateStats {
     ServiceFlags their_services;
     int64_t presync_height{-1};
 
-    // Particl
+    // Globe
     int m_chain_height = -1;
     int nDuplicateCount = 0;
     int nLooseHeadersCount = 0;
@@ -85,7 +85,7 @@ public:
     /* Public for unit testing. */
     virtual void UnitTestMisbehaving(NodeId peer_id, int howmuch) = 0;
 
-    /* Particl: Keep old functionality */
+    /* Globe: Keep old functionality */
     virtual void MisbehavingById(const NodeId pnode, const int howmuch, const std::string& message) = 0;
 
     /**
@@ -101,7 +101,7 @@ public:
     /** This function is used for testing the stale tip eviction logic, see denialofservice_tests.cpp */
     virtual void UpdateLastBlockAnnounceTime(NodeId node, int64_t time_in_seconds) = 0;
 
-    /** Particl */
+    /** Globe */
     virtual NodeId GetBlockSource(const uint256 &hash) = 0;
     virtual void IncPersistentMisbehaviour(NodeId node_id, int howmuch) EXCLUSIVE_LOCKS_REQUIRED(cs_main) = 0;
     virtual bool IncPersistentDiscouraged(NodeId node_id) EXCLUSIVE_LOCKS_REQUIRED(cs_main) = 0;
@@ -117,4 +117,4 @@ NodeId GetBlockSource(const uint256 &hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 int GetNumDOSStates() EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 void ClearDOSStates() EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
-#endif // BITCOIN_NET_PROCESSING_H
+#endif // GLOBE_NET_PROCESSING_H

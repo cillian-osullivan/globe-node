@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,7 +23,7 @@
 #include <cstddef>
 #include <vector>
 
-// Particl
+// Globe
 #include <chainparams.h>
 
 CAmount GetDustThreshold(const CTxOut& txout, const CFeeRate& dustRelayFeeIn)
@@ -53,7 +53,7 @@ CAmount GetDustThreshold(const CTxOut& txout, const CFeeRate& dustRelayFeeIn)
     // public key + an ECDSA signature). For Segwit v1 Taproot outputs the minimum
     // satisfaction is lower (a single BIP340 signature) but this computation was
     // kept to not further reduce the dust level.
-    // See discussion in https://github.com/bitcoin/bitcoin/pull/22779 for details.
+    // See discussion in https://github.com/globe/globe/pull/22779 for details.
     if (txout.scriptPubKey.IsWitnessProgram(witnessversion, witnessprogram)) {
         // sum the sizes of the parts of a transaction input
         // with 75% segwit discount applied to the script size.
@@ -105,8 +105,8 @@ bool IsStandard(const CScript& scriptPubKey, const std::optional<unsigned>& max_
 
 bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason, int64_t time)
 {
-    if (tx.IsParticlVersion()) {
-        if (tx.GetParticlVersion() > PARTICL_TXN_VERSION) {
+    if (tx.IsGlobeVersion()) {
+        if (tx.GetGlobeVersion() > GLOBE_TXN_VERSION) {
             reason = "version";
             return false;
         }
@@ -180,7 +180,7 @@ bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_dat
         } else if ((whichType == TxoutType::MULTISIG) && (!permit_bare_multisig)) {
             reason = "bare-multisig";
             return false;
-        } else if (particl::IsDust(p, dust_relay_fee)) {
+        } else if (globe::IsDust(p, dust_relay_fee)) {
             reason = "dust";
             return false;
         }
@@ -219,7 +219,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs,
         return true; // Coinbases don't use vin normally
     }
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         for (unsigned int i = 0; i < tx.vin.size(); i++) {
             if (tx.vin[i].IsAnonInput()) {
                 continue;
@@ -337,7 +337,7 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
             // into a stack. We do not check IsPushOnly nor compare the hash as these will be done later anyway.
             // If the check fails at this stage, we know that this txid must be a bad one.
 
-            if (!tx.IsParticlVersion()) {
+            if (!tx.IsGlobeVersion()) {
                 if (!EvalScript(stack, tx.vin[i].scriptSig, SCRIPT_VERIFY_NONE, BaseSignatureChecker(), SigVersion::BASE))
                     return false;
             } else {
@@ -354,7 +354,7 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
         std::vector<unsigned char> witnessprogram;
 
         // Non-witness program must not be associated with any witness
-        if (!tx.IsParticlVersion()
+        if (!tx.IsGlobeVersion()
             && !prevScript.IsWitnessProgram(witnessversion, witnessprogram))
             return false;
 
@@ -422,7 +422,7 @@ int64_t GetVirtualTransactionInputSize(const CTxIn& txin, int64_t nSigOpCost, un
     return GetVirtualTransactionSize(GetTransactionInputWeight(txin), nSigOpCost, bytes_per_sigop);
 }
 
-namespace particl {
+namespace globe {
 CAmount GetDustThreshold(const CTxOutStandard *txout, const CFeeRate& dustRelayFeeIn)
 {
     // "Dust" is defined in terms of dustRelayFee,
@@ -465,4 +465,4 @@ bool IsDust(const CTxOutBase *txout, const CFeeRate& dustRelayFee)
     }
     return false;
 }
-} // namespace particl
+} // namespace globe

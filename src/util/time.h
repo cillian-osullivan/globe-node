@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_TIME_H
-#define BITCOIN_UTIL_TIME_H
+#ifndef GLOBE_UTIL_TIME_H
+#define GLOBE_UTIL_TIME_H
 
 #include <compat/compat.h>
 
@@ -132,4 +132,4 @@ namespace part
     int64_t strToEpoch(const char *input, bool fFillMax=false);
 }
 
-#endif // BITCOIN_UTIL_TIME_H
+#endif // GLOBE_UTIL_TIME_H

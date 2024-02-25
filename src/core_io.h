@@ -1,9 +1,9 @@
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CORE_IO_H
-#define BITCOIN_CORE_IO_H
+#ifndef GLOBE_CORE_IO_H
+#define GLOBE_CORE_IO_H
 
 #include <consensus/amount.h>
 
@@ -62,4 +62,4 @@ void TxToUniv(const CTransaction& tx, const uint256& block_hash, UniValue& entry
 void AddRangeproof(const std::vector<uint8_t> &vRangeproof, UniValue &entry);
 void OutputToJSON(uint256 &txid, int i, const CTxOutBase *baseOut, UniValue &entry);
 
-#endif // BITCOIN_CORE_IO_H
+#endif // GLOBE_CORE_IO_H

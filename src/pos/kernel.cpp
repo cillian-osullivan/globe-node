@@ -1,6 +1,6 @@
 // Copyright (c) 2012-2013 The PPCoin developers
 // Copyright (c) 2014 The BlackCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -252,7 +252,7 @@ bool CheckProofOfStake(Chainstate &chain_state, BlockValidationState &state, con
             LogPrintf("ERROR: %s: prevout-not-found\n", __func__);
             return state.Invalid(BlockValidationResult::DOS_20, "prevout-not-found");
         }
-        if (!particl::fVerifyingDB &&
+        if (!globe::fVerifyingDB &&
             (unsigned int)pindexPrev->nHeight > spent_coin.spent_height &&
             pindexPrev->nHeight - spent_coin.spent_height > MAX_REORG_DEPTH) {
             LogPrintf("ERROR: %s: Tried to stake kernel spent at height %d\n", __func__, spent_coin.spent_height);

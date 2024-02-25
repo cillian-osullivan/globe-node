@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 The Particl Core developers
+// Copyright (c) 2017-2018 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,7 +17,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(stealth_tests, ParticlBasicTestingSetup)
+BOOST_FIXTURE_TEST_SUITE(stealth_tests, GlobeBasicTestingSetup)
 
 static const std::string strSecret1C("GzFRfngjf5aHMuAzWDZWzJ8eYqMzp29MmkCp6NgzkXFibrh45tTc");
 static const std::string strSecret2C("H5hDgLvFjLcZG9jyxkUTJ28P6N5T7iMBQ79boMuaPafxXuy8hb9n");
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(stealth_key_serialise)
 {
     CStealthAddress sxAddr;
 
-    CBitcoinSecret bsecret1, bsecret2;
+    CGlobeSecret bsecret1, bsecret2;
     BOOST_CHECK(bsecret1.SetString(strSecret1C));
     BOOST_CHECK(bsecret2.SetString(strSecret2C));
 
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(stealth_key_serialise)
 
     sxAddr.spend_pubkey.resize(EC_COMPRESSED_SIZE * 2);
 
-    CBitcoinSecret bsecret3;
+    CGlobeSecret bsecret3;
     BOOST_CHECK(bsecret3.SetString(strSecret3C));
     CKey kSpend2 = bsecret3.GetKey();
 
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(stealth_key_address)
         sxAddr.prefix.number_bits = k;
         sxAddr.prefix.bitfield = 0xaaaaaaaa;
 
-        CBitcoinAddress addrC(sxAddr.Encoded());
+        CGlobeAddress addrC(sxAddr.Encoded());
         BOOST_CHECK(addrC.IsValid() == true);
         BOOST_CHECK(addrC.ToString() == sxAddr.Encoded());
 
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(stealth_key_address)
         BOOST_CHECK(sxAddrOut == sxAddr);
         BOOST_CHECK(sxAddrOut.Encoded() == sxAddr.Encoded());
 
-        CBitcoinAddress addrC2(dest);
+        CGlobeAddress addrC2(dest);
         BOOST_CHECK(addrC.ToString() == addrC2.ToString());
     }
 }

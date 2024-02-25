@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-# Copyright (c) 2021-2022 The Particl Core developers
+# Copyright (c) 2021-2022 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-from test_framework.test_particl import ParticlTestFramework, bytes_to_wif
+from test_framework.test_globe import GlobeTestFramework, bytes_to_wif
 from test_framework.key import generate_privkey, compute_xonly_pubkey
 from test_framework.segwit_addr import encode_segwit_address
 from test_framework.script import (
@@ -16,7 +16,7 @@ from test_framework.script import (
 )
 
 
-class ParticlTaprootTest(ParticlTestFramework):
+class GlobeTaprootTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3
@@ -118,4 +118,4 @@ class ParticlTaprootTest(ParticlTestFramework):
 
 
 if __name__ == '__main__':
-    ParticlTaprootTest().main()
+    GlobeTaprootTest().main()

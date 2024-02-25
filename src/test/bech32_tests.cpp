@@ -1,5 +1,5 @@
 // Copyright (c) 2017 Pieter Wuille
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,7 +11,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(bech32_tests, ParticlBasicTestingSetup)
+BOOST_FIXTURE_TEST_SUITE(bech32_tests, GlobeBasicTestingSetup)
 
 std::vector<std::pair<std::string, std::string> > testsPass = {
     std::make_pair("PZdYWHgyhuG7NHVCzEkkx3dcLKurTpvmo6", "ph1z2kuclaye2ktkndy7mdpw3zk0nck78a7u6h8hm"),
@@ -43,8 +43,8 @@ std::vector<std::pair<CChainParams::Base58Type, std::string>> testsType = {
 
 BOOST_AUTO_TEST_CASE(bech32_test)
 {
-    CBitcoinAddress addr_base58;
-    CBitcoinAddress addr_bech32;
+    CGlobeAddress addr_base58;
+    CGlobeAddress addr_bech32;
 
     for (auto &v : testsPass) {
         addr_base58.SetString(v.first);
@@ -54,10 +54,10 @@ BOOST_AUTO_TEST_CASE(bech32_test)
 
         CTxDestination dest2 = addr_bech32.Get();
         BOOST_CHECK(dest == dest2);
-        CBitcoinAddress t58_back(dest2);
+        CGlobeAddress t58_back(dest2);
         BOOST_CHECK(t58_back.ToString() == v.first);
 
-        CBitcoinAddress addr_bech32_2(v.second);
+        CGlobeAddress addr_bech32_2(v.second);
         BOOST_CHECK(addr_bech32_2.IsValid());
         CTxDestination dest3 = addr_bech32_2.Get();
         BOOST_CHECK(dest == dest3);
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(bech32_test)
 
     CKeyID knull;
     for (auto &v : testsType) {
-        CBitcoinAddress addr;
+        CGlobeAddress addr;
         addr.Set(knull, v.first, true);
         BOOST_CHECK(addr.ToString() == v.second);
     }

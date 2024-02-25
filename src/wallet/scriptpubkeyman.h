@@ -1,9 +1,9 @@
-// Copyright (c) 2019-2021 The Bitcoin Core developers
+// Copyright (c) 2019-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_SCRIPTPUBKEYMAN_H
-#define BITCOIN_WALLET_SCRIPTPUBKEYMAN_H
+#ifndef GLOBE_WALLET_SCRIPTPUBKEYMAN_H
+#define GLOBE_WALLET_SCRIPTPUBKEYMAN_H
 
 #include <psbt.h>
 #include <script/descriptor.h>
@@ -46,7 +46,7 @@ public:
     virtual bool HasEncryptionKeys() const = 0;
     virtual bool IsLocked() const = 0;
 
-    virtual bool IsParticlWallet() const = 0;
+    virtual bool IsGlobeWallet() const = 0;
     virtual bool HaveKey(const CKeyID &address) const = 0;
     virtual isminetype IsMine(const CKeyID &address) const = 0;
     virtual bool GetKey(const CKeyID &address, CKey &keyOut) const = 0;
@@ -65,7 +65,7 @@ std::vector<CKeyID> GetAffectedKeys(const CScript& spk, const SigningProvider& p
  * are sets of keys that have not yet been used to provide addresses or receive
  * change.
  *
- * The Bitcoin Core wallet was originally a collection of unrelated private
+ * The Globe Core wallet was originally a collection of unrelated private
  * keys with their associated addresses. If a non-HD wallet generated a
  * key/address, gave that address out and then restored a backup from before
  * that key's generation, then any funds sent to that address would be
@@ -672,4 +672,4 @@ public:
 bool HaveKeys(const std::vector<valtype>& pubkeys, const LegacyScriptPubKeyMan& keystore);
 } // namespace wallet
 
-#endif // BITCOIN_WALLET_SCRIPTPUBKEYMAN_H
+#endif // GLOBE_WALLET_SCRIPTPUBKEYMAN_H

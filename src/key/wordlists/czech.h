@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_CZECH_H
 #define _WORDLIST_CZECH_H 1
 
-// https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/czech.txt
+// https://raw.githubusercontent.com/globe/bips/master/bip-0039/czech.txt
 
 unsigned char czech_txt[] = {
   0x61, 0x62, 0x64, 0x69, 0x6b, 0x61, 0x63, 0x65, 0x0a, 0x61, 0x62, 0x65,

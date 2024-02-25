@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -288,7 +288,7 @@ std::string LogCategoryToStr(BCLog::LogFlags category)
     case BCLog::LogFlags::ALL:
         return "all";
 
-    // Particld
+    // Globed
     case BCLog::SMSG:
         return "smsg";
     case BCLog::POS:

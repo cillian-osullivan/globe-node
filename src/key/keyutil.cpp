@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Particl Core developers
+// Copyright (c) 2017 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 #include <serialize.h>
 
 
-static uint32_t BitcoinChecksum(uint8_t *p, uint32_t nBytes)
+static uint32_t GlobeChecksum(uint8_t *p, uint32_t nBytes)
 {
     if (!p || nBytes == 0) {
         return 0;
@@ -38,5 +38,5 @@ bool VerifyChecksum(const std::vector<uint8_t> &data)
     memcpy(&checksum, &(*(data.end() - 4)), 4);
     checksum = le32toh(checksum);
 
-    return BitcoinChecksum((uint8_t*)&data[0], data.size()-4) == checksum;
+    return GlobeChecksum((uint8_t*)&data[0], data.size()-4) == checksum;
 };

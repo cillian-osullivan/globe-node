@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -76,7 +76,7 @@ std::vector<CTxDestination> GetAllDestinationsForKey(const CPubKey& key)
     PKHash keyid(key);
     CTxDestination p2pkh{keyid};
     if (key.IsCompressed()) {
-        if (fParticlMode)
+        if (fGlobeMode)
             return std::vector<CTxDestination>{std::move(keyid)};
         CTxDestination segwit = WitnessV0KeyHash(keyid);
         CTxDestination p2sh = ScriptHash(GetScriptForDestination(segwit));

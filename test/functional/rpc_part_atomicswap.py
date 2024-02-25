@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2018-2021 The Particl Core developers
+# Copyright (c) 2018-2021 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,8 +10,8 @@ import time
 from random import random
 from decimal import Decimal
 
-from test_framework.test_particl import (
-    ParticlTestFramework,
+from test_framework.test_globe import (
+    GlobeTestFramework,
     isclose,
     getIndexAtProperty,
 )
@@ -363,7 +363,7 @@ def getRandomAmount():
     return round(Decimal(random()) * 9 + Decimal(1.2), 8)
 
 
-class AtomicSwapTest(ParticlTestFramework):
+class AtomicSwapTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

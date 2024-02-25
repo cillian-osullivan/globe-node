@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 The Bitcoin Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 #include <util/system.h>
 #include <validation.h>
 
-// Particl
+// Globe
 #include <insight/csindex.h>
 #include <script/script.h>
 #include <script/interpreter.h>
@@ -98,8 +98,8 @@ bool TxIndex::CustomAppend(const interfaces::BlockInfo& block)
         IndexCSOutputs(block);
     }
     // Exclude genesis block transaction because outputs are not spendable.
-    // Particl: genesis block outputs are spendable
-    if (!(block.data && block.data->IsParticlVersion()) && block.height == 0) return true;
+    // Globe: genesis block outputs are spendable
+    if (!(block.data && block.data->IsGlobeVersion()) && block.height == 0) return true;
 
     assert(block.data);
     CDiskTxPos pos({block.file_number, block.data_pos}, GetSizeOfCompactSize(block.data->vtx.size()));
@@ -204,7 +204,7 @@ bool TxIndex::IndexCSOutputs(const interfaces::BlockInfo& block)
             if (lk.m_stake_type == TxoutType::PUBKEYHASH256) {
                 lk.m_stake_id = CKeyID256(uint256(vSolutions[0]));
             } else {
-                LogPrint(BCLog::COINDB, "%s: Ignoring unexpected stakescript type=%d.\n", __func__, particl::FromTxoutType(lk.m_stake_type));
+                LogPrint(BCLog::COINDB, "%s: Ignoring unexpected stakescript type=%d.\n", __func__, globe::FromTxoutType(lk.m_stake_type));
                 continue;
             }
 
@@ -217,7 +217,7 @@ bool TxIndex::IndexCSOutputs(const interfaces::BlockInfo& block)
             if (lk.m_spend_type == TxoutType::PUBKEYHASH256 || lk.m_spend_type == TxoutType::SCRIPTHASH256) {
                 lk.m_spend_id = CKeyID256(uint256(vSolutions[0]));
             } else {
-                LogPrint(BCLog::COINDB, "%s: Ignoring unexpected spendscript type=%d.\n", __func__, particl::FromTxoutType(lk.m_spend_type));
+                LogPrint(BCLog::COINDB, "%s: Ignoring unexpected spendscript type=%d.\n", __func__, globe::FromTxoutType(lk.m_spend_type));
                 continue;
             }
 

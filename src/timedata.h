@@ -1,9 +1,9 @@
-// Copyright (c) 2014-2018 The Bitcoin Core developers
+// Copyright (c) 2014-2018 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TIMEDATA_H
-#define BITCOIN_TIMEDATA_H
+#ifndef GLOBE_TIMEDATA_H
+#define GLOBE_TIMEDATA_H
 
 #include <util/time.h>
 
@@ -96,4 +96,4 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime);
  */
 void TestOnlyResetTimeData();
 
-#endif // BITCOIN_TIMEDATA_H
+#endif // GLOBE_TIMEDATA_H

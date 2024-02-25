@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2015 The Bitcoin Core developers
-# Copyright (c) 2017-2023 The Particl Core developers
+# Copyright (c) 2014-2015 The Globe Core developers
+# Copyright (c) 2017-2023 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,14 +8,14 @@
 # Test addressindex generation and fetching
 #
 
-from test_framework.test_particl import ParticlTestFramework, bytes_to_wif
+from test_framework.test_globe import GlobeTestFramework, bytes_to_wif
 from test_framework.util import assert_equal
 from test_framework.script import taproot_construct
 from test_framework.key import generate_privkey, compute_xonly_pubkey
 from test_framework.segwit_addr import encode_segwit_address
 
 
-class AddressIndexTest(ParticlTestFramework):
+class AddressIndexTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 4
@@ -331,8 +331,8 @@ class AddressIndexTest(ParticlTestFramework):
         mempool = nodes[3].getaddressmempool({"addresses": [addr256]})
         assert_equal(len(mempool), 0)
 
-        # Bitcoin segwit addresses
-        self.log.info("Testing Bitcoin segwit addresses...")
+        # Globe segwit addresses
+        self.log.info("Testing Globe segwit addresses...")
 
         addr_sw_bech32 = nodes[2].getnewaddress('segwit script', False, False, False, 'bech32')
 

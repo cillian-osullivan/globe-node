@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/globe-config.h>
 #endif
 
 #include <randomenv.h>
@@ -322,7 +322,7 @@ void RandAddStaticEnv(CSHA512& hasher)
     hasher.Write((const unsigned char*)COMPILER_VERSION, strlen(COMPILER_VERSION) + 1);
 #endif
 
-    // Bitcoin client version
+    // Globe client version
     hasher << CLIENT_VERSION;
 
 #if defined(HAVE_STRONG_GETAUXVAL)
@@ -352,7 +352,7 @@ void RandAddStaticEnv(CSHA512& hasher)
 #endif
 
     // Memory locations
-    uintptr_t malloc_offset = (uintptr_t) &malloc; // Particl: Avoid "internal compiler error" in i686-w64-mingw32 (~11.2.0)
+    uintptr_t malloc_offset = (uintptr_t) &malloc; // Globe: Avoid "internal compiler error" in i686-w64-mingw32 (~11.2.0)
     hasher << &hasher << &RandAddStaticEnv << malloc_offset << &errno << &environ;
 
     // Hostname

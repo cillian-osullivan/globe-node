@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -118,7 +118,7 @@ static void runTests(int nLanguage, UniValue &tests)
             CExtKey ekTest;
             ekTest.SetSeed(&vSeed[0], vSeed.size());
 
-            eKey58.SetKey(CExtKeyPair(ekTest), CChainParams::EXT_SECRET_KEY_BTC);
+            eKey58.SetKey(CExtKeyPair(ekTest), CChainParams::EXT_SECRET_KEY_GLB);
             BOOST_CHECK(eKey58.ToString() == sExtKey);
         }
     }

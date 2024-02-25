@@ -1,11 +1,11 @@
 [Unit]
-Description=Particl daemon
+Description=Globe daemon
 After=network.target
 
 [Service]
 Type=forking
-PIDFile=%h/.particl/particl.pid
-ExecStart=%h/particlcore/particld -daemon -pid=%h/.particl/particl.pid -conf=%h/.particl/particl.conf -datadir=%h/.particl
+PIDFile=%h/.globe/globe.pid
+ExecStart=%h/globecore/globed -daemon -pid=%h/.globe/globe.pid -conf=%h/.globe/globe.conf -datadir=%h/.globe
 
 StartLimitInterval=120s
 StartLimitBurst=1

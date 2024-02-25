@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_SCRIPT_INTERPRETER_H
-#define BITCOIN_SCRIPT_INTERPRETER_H
+#ifndef GLOBE_SCRIPT_INTERPRETER_H
+#define GLOBE_SCRIPT_INTERPRETER_H
 
 #include <hash.h>
 #include <script/script_error.h>
@@ -151,7 +151,7 @@ bool CheckSignatureEncoding(const std::vector<unsigned char> &vchSig, unsigned i
 struct PrecomputedTransactionData
 {
     // BIP341 precomputed data.
-    // These are single-SHA256, see https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki#cite_note-16.
+    // These are single-SHA256, see https://github.com/globe/bips/blob/master/bip-0341.mediawiki#cite_note-16.
     uint256 m_prevouts_single_hash;
     uint256 m_sequences_single_hash;
     uint256 m_outputs_single_hash;
@@ -270,7 +270,7 @@ public:
         return false;
     }
 
-    virtual bool IsParticlVersion() const
+    virtual bool IsGlobeVersion() const
     {
         return false;
     }
@@ -319,9 +319,9 @@ public:
         return txTo && txTo->IsCoinStake();
     }
 
-    bool IsParticlVersion() const override
+    bool IsGlobeVersion() const override
     {
-        return txTo && txTo->IsParticlVersion();
+        return txTo && txTo->IsGlobeVersion();
     }
 };
 
@@ -378,4 +378,4 @@ bool GetNonCoinstakeScriptPath(const CScript &scriptIn, CScript &scriptOut);
 bool SplitConditionalCoinstakeScript(const CScript &scriptIn, CScript &scriptOutA, CScript &scriptOutB);
 bool GetColdStakeScriptPath(bool for_coinstake, const CScript &script_in, CScript &script_out);
 
-#endif // BITCOIN_SCRIPT_INTERPRETER_H
+#endif // GLOBE_SCRIPT_INTERPRETER_H

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2018-2020 The Bitcoin Core developers
+# Copyright (c) 2018-2020 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #
@@ -98,7 +98,7 @@ pushd "$TARGET" || exit 1
           exit 1
         fi
 
-        git clone https://github.com/particl/particl-core "$tag"
+        git clone https://github.com/globe/globe-core "$tag"
         pushd "$tag" || exit 1
         {
           git checkout "$tag"
@@ -120,9 +120,9 @@ pushd "$TARGET" || exit 1
           make
           # Move binaries, so they're in the same place as in the release download:
           mkdir bin
-          mv src/particld src/particl-cli src/particl-tx bin
+          mv src/globed src/globe-cli src/globe-tx bin
           if [ "$FUNCTIONAL_TESTS" -eq "0" ]; then
-            mv src/qt/particl-qt bin
+            mv src/qt/globe-qt bin
           fi
         }
         popd || exit 1
@@ -133,18 +133,18 @@ pushd "$TARGET" || exit 1
       else
         mkdir "$tag"
         #if [[ "$tag" =~ v(.*)(rc[0-9]+)$ ]]; then
-        #    BIN_PATH="bin/bitcoin-core-${BASH_REMATCH[1]}/test.${BASH_REMATCH[2]}"
+        #    BIN_PATH="bin/globe-core-${BASH_REMATCH[1]}/test.${BASH_REMATCH[2]}"
         #else
-        #    BIN_PATH="bin/bitcoin-core-${tag:1}"
+        #    BIN_PATH="bin/globe-core-${tag:1}"
         #fi
-        URL="https://github.com/particl/particl-core/releases/download/${tag}/particl-${tag:1}-$PLATFORM.tar.gz"
+        URL="https://github.com/globe/globe-core/releases/download/${tag}/globe-${tag:1}-$PLATFORM.tar.gz"
         echo "Fetching: $URL"
         if ! curl -O -f "$URL"; then
             echo "Download failed."
             exit 1
         fi
-        tar -zxf "particl-${tag:1}-$PLATFORM.tar.gz" -C "$tag" --strip-components=1 "particl-${tag:1}"
-        rm "particl-${tag:1}-$PLATFORM.tar.gz"
+        tar -zxf "globe-${tag:1}-$PLATFORM.tar.gz" -C "$tag" --strip-components=1 "globe-${tag:1}"
+        rm "globe-${tag:1}-$PLATFORM.tar.gz"
       fi
     fi
   done

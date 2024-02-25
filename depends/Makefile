@@ -43,8 +43,8 @@ NO_USDT ?=
 NO_NATPMP ?=
 MULTIPROCESS ?=
 LTO ?=
-FALLBACK_DOWNLOAD_PATH ?= https://bitcoincore.org/depends-sources
-# Particl
+FALLBACK_DOWNLOAD_PATH ?= https://globecore.org/depends-sources
+# Globe
 PROTOBUF ?=
 NO_USB ?=
 

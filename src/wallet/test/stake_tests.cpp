@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(stake_test)
     CAmount nAmountSendAway = 10000;
     CTransactionRef tx_new;
 
-    // Parse Bitcoin address
+    // Parse Globe address
     CScript scriptPubKey = GetScriptForDestination(PKHash(kRecv.GetPubKey()));
 
     // Create and send the transaction

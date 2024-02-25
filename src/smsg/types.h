@@ -1,9 +1,9 @@
-// Copyright (c) 2022 The Particl Core developers
+// Copyright (c) 2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_SMSG_TYPES_H
-#define PARTICL_SMSG_TYPES_H
+#ifndef GLOBE_SMSG_TYPES_H
+#define GLOBE_SMSG_TYPES_H
 
 #include <leveldb/write_batch.h>
 
@@ -29,4 +29,4 @@ public:
 
 } // namespace smsg
 
-#endif // PARTICL_SMSG_TYPES_H
+#endif // GLOBE_SMSG_TYPES_H

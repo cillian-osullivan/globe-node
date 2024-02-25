@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_WALLET_HDWALLET_H
-#define PARTICL_WALLET_HDWALLET_H
+#ifndef GLOBE_WALLET_HDWALLET_H
+#define GLOBE_WALLET_HDWALLET_H
 
 #include <wallet/wallet.h>
 #include <wallet/hdwalletdb.h>
@@ -42,7 +42,7 @@ class CHDWallet : public wallet::CWallet
 public:
     CHDWallet(interfaces::Chain* chain, const std::string& name, const ArgsManager& args, std::unique_ptr<WalletDatabase> database) : CWallet(chain, name, args, std::move(database))
     {
-        m_default_address_type = OutputType::LEGACY; // In Particl segwit is enabled for all types
+        m_default_address_type = OutputType::LEGACY; // In Globe segwit is enabled for all types
         m_fallback_fee = CFeeRate(DEFAULT_FALLBACK_FEE_PART);
     }
 
@@ -51,7 +51,7 @@ public:
         Finalise();
     }
 
-    bool IsParticlWallet() const override { return true; };
+    bool IsGlobeWallet() const override { return true; };
 
     int Finalise();
     int FreeExtKeyMaps();
@@ -619,9 +619,9 @@ int64_t CalculateMaximumSignedTxSize(const CTransaction &tx, const CHDWallet *wa
 
 void RestartStakingThreads(WalletContext &wallet_context, ChainstateManager &chainman);
 
-bool IsParticlWallet(const WalletStorage *win);
-CHDWallet *GetParticlWallet(WalletStorage *win);
-const CHDWallet *GetParticlWallet(const WalletStorage *win);
+bool IsGlobeWallet(const WalletStorage *win);
+CHDWallet *GetGlobeWallet(WalletStorage *win);
+const CHDWallet *GetGlobeWallet(const WalletStorage *win);
 
 
-#endif // PARTICL_WALLET_HDWALLET_H
+#endif // GLOBE_WALLET_HDWALLET_H

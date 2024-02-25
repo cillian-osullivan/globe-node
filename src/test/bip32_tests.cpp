@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2021 The Bitcoin Core developers
+// Copyright (c) 2013-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -133,11 +133,11 @@ void RunTest(const TestVector& test)
         pubkey.Encode(data);
 
         // Test private key
-        CBitcoinExtKey b58key; b58key.SetKey(key);
+        CGlobeExtKey b58key; b58key.SetKey(key);
 
         BOOST_CHECK(b58key.ToString() == derive.prv);
 
-        CBitcoinExtKey b58keyDecodeCheck(derive.prv);
+        CGlobeExtKey b58keyDecodeCheck(derive.prv);
         CExtKey checkKey = b58keyDecodeCheck.GetKey();
 
         assert(checkKey == key); //ensure a base58 decoded key also matches

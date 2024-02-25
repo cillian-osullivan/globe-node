@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -51,7 +51,7 @@
 #include <validationinterface.h>
 #include <walletinitinterface.h>
 
-// Particl
+// Globe
 #include <insight/insight.h>
 #include <smsg/smessage.h>
 #include <smsg/manager.h>
@@ -102,11 +102,11 @@ std::ostream& operator<<(std::ostream& os, const uint256& num)
     return os;
 }
 
-BasicTestingSetup::BasicTestingSetup(const std::string& chainName, const std::vector<const char*>& extra_args, bool fParticlModeIn)
+BasicTestingSetup::BasicTestingSetup(const std::string& chainName, const std::vector<const char*>& extra_args, bool fGlobeModeIn)
     : m_path_root{fs::temp_directory_path() / "test_common_" PACKAGE_NAME / g_insecure_rand_ctx_temp_path.rand256().ToString()},
       m_args{}
 {
-    fParticlMode = fParticlModeIn;
+    fGlobeMode = fGlobeModeIn;
     m_node.args = &gArgs;
     std::vector<const char*> arguments = Cat(
         {
@@ -122,7 +122,7 @@ BasicTestingSetup::BasicTestingSetup(const std::string& chainName, const std::ve
         },
         extra_args);
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         arguments.push_back("-debugexclude=hdwallet");
     } else {
         arguments.push_back("-btcmode");
@@ -145,9 +145,9 @@ BasicTestingSetup::BasicTestingSetup(const std::string& chainName, const std::ve
             throw std::runtime_error{error};
         }
     }
-    fBalancesIndex = m_node.args->GetBoolArg("-balancesindex", particl::DEFAULT_BALANCESINDEX);
+    fBalancesIndex = m_node.args->GetBoolArg("-balancesindex", globe::DEFAULT_BALANCESINDEX);
     SelectParams(chainName);
-    ResetParams(chainName, fParticlMode);
+    ResetParams(chainName, fGlobeMode);
     SeedInsecureRand();
     if (G_TEST_LOG_FUN) LogInstance().PushBackCallback(G_TEST_LOG_FUN);
     InitLogging(*m_node.args);
@@ -193,8 +193,8 @@ CTxMemPool::Options MemPoolOptionsForTest(const NodeContext& node)
     return mempool_opts;
 }
 
-ChainTestingSetup::ChainTestingSetup(const std::string& chainName, const std::vector<const char*>& extra_args, bool fParticlModeIn)
-    : BasicTestingSetup(chainName, extra_args, fParticlModeIn)
+ChainTestingSetup::ChainTestingSetup(const std::string& chainName, const std::vector<const char*>& extra_args, bool fGlobeModeIn)
+    : BasicTestingSetup(chainName, extra_args, fGlobeModeIn)
 {
     const CChainParams& chainparams = Params();
 
@@ -243,8 +243,8 @@ ChainTestingSetup::~ChainTestingSetup()
     m_node.smsgman.reset();
 }
 
-TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const char*>& extra_args, bool fParticlModeIn)
-    : ChainTestingSetup(chainName, extra_args, fParticlModeIn)
+TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const char*>& extra_args, bool fGlobeModeIn)
+    : ChainTestingSetup(chainName, extra_args, fGlobeModeIn)
 {
     // Ideally we'd move all the RPC tests to the functional testing framework
     // instead of unit tests, but for now we need these here.
@@ -260,11 +260,11 @@ TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const
     options.check_blocks = m_args.GetIntArg("-checkblocks", DEFAULT_CHECKBLOCKS);
     options.check_level = m_args.GetIntArg("-checklevel", DEFAULT_CHECKLEVEL);
     node::ChainstateLoadArgs csl_args;
-    // Particl, NOTE: m_args != m_node.args
-    csl_args.address_index = m_node.args->GetBoolArg("-addressindex", particl::DEFAULT_ADDRESSINDEX);
-    csl_args.spent_index = m_node.args->GetBoolArg("-spentindex", particl::DEFAULT_SPENTINDEX);
-    csl_args.timestamp_index = m_node.args->GetBoolArg("-timestampindex", particl::DEFAULT_TIMESTAMPINDEX);
-    csl_args.balances_index = m_node.args->GetBoolArg("-balancesindex", particl::DEFAULT_BALANCESINDEX);
+    // Globe, NOTE: m_args != m_node.args
+    csl_args.address_index = m_node.args->GetBoolArg("-addressindex", globe::DEFAULT_ADDRESSINDEX);
+    csl_args.spent_index = m_node.args->GetBoolArg("-spentindex", globe::DEFAULT_SPENTINDEX);
+    csl_args.timestamp_index = m_node.args->GetBoolArg("-timestampindex", globe::DEFAULT_TIMESTAMPINDEX);
+    csl_args.balances_index = m_node.args->GetBoolArg("-balancesindex", globe::DEFAULT_BALANCESINDEX);
     options.args = csl_args;
     auto [status, error] = LoadChainstate(*Assert(m_node.chainman), m_cache_sizes, options);
     assert(status == node::ChainstateLoadStatus::SUCCESS);

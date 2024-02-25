@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -49,7 +49,7 @@
 #include <optional>
 #include <typeinfo>
 
-// Particl includes
+// Globe includes
 #include <smsg/smessage.h>
 
 using node::ReadBlockFromDisk;
@@ -186,12 +186,12 @@ static constexpr size_t MAX_ADDR_PROCESSING_TOKEN_BUCKET{MAX_ADDR_TO_SEND};
 /** The compactblocks version we support. See BIP 152. */
 static constexpr uint64_t CMPCTBLOCKS_VERSION{2};
 
-namespace particl {
+namespace globe {
 static constexpr size_t MAX_LOOSE_HEADERS = 1000;
 static constexpr int MAX_DUPLICATE_HEADERS = 2000;
 static constexpr int64_t MAX_LOOSE_HEADER_TIME = 120;
 static constexpr int64_t MIN_DOS_STATE_TTL = 60 * 10; // seconds
-} // namespace particl
+} // namespace globe
 
 // Internal stuff
 namespace {
@@ -1032,7 +1032,7 @@ private:
      */
     bool SetupAddressRelay(const CNode& node, Peer& peer);
 
-    /** Particl */
+    /** Globe */
     int m_banscore = DISCOURAGEMENT_THRESHOLD;
     void PassOnMisbehaviour(NodeId node_id, int howmuch) EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex);
 public:
@@ -1691,7 +1691,7 @@ void PeerManagerImpl::Misbehaving(Peer& peer, int howmuch, const std::string& me
 {
     assert(howmuch > 0);
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         LOCK(cs_main);
         IncPersistentMisbehaviour(peer.m_id, howmuch);
     }
@@ -1896,7 +1896,7 @@ bool PeerManagerImpl::IncDuplicateHeaders(NodeId node_id) EXCLUSIVE_LOCKS_REQUIR
     if (it != map_dos_state.end()) {
         ++it->second.m_duplicate_count;
         it->second.m_last_used_time = GetTime();
-        if (it->second.m_duplicate_count < particl::MAX_DUPLICATE_HEADERS) {
+        if (it->second.m_duplicate_count < globe::MAX_DUPLICATE_HEADERS) {
             return true;
         }
         return false;
@@ -1971,8 +1971,8 @@ void PeerManagerImpl::CheckUnreceivedHeaders(int64_t now) EXCLUSIVE_LOCKS_REQUIR
         auto &dos_counters = it->second;
         auto it_headers = dos_counters.m_map_loose_headers.begin();
         for (; it_headers != dos_counters.m_map_loose_headers.end();) {
-            if (it_headers->second + particl::MAX_LOOSE_HEADER_TIME < now) {
-                if (particl::RemoveUnreceivedHeader(m_chainman, it_headers->first)) {
+            if (it_headers->second + globe::MAX_LOOSE_HEADER_TIME < now) {
+                if (globe::RemoveUnreceivedHeader(m_chainman, it_headers->first)) {
                     MisbehavingByAddr(it->first, dos_counters.m_misbehavior, 5, "Block not received.");
                     dos_counters.m_misbehavior += 5;
                 }
@@ -1983,7 +1983,7 @@ void PeerManagerImpl::CheckUnreceivedHeaders(int64_t now) EXCLUSIVE_LOCKS_REQUIR
         }
         // TODO: Options for decrease rate
         if (dos_counters.m_duplicate_count > 0) {
-            if (now - dos_counters.m_last_used_time > particl::MIN_DOS_STATE_TTL) {
+            if (now - dos_counters.m_last_used_time > globe::MIN_DOS_STATE_TTL) {
                 // Decay faster after some time passes
                 dos_counters.m_duplicate_count -= 20;
                 if (dos_counters.m_duplicate_count > 0) {
@@ -1999,7 +1999,7 @@ void PeerManagerImpl::CheckUnreceivedHeaders(int64_t now) EXCLUSIVE_LOCKS_REQUIR
         if (dos_counters.m_duplicate_count < 1 &&
             dos_counters.m_misbehavior < 1 &&
             dos_counters.m_map_loose_headers.size() == 0 &&
-            now - dos_counters.m_last_used_time > particl::MIN_DOS_STATE_TTL) {
+            now - dos_counters.m_last_used_time > globe::MIN_DOS_STATE_TTL) {
             map_dos_state.erase(it++);
             continue;
         }
@@ -2024,7 +2024,7 @@ bool PeerManagerImpl::AddNodeHeader(NodeId node_id, const uint256 &hash) EXCLUSI
     }
     auto it = map_dos_state.find(state->m_address);
     if (it != map_dos_state.end()) {
-        if (it->second.m_map_loose_headers.size() > particl::MAX_LOOSE_HEADERS) {
+        if (it->second.m_map_loose_headers.size() > globe::MAX_LOOSE_HEADERS) {
             return false;
         }
         it->second.m_map_loose_headers.insert(std::make_pair(hash, GetTime()));
@@ -2734,7 +2734,7 @@ void PeerManagerImpl::SendBlockTransactions(CNode& pfrom, Peer& peer, const CBlo
 bool PeerManagerImpl::CheckHeadersPoW(const std::vector<CBlockHeader>& headers, const Consensus::Params& consensusParams, Peer& peer)
 {
     // Do these headers have proof-of-work matching what's claimed?
-    if (!fParticlMode &&
+    if (!fGlobeMode &&
         !HasValidProofOfWork(headers, consensusParams)) {
         Misbehaving(peer, 100, "header with invalid proof of work");
         return false;
@@ -2999,7 +2999,7 @@ void PeerManagerImpl::HeadersDirectFetchBlocks(CNode& pfrom, const Peer& peer, c
             if (!(pindexWalk->nStatus & BLOCK_HAVE_DATA) &&
                     !IsBlockRequested(pindexWalk->GetBlockHash()) &&
                     (!DeploymentActiveAt(*pindexWalk, m_chainman, Consensus::DEPLOYMENT_SEGWIT) || CanServeWitnesses(peer)) &&
-                     !(pindexWalk->nFlags & BLOCK_DELAYED)) {  // Particl: Already have block, waiting for previous blocks
+                     !(pindexWalk->nFlags & BLOCK_DELAYED)) {  // Globe: Already have block, waiting for previous blocks
                 // We don't have this block, and it's not yet in flight.
                 vToFetch.push_back(pindexWalk);
             }
@@ -3307,11 +3307,11 @@ void PeerManagerImpl::ProcessOrphanTx(std::set<uint256>& orphan_work_set)
                 // adding such txids to the reject filter would potentially
                 // interfere with relay of valid transactions from peers that
                 // do not support wtxid-based relay. See
-                // https://github.com/bitcoin/bitcoin/issues/8279 for details.
+                // https://github.com/globe/globe/issues/8279 for details.
                 // We can remove this restriction (and always add wtxids to
                 // the filter even for witness stripped transactions) once
                 // wtxid-based relay is broadly deployed.
-                // See also comments in https://github.com/bitcoin/bitcoin/pull/18044#discussion_r443419034
+                // See also comments in https://github.com/globe/globe/pull/18044#discussion_r443419034
                 // for concerns around weakening security of unupgraded nodes
                 // if we start doing this too early.
                 m_recent_rejects.insert(porphanTx->GetWitnessHash());
@@ -3639,7 +3639,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
         peer->m_chain_height = starting_height;
         {
             LOCK(cs_main);
-            particl::UpdateNumBlocksOfPeers(m_chainman, pfrom.GetId(), starting_height);
+            globe::UpdateNumBlocksOfPeers(m_chainman, pfrom.GetId(), starting_height);
         }
 
         // We only initialize the m_tx_relay data structure if:
@@ -4441,11 +4441,11 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                 // adding such txids to the reject filter would potentially
                 // interfere with relay of valid transactions from peers that
                 // do not support wtxid-based relay. See
-                // https://github.com/bitcoin/bitcoin/issues/8279 for details.
+                // https://github.com/globe/globe/issues/8279 for details.
                 // We can remove this restriction (and always add wtxids to
                 // the filter even for witness stripped transactions) once
                 // wtxid-based relay is broadly deployed.
-                // See also comments in https://github.com/bitcoin/bitcoin/pull/18044#discussion_r443419034
+                // See also comments in https://github.com/globe/globe/pull/18044#discussion_r443419034
                 // for concerns around weakening security of unupgraded nodes
                 // if we start doing this too early.
                 m_recent_rejects.insert(tx.GetWitnessHash());
@@ -4862,7 +4862,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
             // Check work on this block against our anti-dos thresholds.
             const CBlockIndex* prev_block = m_chainman.m_blockman.LookupBlockIndex(pblock->hashPrevBlock);
-            if (fParticlMode) {
+            if (fGlobeMode) {
                 // TODO: Add limit
                 min_pow_checked = true;
             } else
@@ -4952,7 +4952,7 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
             }
             {
                 LOCK(cs_main);
-                particl::UpdateNumBlocksOfPeers(m_chainman, pfrom.GetId(), nChainHeight);
+                globe::UpdateNumBlocksOfPeers(m_chainman, pfrom.GetId(), nChainHeight);
             }
 
             // Echo the message back with the nonce. This allows for two useful features:
@@ -5166,7 +5166,7 @@ bool PeerManagerImpl::MaybeDiscourageAndDisconnect(CNode& pnode, Peer& peer)
         peer.m_should_ban = false;
     } // peer.m_misbehavior_mutex
 
-    if (fParticlMode && !banning) {
+    if (fGlobeMode && !banning) {
         LOCK(cs_main);
         if (IncPersistentDiscouraged(peer.m_id)) {
             banning = true;
@@ -5195,7 +5195,7 @@ bool PeerManagerImpl::MaybeDiscourageAndDisconnect(CNode& pnode, Peer& peer)
     }
 
     if (m_banman && banning &&
-        gArgs.GetBoolArg("-automaticbans", particl::DEFAULT_AUTOMATIC_BANS)) {
+        gArgs.GetBoolArg("-automaticbans", globe::DEFAULT_AUTOMATIC_BANS)) {
         LogPrint(BCLog::NET, "Disconnecting and banning peer %d!\n", peer.m_id);
         m_banman->Ban(pnode.addr);
     } else {
@@ -5510,7 +5510,7 @@ void PeerManagerImpl::MaybeSendPing(CNode& node_to, Peer& peer, std::chrono::mic
         } while (nonce == 0);
         peer.m_ping_queued = false;
         peer.m_ping_start = now;
-        // Particl ping includes chain height and is always > BIP0031
+        // Globe ping includes chain height and is always > BIP0031
         int nChainHeight;
         {
             LOCK(cs_main);

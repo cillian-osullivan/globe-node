@@ -1,9 +1,9 @@
-// Copyright (c) 2019-2021 The Bitcoin Core developers
+// Copyright (c) 2019-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/globe-config.h>
 #endif
 
 #include <interfaces/node.h>
@@ -14,7 +14,7 @@
 
 #include <QPushButton>
 
-extern bool fParticlMode;
+extern bool fGlobeMode;
 
 CreateWalletDialog::CreateWalletDialog(QWidget* parent) :
     QDialog(parent, GUIUtil::dialog_flags),
@@ -25,7 +25,7 @@ CreateWalletDialog::CreateWalletDialog(QWidget* parent) :
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     ui->wallet_name_line_edit->setFocus(Qt::ActiveWindowFocusReason);
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         ui->blank_wallet_checkbox->setChecked(true);
         ui->descriptor_checkbox->setChecked(false);
         ui->descriptor_checkbox->setEnabled(false);

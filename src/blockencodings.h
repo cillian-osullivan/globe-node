@@ -1,9 +1,9 @@
-// Copyright (c) 2016-2020 The Bitcoin Core developers
+// Copyright (c) 2016-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BLOCKENCODINGS_H
-#define BITCOIN_BLOCKENCODINGS_H
+#ifndef GLOBE_BLOCKENCODINGS_H
+#define GLOBE_BLOCKENCODINGS_H
 
 #include <primitives/block.h>
 
@@ -114,7 +114,7 @@ public:
     SERIALIZE_METHODS(CBlockHeaderAndShortTxIDs, obj)
     {
         READWRITE(obj.header);
-        if (obj.header.IsParticlVersion()) {
+        if (obj.header.IsGlobeVersion()) {
             READWRITE(obj.vchBlockSig, obj.nonce, Using<VectorFormatter<CustomUintFormatter<SHORTTXIDS_LENGTH>>>(obj.shorttxids), obj.prefilledtxn);
         } else {
             READWRITE(obj.nonce, Using<VectorFormatter<CustomUintFormatter<SHORTTXIDS_LENGTH>>>(obj.shorttxids), obj.prefilledtxn);
@@ -145,4 +145,4 @@ public:
     ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing);
 };
 
-#endif // BITCOIN_BLOCKENCODINGS_H
+#endif // GLOBE_BLOCKENCODINGS_H

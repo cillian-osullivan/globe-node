@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2016-2021 The Bitcoin Core developers
+# Copyright (c) 2016-2021 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test RPC commands for signing messages with private key."""
@@ -7,14 +7,14 @@
 from test_framework.descriptors import (
     descsum_create,
 )
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import GlobeTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
 
 
-class SignMessagesWithPrivTest(BitcoinTestFramework):
+class SignMessagesWithPrivTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -31,13 +31,13 @@ class SignMessagesWithPrivTest(BitcoinTestFramework):
         self.log.info('test signing with priv_key')
         priv_key = 'cUeKHd5orzT3mz8P9pxyREHfsWtVfgsfDjiZZBcjUBAaGk1BTj7N'
         expected_signature = 'INbVnW4e6PeRmsv2Qgu8NuopvrVjkcxob+sX8OcZG0SALhWybUjzMLPdAsXI46YZGb0KQTRii+wWIQzRpG/U+S0='
-        signature = self.nodes[0].signmessagewithprivkey(priv_key, message, 'Bitcoin Signed Message:\n')
+        signature = self.nodes[0].signmessagewithprivkey(priv_key, message, 'Globe Signed Message:\n')
         assert_equal(expected_signature, signature)
 
         self.log.info('test that verifying with P2PKH address succeeds')
         addresses = self.addresses_from_privkey(priv_key)
         assert_equal(addresses[0], 'mpLQjfK79b7CCV4VMJWEWAj5Mpx8Up5zxB')
-        assert self.nodes[0].verifymessage(addresses[0], signature, message, 'Bitcoin Signed Message:\n')
+        assert self.nodes[0].verifymessage(addresses[0], signature, message, 'Globe Signed Message:\n')
 
         self.log.info('test that verifying with non-P2PKH addresses throws error')
         for non_p2pkh_address in addresses[1:]:

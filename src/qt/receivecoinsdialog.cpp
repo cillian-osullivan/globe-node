@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -207,7 +207,7 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
             tr("Could not generate new %1 address").arg(QString::fromStdString(FormatOutputType(address_type))),
             QMessageBox::Ok, QMessageBox::Ok);
         break;
-    case AddressTableModel::EditStatus::RPC_ERROR: // Particl: Error handled by RPC wrapper code
+    case AddressTableModel::EditStatus::RPC_ERROR: // Globe: Error handled by RPC wrapper code
         break;
     // These aren't valid return values for our action
     case AddressTableModel::EditStatus::INVALID_ADDRESS:
@@ -308,7 +308,7 @@ void ReceiveCoinsDialog::copyURI()
     }
 
     const RecentRequestsTableModel * const submodel = model->getRecentRequestsTableModel();
-    const QString uri = GUIUtil::formatBitcoinURI(submodel->entry(sel.row()).recipient);
+    const QString uri = GUIUtil::formatGlobeURI(submodel->entry(sel.row()).recipient);
     GUIUtil::setClipboard(uri);
 }
 

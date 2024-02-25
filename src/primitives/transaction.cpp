@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -348,7 +348,7 @@ std::string CTransaction::ToString() const
         GetHash().ToString().substr(0,10),
         nVersion,
         vin.size(),
-        (nVersion & 0xFF) < PARTICL_TXN_VERSION ? vout.size() : vpout.size(),
+        (nVersion & 0xFF) < GLOBE_TXN_VERSION ? vout.size() : vpout.size(),
         nLockTime);
     for (const auto& tx_in : vin)
         str += "    " + tx_in.ToString() + "\n";

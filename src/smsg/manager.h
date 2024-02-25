@@ -1,9 +1,9 @@
-// Copyright (c) 2022 The Particl Core developers
+// Copyright (c) 2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_SMSG_MANAGER_H
-#define PARTICL_SMSG_MANAGER_H
+#ifndef GLOBE_SMSG_MANAGER_H
+#define GLOBE_SMSG_MANAGER_H
 
 #include <sync.h>
 #include <smsg/types.h>
@@ -32,4 +32,4 @@ public:
     virtual bool IsEnabled() = 0;
 };
 
-#endif // PARTICL_SMSG_MANAGER_H
+#endif // GLOBE_SMSG_MANAGER_H

@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -46,7 +46,7 @@ uint64_t GetBogoSize(const CScript& script_pub_key)
            8 /* amount */ +
            2 /* scriptPubKey len */ +
            script_pub_key.size() /* scriptPubKey */ +
-           (fParticlMode ? 1 /* nType */ + 64 /* commitment */ : 0);
+           (fGlobeMode ? 1 /* nType */ + 64 /* commitment */ : 0);
 }
 
 CDataStream TxOutSer(const COutPoint& outpoint, const Coin& coin) {

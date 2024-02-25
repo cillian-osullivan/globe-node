@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 #include <string>
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(extkey_tests, ParticlBasicTestingSetup)
+BOOST_FIXTURE_TEST_SUITE(extkey_tests, GlobeBasicTestingSetup)
 
 class FailTest
 {
@@ -128,7 +128,7 @@ public:
 void RunDeriveTest(std::vector<DeriveTestData> &vData)
 {
     int rv;
-    CBitcoinExtKey extKey58;
+    CGlobeExtKey extKey58;
     CExtKey evkeyM;
     CExtPubKey epkeyM;
 
@@ -142,12 +142,12 @@ void RunDeriveTest(std::vector<DeriveTestData> &vData)
             BOOST_CHECK(0 == (rv += abs(strcmp(extKey58.ToString().c_str(), dt.vKey58.c_str()))));
 
             evkeyM = extKey58.GetKey();
-            BOOST_CHECK(0 == (rv += abs(strcmp(CBitcoinExtKey(evkeyM).ToString().c_str(), dt.vKey58.c_str()))));
+            BOOST_CHECK(0 == (rv += abs(strcmp(CGlobeExtKey(evkeyM).ToString().c_str(), dt.vKey58.c_str()))));
             epkeyM = evkeyM.Neutered();
 
-            BOOST_CHECK(0 == (rv += abs(strcmp(CBitcoinExtPubKey(epkeyM).ToString().c_str(), dt.pKey58.c_str()))));
+            BOOST_CHECK(0 == (rv += abs(strcmp(CGlobeExtPubKey(epkeyM).ToString().c_str(), dt.pKey58.c_str()))));
 
-            BOOST_CHECK(CBitcoinExtPubKey(epkeyM).ToString().c_str());
+            BOOST_CHECK(CGlobeExtPubKey(epkeyM).ToString().c_str());
 
             if (rv != 0) {
                 BOOST_MESSAGE("Set master failed, aborting test.");
@@ -168,14 +168,14 @@ void RunDeriveTest(std::vector<DeriveTestData> &vData)
         BOOST_CHECK(dt.nDerives == (uint32_t)rv);
         evkeyOut = evkey[dt.nDerives % 2];
 
-        BOOST_CHECK(CBitcoinExtKey(evkeyOut).ToString().c_str());
+        BOOST_CHECK(CGlobeExtKey(evkeyOut).ToString().c_str());
         BOOST_CHECK(evkeyOut.nDepth == dt.nDerives % 256);
         // ndepth used to wrap around: dt.nDerives % 256
 
-        BOOST_CHECK(0 == strcmp(CBitcoinExtKey(evkeyOut).ToString().c_str(), dt.vKey58.c_str()));
+        BOOST_CHECK(0 == strcmp(CGlobeExtKey(evkeyOut).ToString().c_str(), dt.vKey58.c_str()));
 
         epkeyOut = evkeyOut.Neutered();
-        BOOST_CHECK(0 == strcmp(CBitcoinExtPubKey(epkeyOut).ToString().c_str(), dt.pKey58.c_str()));
+        BOOST_CHECK(0 == strcmp(CGlobeExtPubKey(epkeyOut).ToString().c_str(), dt.pKey58.c_str()));
     }
 
     return;
@@ -210,7 +210,7 @@ void RunDeriveTests()
             std::string("xparJhXAGxmqnk8sarQj17F7vitYfE3ZghWz4USKsSRwnfFznQ2S6SFZqcAhNpBUU6fU6Pv6UKUNiMTJRYDQHL899d5fHge73thmnJeUTAJ16St"),
             std::string("ppart3HHTAdHcWsm8Vby6Rz3Sp5L7uK5ZHuYC9XtoyCWmUsEr6WcJbA9pNDgESfdciRF2aMC4uWyvSuxyaPwGo27KjmAgsDME8tPGqmD4Sg85X3t")),
     };
-    CBitcoinExtKey extKey58;
+    CGlobeExtKey extKey58;
 
     // Valid string
     BOOST_CHECK(0 == extKey58.Set58(vMainNetPairs[0].vKey58.c_str()));
@@ -328,7 +328,7 @@ void RunSerialiseTests()
 
 
     // id
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     CKeyID id = sk.GetID();
     CKeyID idTest;
 
@@ -439,15 +439,15 @@ void RunSerialiseTests()
     BOOST_CHECK(1 == skp.DeriveNextKey(pk, nChild, true));
 
 
-    // CBitcoinAddress tests
-    // CBitcoinAddress always deals in public keys - should never expose a secret in an address
+    // CGlobeAddress tests
+    // CGlobeAddress always deals in public keys - should never expose a secret in an address
 
     CExtKeyPair kp, kpT;
     CTxDestination dest;
 
     BOOST_CHECK(0 == eKey58.Set58("PPARTKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj"));
     kp = eKey58.GetKey();
-    CBitcoinAddress addrB(MakeExtPubKey(kp));
+    CGlobeAddress addrB(MakeExtPubKey(kp));
     BOOST_CHECK(addrB.IsValid() == true);
 
     BOOST_CHECK(addr.Set(kp) == true);
@@ -475,7 +475,7 @@ void RunSerialiseTests()
 
     BOOST_CHECK(0 == eKey58.Set58("pparszDdEByd5kvHotS5WeLAiv5gp7b1YfUTs31TmudPuf1dHtos22oNJPmHT2NKyysyfqN56nFPVkUwZjPhK5zqLMucuT8g9dHXjnjsKufeSuVm"));
     kp = eKey58.GetKey();
-    CBitcoinAddress addrC("xparFdrwJK7K2nfYygX9DTNQ2jFEsVyZ4GSewx1HosK5xoeSahH9Y5U3s9muxZvvhzop2cB2THdY8GLvDSuvprvFe7irBSGC8SCg2kopTnkqPWi");
+    CGlobeAddress addrC("xparFdrwJK7K2nfYygX9DTNQ2jFEsVyZ4GSewx1HosK5xoeSahH9Y5U3s9muxZvvhzop2cB2THdY8GLvDSuvprvFe7irBSGC8SCg2kopTnkqPWi");
     BOOST_CHECK(addrC.IsValid() == true);
     BOOST_CHECK(addrC.IsValid(CChainParams::EXT_PUBLIC_KEY) == true);
 

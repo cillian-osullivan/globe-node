@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -165,7 +165,7 @@ const CBlockIndex* Chainstate::FindForkInGlobalIndex(const CBlockLocator& locato
     return m_chain.Genesis();
 }
 
-namespace particl {
+namespace globe {
 bool DelayBlock(BlockManager &blockman, const std::shared_ptr<const CBlock> &pblock, BlockValidationState &state) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 void CheckDelayedBlocks(BlockManager &blockman, BlockValidationState &state, const uint256 &block_hash) LOCKS_EXCLUDED(cs_main);
 
@@ -195,7 +195,7 @@ bool fVerifyingDB = false;
 static bool attempted_rct_index_repair = false;
 std::atomic_bool fSkipRangeproof(false);
 std::atomic_bool fBusyImporting(false);        // covers ActivateBestChain too
-} // namespace particl
+} // namespace globe
 
 
 bool CheckInputScripts(const CTransaction& tx, TxValidationState& state,
@@ -466,7 +466,7 @@ static bool CheckInputsFromMempoolAndCache(const CTransaction& tx, TxValidationS
         if (txFrom) {
             assert(txFrom->GetHash() == txin.prevout.hash);
             assert(txFrom->GetNumVOuts() > txin.prevout.n);
-            if (txFrom->IsParticlVersion()) {
+            if (txFrom->IsGlobeVersion()) {
                 assert(coin.Matches(txFrom->vpout[txin.prevout.n].get()));
             } else {
                 assert(txFrom->vout[txin.prevout.n] == coin.out);
@@ -523,7 +523,7 @@ public:
          */
         const bool m_package_feerates;
 
-        /** Particl - test if tx would get in the mempool without considering locks */
+        /** Globe - test if tx would get in the mempool without considering locks */
         const bool m_ignore_locks;
 
         /** Parameters for single transaction mempool validation. */
@@ -765,7 +765,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     std::unique_ptr<CTxMemPoolEntry>& entry = ws.m_entry;
 
     const Consensus::Params &consensus = Params().GetConsensus();
-    state.SetStateInfo(nAcceptTime, m_active_chainstate.m_chain.Height(), consensus, fParticlMode, (particl::fBusyImporting && particl::fSkipRangeproof));
+    state.SetStateInfo(nAcceptTime, m_active_chainstate.m_chain.Height(), consensus, fGlobeMode, (globe::fBusyImporting && globe::fSkipRangeproof));
 
     if (!CheckTransaction(tx, state)) {
         return false; // state filled in by CheckTransaction
@@ -789,7 +789,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // A transaction with 1 segwit input and 1 P2WPHK output has non-witness size of 82 bytes.
     // Transactions smaller than this are not relayed to mitigate CVE-2017-12842 by not relaying
     // 64-byte transactions.
-    if (::GetSerializeSize(tx, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) < (fParticlMode ? MIN_STANDARD_TX_NONWITNESS_SIZE_PART : MIN_STANDARD_TX_NONWITNESS_SIZE))
+    if (::GetSerializeSize(tx, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) < (fGlobeMode ? MIN_STANDARD_TX_NONWITNESS_SIZE_PART : MIN_STANDARD_TX_NONWITNESS_SIZE))
         return state.Invalid(TxValidationResult::TX_NOT_STANDARD, "tx-size-small");
 
     // Only accept nLockTime-using transactions that can be mined in the next
@@ -877,9 +877,9 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     }
 
     if (state.m_has_anon_input && gArgs.GetBoolArg("-checkpeerheight", true) &&
-        m_active_chainstate.m_chain.Height() < particl::GetNumBlocksOfPeers() - 1) {
+        m_active_chainstate.m_chain.Height() < globe::GetNumBlocksOfPeers() - 1) {
         LogPrintf("%s: Ignoring anon transaction while chain syncs height %d - peers %d.\n",
-            __func__, m_active_chainstate.m_chain.Height(), particl::GetNumBlocksOfPeers());
+            __func__, m_active_chainstate.m_chain.Height(), globe::GetNumBlocksOfPeers());
         return state.Error("Syncing");
     }
 
@@ -903,7 +903,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // be mined yet.
     // Pass in m_view which has all of the relevant inputs cached. Note that, since m_view's
     // backend was removed, it no longer pulls coins from the mempool.
-    if (!args.m_test_accept || !args.m_ignore_locks)  // Particl: Only check m_ignore_locks when m_test_accept is true
+    if (!args.m_test_accept || !args.m_ignore_locks)  // Globe: Only check m_ignore_locks when m_test_accept is true
     if (!CheckSequenceLocksAtTip(m_active_chainstate.m_chain.Tip(), m_view, tx, &lp)) {
         return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "non-BIP68-final");
     }
@@ -1007,7 +1007,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         // being able to broadcast descendants of an unconfirmed transaction
         // to be secure by simply only having two immediately-spendable
         // outputs - one for each counterparty. For more info on the uses for
-        // this, see https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2018-November/016518.html
+        // this, see https://lists.linuxfoundation.org/pipermail/globe-dev/2018-November/016518.html
         if (ws.m_vsize > EXTRA_DESCENDANT_TX_SIZE_LIMIT ||
                 !m_pool.CalculateMemPoolAncestors(*entry, ws.m_ancestors, 2, m_limit_ancestor_size, m_limit_descendants + 1, m_limit_descendant_size + EXTRA_DESCENDANT_TX_SIZE_LIMIT, dummy_err_string)) {
             return state.Invalid(TxValidationResult::TX_MEMPOOL_POLICY, "too-long-mempool-chain", errString);
@@ -1679,12 +1679,12 @@ bool Chainstate::IsInitialBlockDownload() const
         return true;
     if (m_chain.Tip()->nChainWork < nMinimumChainWork)
         return true;
-    if ((!fParticlMode || m_chain.Tip()->nHeight > COINBASE_MATURITY) &&
+    if ((!fGlobeMode || m_chain.Tip()->nHeight > COINBASE_MATURITY) &&
         m_chain.Tip()->GetBlockTime() < (GetTime() - nMaxTipAge))
         return true;
-    if (fParticlMode && check_peer_height &&
-        (particl::GetNumPeers() < 1 ||
-         m_chain.Tip()->nHeight < particl::GetNumBlocksOfPeers() - 10))
+    if (fGlobeMode && check_peer_height &&
+        (globe::GetNumPeers() < 1 ||
+         m_chain.Tip()->nHeight < globe::GetNumBlocksOfPeers() - 10))
         return true;
 
     LogPrintf("Leaving InitialBlockDownload (latching to false)\n");
@@ -1971,8 +1971,8 @@ int ApplyTxInUndo(Coin&& undo, CCoinsViewCache& view, const COutPoint& out)
 
     if (view.HaveCoin(out)) fClean = false; // overwriting transaction output
 
-    if (undo.nHeight == 0 && // Genesis block txns are spendable in Particl
-        (!fParticlMode || out.hash != Params().GenesisBlock().vtx[0]->GetHash())) {
+    if (undo.nHeight == 0 && // Genesis block txns are spendable in Globe
+        (!fGlobeMode || out.hash != Params().GenesisBlock().vtx[0]->GetHash())) {
         // Missing undo metadata (height and coinbase). Older versions included this
         // information only in undo records for the last spend of a transactions'
         // outputs. This implies that it must be present for some other output of the same tx.
@@ -2012,7 +2012,7 @@ DisconnectResult Chainstate::DisconnectBlock(const CBlock& block, const CBlockIn
         return DISCONNECT_FAILED;
     }
 
-    if (!fParticlMode) {
+    if (!fGlobeMode) {
         if (blockUndo.vtxundo.size() + 1 != block.vtx.size()) {
             error("DisconnectBlock(): block and undo data inconsistent");
             return DISCONNECT_FAILED;
@@ -2134,7 +2134,7 @@ DisconnectResult Chainstate::DisconnectBlock(const CBlock& block, const CBlockIn
         }
 
 
-        if (fParticlMode) {
+        if (fGlobeMode) {
             // Restore inputs
             if (!tx.IsCoinBase()) {
                 if (nVtxundo < 0 || nVtxundo >= (int)blockUndo.vtxundo.size()) {
@@ -2275,7 +2275,7 @@ static unsigned int GetBlockScriptFlags(const CBlockIndex& block_index, const Ch
 {
     const Consensus::Params& consensusparams = chainman.GetConsensus();
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         unsigned int flags = SCRIPT_VERIFY_P2SH;
         flags |= SCRIPT_VERIFY_DERSIG;
         flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
@@ -2352,7 +2352,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     int64_t nTimeStart = GetTimeMicros();
 
     const Consensus::Params &consensus = Params().GetConsensus();
-    state.SetStateInfo(block.nTime, pindex->nHeight, consensus, fParticlMode, (particl::fBusyImporting && particl::fSkipRangeproof), true);
+    state.SetStateInfo(block.nTime, pindex->nHeight, consensus, fGlobeMode, (globe::fBusyImporting && globe::fSkipRangeproof), true);
 
     // Check it again in case a previous version let a bad block in
     // NOTE: We don't currently (re-)invoke ContextualCheckBlock() or
@@ -2397,7 +2397,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
-    if (!fParticlMode &&    // genesis coinbase is spendable when in Particl mode
+    if (!fGlobeMode &&    // genesis coinbase is spendable when in Globe mode
         fIsGenesisBlock) {
         if (!fJustCheck)
             view.SetBestBlock(pindex->GetBlockHash(), pindex->nHeight);
@@ -2450,7 +2450,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     // Now that the whole chain is irreversibly beyond that time it is applied to all blocks except the
     // two in the chain that violate it. This prevents exploiting the issue against nodes during their
     // initial block download.
-    bool fEnforceBIP30 = fParticlMode || (!((pindex->nHeight==91842 && pindex->GetBlockHash() == uint256S("0x00000000000a4d0a398161ffc163c503763b1f4360639393e0e4c8e300e0caec")) ||
+    bool fEnforceBIP30 = fGlobeMode || (!((pindex->nHeight==91842 && pindex->GetBlockHash() == uint256S("0x00000000000a4d0a398161ffc163c503763b1f4360639393e0e4c8e300e0caec")) ||
                            (pindex->nHeight==91880 && pindex->GetBlockHash() == uint256S("0x00000000000743f190a18c5577a3c2d2a1f610ae9601ac046a38084ccb7cd721"))));
 
     // Once BIP34 activated it was not possible to create new duplicate coinbases and thus other than starting
@@ -2557,7 +2557,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     int64_t nAnonIn = 0;
     int64_t nStakeReward = 0;
 
-    blockundo.vtxundo.reserve(block.vtx.size() - (fParticlMode ? 0 : 1));
+    blockundo.vtxundo.reserve(block.vtx.size() - (fGlobeMode ? 0 : 1));
 
     // NOTE: Block reward is based on nMoneySupply
     CAmount nMoneyCreated = 0;
@@ -2572,7 +2572,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
         nInputs += tx.vin.size();
 
         TxValidationState tx_state;
-        tx_state.SetStateInfo(block.nTime, pindex->nHeight, consensus, fParticlMode, (particl::fBusyImporting && particl::fSkipRangeproof), true);
+        tx_state.SetStateInfo(block.nTime, pindex->nHeight, consensus, fGlobeMode, (globe::fBusyImporting && globe::fSkipRangeproof), true);
         tx_state.m_chainman = state.m_chainman;
         tx_state.m_chainstate = this;
         if (!tx.IsCoinBase())
@@ -2622,7 +2622,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
                 return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-txns-nonfinal");
             }
 
-            if (tx.IsParticlVersion()) {
+            if (tx.IsGlobeVersion()) {
                 // Update spent inputs
                 for (size_t j = 0; j < tx.vin.size(); j++) {
                     const CTxIn input = tx.vin[j];
@@ -2737,19 +2737,19 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
                 CTxOutRingCT *txout = (CTxOutRingCT*)tx.vpout[k].get();
 
                 int64_t nTestExists;
-                if (!particl::fVerifyingDB && m_blockman.m_block_tree_db->ReadRCTOutputLink(txout->pk, nTestExists)) {
+                if (!globe::fVerifyingDB && m_blockman.m_block_tree_db->ReadRCTOutputLink(txout->pk, nTestExists)) {
                     control.Wait();
 
                     if (nTestExists > pindex->pprev->nAnonOutputs) {
                         // The anon index can diverge from the chain index if shutdown does not complete
                         LogPrintf("%s: Duplicate anon-output %s, index %d, above last index %d.\n", __func__, HexStr(txout->pk), nTestExists, pindex->pprev->nAnonOutputs);
 
-                        if (!particl::attempted_rct_index_repair) {
+                        if (!globe::attempted_rct_index_repair) {
                             LogPrintf("Attempting to repair anon index.\n");
                             assert(state.m_chainman);
                             std::set<CCmpPubKey> setKi; // unused
                             RollBackRCTIndex(*state.m_chainman, pindex->pprev->nAnonOutputs, nTestExists, pindex->pprev->nHeight, setKi);
-                            particl::attempted_rct_index_repair = true;
+                            globe::attempted_rct_index_repair = true;
                             return false;
                         } else {
                             LogPrintf("Not attempting anon index repair, already tried once.\n");
@@ -2758,7 +2758,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
 
                     return error("%s: Duplicate anon-output (db) %s, index %d.", __func__, HexStr(txout->pk), nTestExists);
                 }
-                if (!particl::fVerifyingDB && view.ReadRCTOutputLink(txout->pk, nTestExists)) {
+                if (!globe::fVerifyingDB && view.ReadRCTOutputLink(txout->pk, nTestExists)) {
                     control.Wait();
                     return error("%s: Duplicate anon-output (view) %s, index %d.", __func__, HexStr(txout->pk), nTestExists);
                 }
@@ -2813,7 +2813,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "block-validation-failed");
     }
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         if (block.nTime >= consensus.clamp_tx_version_time) {
             nMoneyCreated -= nFees;  // nStakeReward includes fees
             nMoneyCreated -= nMoneyBurned;
@@ -2828,7 +2828,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
                 CAmount smsg_fee_new, smsg_fee_prev = consensus.smsg_fee_msg_per_day_per_k;
                 if (pindex->pprev->nHeight > 0 // Skip genesis block (POW)
                     && pindex->pprev->nTime >= consensus.smsg_fee_time) {
-                    if (!particl::coinStakeCache.GetCoinStake(*this, pindex->pprev->GetBlockHash(), txPrevCoinstake)
+                    if (!globe::coinStakeCache.GetCoinStake(*this, pindex->pprev->GetBlockHash(), txPrevCoinstake)
                         || !txPrevCoinstake->GetSmsgFeeRate(smsg_fee_prev)) {
                         LogPrintf("ERROR: %s: Failed to get previous smsg fee.\n", __func__);
                         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cs-smsg-fee-prev");
@@ -2855,7 +2855,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
                 uint32_t smsg_difficulty_new, smsg_difficulty_prev = consensus.smsg_min_difficulty;
                 if (pindex->pprev->nHeight > 0 // Skip genesis block (POW)
                     && pindex->pprev->nTime >= consensus.smsg_difficulty_time) {
-                    if (!particl::coinStakeCache.GetCoinStake(*this, pindex->pprev->GetBlockHash(), txPrevCoinstake)
+                    if (!globe::coinStakeCache.GetCoinStake(*this, pindex->pprev->GetBlockHash(), txPrevCoinstake)
                         || !txPrevCoinstake->GetSmsgDifficulty(smsg_difficulty_prev)) {
                         LogPrintf("ERROR: %s: Failed to get previous smsg difficulty.\n", __func__);
                         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cs-smsg-diff-prev");
@@ -2895,7 +2895,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
 
                 if (pindex->pprev->nHeight > 0) { // Genesis block is pow
                     if (!txPrevCoinstake &&
-                        !particl::coinStakeCache.GetCoinStake(*this, pindex->pprev->GetBlockHash(), txPrevCoinstake)) {
+                        !globe::coinStakeCache.GetCoinStake(*this, pindex->pprev->GetBlockHash(), txPrevCoinstake)) {
                         LogPrintf("ERROR: %s: Failed to get previous coinstake.\n", __func__);
                         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cs-prev");
                     }
@@ -2955,7 +2955,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
                     }
                 }
 
-                particl::coinStakeCache.InsertCoinStake(blockHash, txCoinstake);
+                globe::coinStakeCache.InsertCoinStake(blockHash, txCoinstake);
             }
         } else {
             if (blockHash != m_params.GetConsensus().hashGenesisBlock) {
@@ -2979,7 +2979,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
 
     if (consensus.exploit_fix_2_height && pindex->nHeight == (int)consensus.exploit_fix_2_height) {
         // Set moneysupply to utxoset sum
-        pindex->nMoneySupply = particl::GetUTXOSum(*this) + nMoneyCreated;
+        pindex->nMoneySupply = globe::GetUTXOSum(*this) + nMoneyCreated;
         LogPrintf("RCT mint fix HF2, set nMoneySupply to: %d\n", pindex->nMoneySupply);
         reset_balances = true;
         block_balances[BAL_IND_PLAIN] = pindex->nMoneySupply;
@@ -2989,7 +2989,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     pindex->nAnonOutputs = view.nLastRCTOutput;
     m_blockman.m_dirty_blockindex.insert(pindex); // pindex has changed, must save to disk
 
-    if ((!fIsGenesisBlock || fParticlMode) &&
+    if ((!fIsGenesisBlock || fGlobeMode) &&
         !m_blockman.WriteUndoDataForBlock(blockundo, state, pindex, m_params)) {
         return false;
     }
@@ -3947,7 +3947,7 @@ bool Chainstate::ActivateBestChain(BlockValidationState& state, std::shared_ptr<
     }
 
     for (const auto &block_hash : connected_blocks) {
-        particl::CheckDelayedBlocks(m_blockman, state, block_hash);
+        globe::CheckDelayedBlocks(m_blockman, state, block_hash);
     }
 
     return true;
@@ -4207,12 +4207,12 @@ void Chainstate::ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pin
 
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
-    if (fParticlMode &&
-        !block.IsParticlVersion())
+    if (fGlobeMode &&
+        !block.IsGlobeVersion())
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "block-version", "bad block version");
 
     // Check proof of work matches claimed amount
-    if (!fParticlMode &&
+    if (!fGlobeMode &&
         fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
 
@@ -4252,7 +4252,7 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
     if (!CheckBlockHeader(block, state, consensusParams, fCheckPOW))
         return false;
 
-    state.SetStateInfo(block.nTime, -1, consensusParams, fParticlMode, (particl::fBusyImporting && particl::fSkipRangeproof), true);
+    state.SetStateInfo(block.nTime, -1, consensusParams, fGlobeMode, (globe::fBusyImporting && globe::fSkipRangeproof), true);
 
     // Signet only: check block solution
     if (consensusParams.signet_blocks && fCheckPOW && !CheckSignetBlockSolution(block, consensusParams)) {
@@ -4285,7 +4285,7 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
     if (block.vtx.empty() || block.vtx.size() * WITNESS_SCALE_FACTOR > MAX_BLOCK_WEIGHT || ::GetSerializeSize(block, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * WITNESS_SCALE_FACTOR > MAX_BLOCK_WEIGHT)
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-blk-length", "size limits failed");
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         // First transaction must be coinbase (genesis only) or coinstake
         // 2nd txn may be coinbase in early blocks: check further in ContextualCheckBlock
         if (!(block.vtx[0]->IsCoinBase() || block.vtx[0]->IsCoinStake())) { // only genesis can be coinbase, check in ContextualCheckBlock
@@ -4315,7 +4315,7 @@ bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensu
     // Must check for duplicate inputs (see CVE-2018-17144)
     for (const auto& tx : block.vtx) {
         TxValidationState tx_state;
-        tx_state.SetStateInfo(block.nTime, -1, consensusParams, fParticlMode, (particl::fBusyImporting && particl::fSkipRangeproof), true);
+        tx_state.SetStateInfo(block.nTime, -1, consensusParams, fGlobeMode, (globe::fBusyImporting && globe::fSkipRangeproof), true);
         tx_state.m_chainman = state.m_chainman;
         if (state.m_chainman) {
             tx_state.m_chainstate = &state.m_chainman->ActiveChainstate();
@@ -4357,7 +4357,7 @@ void ChainstateManager::UpdateUncommittedBlockStructures(CBlock& block, const CB
 std::vector<unsigned char> ChainstateManager::GenerateCoinbaseCommitment(CBlock& block, const CBlockIndex* pindexPrev) const
 {
     std::vector<unsigned char> commitment;
-    if (fParticlMode) {
+    if (fGlobeMode) {
         return commitment;
     }
 
@@ -4418,9 +4418,9 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
 
     // Check proof of work
     const Consensus::Params& consensusParams = chainman.GetConsensus();
-    if (fParticlMode && pindexPrev) {
+    if (fGlobeMode && pindexPrev) {
         // Check proof-of-stake
-        if (block.nBits != particl::GetNextTargetRequired(pindexPrev, consensusParams))
+        if (block.nBits != globe::GetNextTargetRequired(pindexPrev, consensusParams))
             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "bad-diffbits-pos", "incorrect proof of stake");
     } else {
         // Check proof of work
@@ -4447,7 +4447,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     // Check timestamp
     auto unix_timestamp = TicksSinceEpoch<std::chrono::seconds>(now);
     if (!block.hashPrevBlock.IsNull() && // allow genesis block to be created in the future
-        (fParticlMode ? (block.GetBlockTime() > particl::FutureDrift(unix_timestamp)) : (block.Time() > now + std::chrono::seconds{MAX_FUTURE_BLOCK_TIME}))) {
+        (fGlobeMode ? (block.GetBlockTime() > globe::FutureDrift(unix_timestamp)) : (block.Time() > now + std::chrono::seconds{MAX_FUTURE_BLOCK_TIME}))) {
         return state.Invalid(BlockValidationResult::BLOCK_TIME_FUTURE, "time-too-new", "block timestamp too far in the future");
     }
 
@@ -4491,10 +4491,10 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
         }
     }
 
-    if (fParticlMode) {
+    if (fGlobeMode) {
         if (block.IsProofOfStake()) {
             if (!chainman.ActiveChainstate().IsInitialBlockDownload() &&
-                !particl::CheckStakeUnique(block)) {
+                !globe::CheckStakeUnique(block)) {
                 //state.DoS(10, false, "bad-cs-duplicate", false, "duplicate coinstake");
 
                 state.nFlags |= BLOCK_FAILED_DUPLICATE_STAKE;
@@ -4551,7 +4551,7 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
             }
 
             // Check timestamp against prev
-            if (block.GetBlockTime() <= pindexPrev->GetPastTimeLimit() || particl::FutureDrift(block.GetBlockTime()) < pindexPrev->GetBlockTime()) {
+            if (block.GetBlockTime() <= pindexPrev->GetPastTimeLimit() || globe::FutureDrift(block.GetBlockTime()) < pindexPrev->GetBlockTime()) {
                 return state.Invalid(BlockValidationResult::DOS_50, "bad-block-time", strprintf("%s: block's timestamp is too early", __func__));
             }
 
@@ -4679,7 +4679,7 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
             if (state.m_chainman && !state.m_peerman) {
                 state.m_peerman = state.m_chainman->m_peerman;
             }
-            if (fParticlMode && !fRequested &&
+            if (fGlobeMode && !fRequested &&
                 !state.m_chainman->ActiveChainstate().IsInitialBlockDownload() && state.nodeId >= 0 &&
                 !state.m_peerman->IncDuplicateHeaders(state.nodeId)) {
                 state.m_punish_for_duplicates = true;
@@ -4771,7 +4771,7 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
     }
 
     bool force_accept = true;
-    if (fParticlMode &&
+    if (fGlobeMode &&
         state.nodeId >= 0 &&
         state.m_chainman->HaveActiveChainstate() &&
         !state.m_chainman->ActiveChainstate().IsInitialBlockDownload()) {
@@ -4914,14 +4914,14 @@ bool Chainstate::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, BlockV
             (pindex->pprev->bnStakeModifier.IsNull() &&
              pindex->pprev->GetBlockHash() != m_params.GetConsensus().hashGenesisBlock)) {
             // Block received out of order
-            if (fParticlMode && !IsInitialBlockDownload()) {
+            if (fGlobeMode && !IsInitialBlockDownload()) {
                 if (pindex->nFlags & BLOCK_DELAYED) {
                     // Block is already delayed
                     state.nFlags |= BLOCK_DELAYED;
                     return true;
                 }
                 pindex->nFlags |= BLOCK_DELAYED;
-                return particl::DelayBlock(m_blockman, pblock, state);
+                return globe::DelayBlock(m_blockman, pblock, state);
             }
         } else {
             pindex->bnStakeModifier = ComputeStakeModifierV2(pindex->pprev, pindex->prevoutStake.hash);
@@ -5011,7 +5011,7 @@ bool ChainstateManager::ProcessNewBlock(const std::shared_ptr<const CBlock>& blo
         // Skipping AcceptBlock() for CheckBlock() failures means that we will never mark a block as invalid if
         // CheckBlock() fails.  This is protective against consensus failure if there are any unknown forms of block
         // malleability that cause CheckBlock() to fail; see e.g. CVE-2012-2459 and
-        // https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2019-February/016697.html.  Because CheckBlock() is
+        // https://lists.linuxfoundation.org/pipermail/globe-dev/2019-February/016697.html.  Because CheckBlock() is
         // not very expensive, the anti-DoS benefits of caching failure (of a definitely-invalid block) are not substantial.
         bool ret = CheckBlock(*block, state, GetConsensus());
         if (ret) {
@@ -5022,7 +5022,7 @@ bool ChainstateManager::ProcessNewBlock(const std::shared_ptr<const CBlock>& blo
             return true;
         }
         if (!ret) {
-            if (fParticlMode && state.GetResult() != BlockValidationResult::BLOCK_MISSING_PREV) {
+            if (fGlobeMode && state.GetResult() != BlockValidationResult::BLOCK_MISSING_PREV) {
                 // Mark block as invalid to prevent re-requesting from peer.
                 // Block will have been added to the block index in AcceptBlockHeader
                 CBlockIndex *pindex = ActiveChainstate().m_blockman.AddToBlockIndex(*block, m_best_header);
@@ -5060,7 +5060,7 @@ bool ChainstateManager::ProcessNewBlock(const std::shared_ptr<const CBlock>& blo
     {
         assert(pindex);
         // Check here for blocks not connected to the chain, TODO: move to a timer.
-        particl::CheckDelayedBlocks(ActiveChainstate().m_blockman, state, pindex->GetBlockHash());
+        globe::CheckDelayedBlocks(ActiveChainstate().m_blockman, state, pindex->GetBlockHash());
     }
 
     return true;
@@ -5180,7 +5180,7 @@ bool CVerifyDB::VerifyDB(
         return true;
     }
 
-    particl::fVerifyingDB = true;
+    globe::fVerifyingDB = true;
 
     // Verify blocks in the best chain
     if (nCheckDepth <= 0 || nCheckDepth > chainstate.m_chain.Height()) {
@@ -5273,7 +5273,7 @@ bool CVerifyDB::VerifyDB(
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex, consensus_params))
                 return error("VerifyDB(): *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
-            // Particl: Clear state, data from VerifyDB is not written to disk.
+            // Globe: Clear state, data from VerifyDB is not written to disk.
             BlockValidationState state;
             coins.ClearFlushed();
             if (!chainstate.ConnectBlock(block, state, pindex, coins)) {
@@ -5285,7 +5285,7 @@ bool CVerifyDB::VerifyDB(
 
     LogPrintf("[DONE].\n");
     LogPrintf("No coin database inconsistencies in last %i blocks (%i transactions)\n", block_count, nGoodTransactions);
-    particl::fVerifyingDB = false;
+    globe::fVerifyingDB = false;
 
     return true;
 }
@@ -5497,16 +5497,16 @@ bool ChainstateManager::LoadBlockIndex()
         m_blockman.m_block_tree_db->WriteFlag("v2", true);
 
         // Use the provided setting for indices in the new database
-        fAddressIndex = gArgs.GetBoolArg("-addressindex", particl::DEFAULT_ADDRESSINDEX);
+        fAddressIndex = gArgs.GetBoolArg("-addressindex", globe::DEFAULT_ADDRESSINDEX);
         m_blockman.m_block_tree_db->WriteFlag("addressindex", fAddressIndex);
         LogPrintf("%s: address index %s\n", __func__, fAddressIndex ? "enabled" : "disabled");
-        fTimestampIndex = gArgs.GetBoolArg("-timestampindex", particl::DEFAULT_TIMESTAMPINDEX);
+        fTimestampIndex = gArgs.GetBoolArg("-timestampindex", globe::DEFAULT_TIMESTAMPINDEX);
         m_blockman.m_block_tree_db->WriteFlag("timestampindex", fTimestampIndex);
         LogPrintf("%s: timestamp index %s\n", __func__, fTimestampIndex ? "enabled" : "disabled");
-        fSpentIndex = gArgs.GetBoolArg("-spentindex", particl::DEFAULT_SPENTINDEX);
+        fSpentIndex = gArgs.GetBoolArg("-spentindex", globe::DEFAULT_SPENTINDEX);
         m_blockman.m_block_tree_db->WriteFlag("spentindex", fSpentIndex);
         LogPrintf("%s: spent index %s\n", __func__, fSpentIndex ? "enabled" : "disabled");
-        fBalancesIndex = gArgs.GetBoolArg("-balancesindex", particl::DEFAULT_BALANCESINDEX);
+        fBalancesIndex = gArgs.GetBoolArg("-balancesindex", globe::DEFAULT_BALANCESINDEX);
         m_blockman.m_block_tree_db->WriteFlag("balancesindex", fBalancesIndex);
         LogPrintf("%s: balances index %s\n", __func__, fBalancesIndex ? "enabled" : "disabled");
     }
@@ -5552,10 +5552,10 @@ void Chainstate::LoadExternalBlockFile(
 
     const auto start{SteadyClock::now()};
 
-    fAddressIndex = gArgs.GetBoolArg("-addressindex", particl::DEFAULT_ADDRESSINDEX);
-    fTimestampIndex = gArgs.GetBoolArg("-timestampindex", particl::DEFAULT_TIMESTAMPINDEX);
-    fSpentIndex = gArgs.GetBoolArg("-spentindex", particl::DEFAULT_SPENTINDEX);
-    fBalancesIndex = gArgs.GetBoolArg("-balancesindex", particl::DEFAULT_BALANCESINDEX);
+    fAddressIndex = gArgs.GetBoolArg("-addressindex", globe::DEFAULT_ADDRESSINDEX);
+    fTimestampIndex = gArgs.GetBoolArg("-timestampindex", globe::DEFAULT_TIMESTAMPINDEX);
+    fSpentIndex = gArgs.GetBoolArg("-spentindex", globe::DEFAULT_SPENTINDEX);
+    fBalancesIndex = gArgs.GetBoolArg("-balancesindex", globe::DEFAULT_BALANCESINDEX);
 
     int nLoaded = 0;
     try {
@@ -6368,7 +6368,7 @@ ChainstateManager::~ChainstateManager()
     }
 }
 
-namespace particl {
+namespace globe {
 
 class HeightEntry {
 public:
@@ -6565,7 +6565,7 @@ bool DelayBlock(BlockManager &blockman, const std::shared_ptr<const CBlock> &pbl
 
 void CheckDelayedBlocks(BlockManager &blockman, BlockValidationState &state, const uint256 &block_hash) LOCKS_EXCLUDED(cs_main)
 {
-    if (!fParticlMode) {
+    if (!fGlobeMode) {
         return;
     }
     assert(state.m_chainman);
@@ -6777,7 +6777,7 @@ bool ProcessDuplicateStakeHeader(BlockManager &blockman, CBlockIndex *pindex, No
 
                     if (!pindexPrev->prevoutStake.IsNull()) {
                         uint256 prevhash = pindexPrev->GetBlockHash();
-                        particl::AddToMapStakeSeen(pindexPrev->prevoutStake, prevhash);
+                        globe::AddToMapStakeSeen(pindexPrev->prevoutStake, prevhash);
                     }
 
                     pindexPrev->nStatus &= (~BLOCK_FAILED_CHILD);
@@ -6790,7 +6790,7 @@ bool ProcessDuplicateStakeHeader(BlockManager &blockman, CBlockIndex *pindex, No
         //};
 
         if (!pindex->prevoutStake.IsNull()) {
-            particl::AddToMapStakeSeen(pindex->prevoutStake, hash);
+            globe::AddToMapStakeSeen(pindex->prevoutStake, hash);
         }
         return true;
     }
@@ -6839,7 +6839,7 @@ bool CheckStakeUnique(const CBlock &block, bool fUpdate)
         return true;
     }
 
-    while (listStakeSeen.size() > particl::MAX_STAKE_SEEN_SIZE) {
+    while (listStakeSeen.size() > globe::MAX_STAKE_SEEN_SIZE) {
         const COutPoint &oldest = listStakeSeen.front();
         if (1 != mapStakeSeen.erase(oldest)) {
             LogPrintf("%s: Warning: mapStakeSeen did not erase %s %n\n", __func__, oldest.hash.ToString(), oldest.n);
@@ -6996,4 +6996,4 @@ uint32_t GetSmsgDifficulty(ChainstateManager &chainman, uint64_t time, bool veri
     return consensusParams.smsg_min_difficulty - consensusParams.smsg_difficulty_max_delta;
 };
 
-} // namespace particl
+} // namespace globe

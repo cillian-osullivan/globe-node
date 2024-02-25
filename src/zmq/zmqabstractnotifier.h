@@ -1,9 +1,9 @@
-// Copyright (c) 2015-2021 The Bitcoin Core developers
+// Copyright (c) 2015-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
-#define BITCOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
+#ifndef GLOBE_ZMQ_ZMQABSTRACTNOTIFIER_H
+#define GLOBE_ZMQ_ZMQABSTRACTNOTIFIER_H
 
 
 #include <memory>
@@ -70,4 +70,4 @@ protected:
     int outbound_message_high_water_mark; // aka SNDHWM
 };
 
-#endif // BITCOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
+#endif // GLOBE_ZMQ_ZMQABSTRACTNOTIFIER_H

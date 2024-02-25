@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_PRIMITIVES_BLOCK_H
-#define BITCOIN_PRIMITIVES_BLOCK_H
+#ifndef GLOBE_PRIMITIVES_BLOCK_H
+#define GLOBE_PRIMITIVES_BLOCK_H
 
 #include <primitives/transaction.h>
 #include <serialize.h>
@@ -37,7 +37,7 @@ public:
 
     SERIALIZE_METHODS(CBlockHeader, obj) {
         READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot);
-        if (obj.IsParticlVersion()) {
+        if (obj.IsGlobeVersion()) {
             READWRITE(obj.hashWitnessMerkleRoot);
         }
         READWRITE(obj.nTime, obj.nBits, obj.nNonce);
@@ -71,9 +71,9 @@ public:
         return (int64_t)nTime;
     }
 
-    bool IsParticlVersion() const
+    bool IsGlobeVersion() const
     {
-        return nVersion == PARTICL_BLOCK_VERSION;
+        return nVersion == GLOBE_BLOCK_VERSION;
     }
 };
 
@@ -130,7 +130,7 @@ public:
     {
         READWRITEAS(CBlockHeader, obj);
         READWRITE(obj.vtx);
-        if (obj.nVersion == PARTICL_BLOCK_VERSION) {
+        if (obj.nVersion == GLOBE_BLOCK_VERSION) {
             READWRITE(obj.vchBlockSig);
         }
     }
@@ -189,4 +189,4 @@ struct CBlockLocator
     }
 };
 
-#endif // BITCOIN_PRIMITIVES_BLOCK_H
+#endif // GLOBE_PRIMITIVES_BLOCK_H

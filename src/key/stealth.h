@@ -1,10 +1,10 @@
 // Copyright (c) 2014 The ShadowCoin developers
-// Copyright (c) 2017-2020 The Particl Core developers
+// Copyright (c) 2017-2020 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_KEY_STEALTH_H
-#define PARTICL_KEY_STEALTH_H
+#ifndef GLOBE_KEY_STEALTH_H
+#define GLOBE_KEY_STEALTH_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -151,11 +151,11 @@ int MakeStealthData(const std::string &sNarration, stealth_prefix prefix, const 
 int PrepareStealthOutput(const CStealthAddress &sx, const std::string &sNarration,
     CScript &scriptPubKey, std::vector<uint8_t> &vData, std::string &sError);
 
-namespace particl {
+namespace globe {
 void ECC_Start_Stealth();
 void ECC_Stop_Stealth();
-} // namespace particl
+} // namespace globe
 
 
-#endif // PARTICL_KEY_STEALTH_H
+#endif // GLOBE_KEY_STEALTH_H
 

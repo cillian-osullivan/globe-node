@@ -1,5 +1,5 @@
 // Copyright (c) 2015 The ShadowCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -124,7 +124,7 @@ static RPCHelpMan mnemonicrpc()
         result.pushKV("mnemonic", sMnemonic);
 
         if (fBip44) {
-            eKey58.SetKey(CExtKeyPair(ekMaster), CChainParams::EXT_SECRET_KEY_BTC);
+            eKey58.SetKey(CExtKeyPair(ekMaster), CChainParams::EXT_SECRET_KEY_GLB);
             result.pushKV("master", eKey58.ToString());
 
             // m / purpose' / coin_type' / account' / change / address_index
@@ -184,7 +184,7 @@ static RPCHelpMan mnemonicrpc()
         }
 
         if (fBip44) {
-            eKey58.SetKey(CExtKeyPair(ekMaster), CChainParams::EXT_SECRET_KEY_BTC);
+            eKey58.SetKey(CExtKeyPair(ekMaster), CChainParams::EXT_SECRET_KEY_GLB);
             result.pushKV("master", eKey58.ToString());
 
             // m / purpose' / coin_type' / account' / change / address_index

@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_WALLET_HDWALLETDB_H
-#define PARTICL_WALLET_HDWALLETDB_H
+#ifndef GLOBE_WALLET_HDWALLETDB_H
+#define GLOBE_WALLET_HDWALLETDB_H
 
 #include <primitives/transaction.h>
 #include <wallet/bdb.h>
@@ -421,4 +421,4 @@ public:
     bool WriteEKLKey(const CKeyID &id, const CEKLKey &c);
 };
 
-#endif // PARTICL_WALLET_HDWALLETDB_H
+#endif // GLOBE_WALLET_HDWALLETDB_H

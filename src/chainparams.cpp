@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,7 +17,7 @@
 
 #include <assert.h>
 
-// Particl
+// Globe
 #include <key/keyutil.h>
 
 int64_t CChainParams::GetCoinYearReward(int64_t nTime) const
@@ -265,7 +265,7 @@ static CBlock CreateGenesisBlockRegTest(uint32_t nTime, uint32_t nNonce, uint32_
     const char *pszTimestamp = "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
 
     CMutableTransaction txNew;
-    txNew.nVersion = PARTICL_TXN_VERSION;
+    txNew.nVersion = GLOBE_TXN_VERSION;
     txNew.SetType(TXN_COINBASE);
     txNew.vin.resize(1);
     uint32_t nHeight = 0;  // bip34
@@ -283,7 +283,7 @@ static CBlock CreateGenesisBlockRegTest(uint32_t nTime, uint32_t nNonce, uint32_
     genesis.nTime    = nTime;
     genesis.nBits    = nBits;
     genesis.nNonce   = nNonce;
-    genesis.nVersion = PARTICL_BLOCK_VERSION;
+    genesis.nVersion = GLOBE_BLOCK_VERSION;
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
 
     genesis.hashPrevBlock.SetNull();
@@ -298,7 +298,7 @@ static CBlock CreateGenesisBlockTestNet(uint32_t nTime, uint32_t nNonce, uint32_
     const char *pszTimestamp = "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
 
     CMutableTransaction txNew;
-    txNew.nVersion = PARTICL_TXN_VERSION;
+    txNew.nVersion = GLOBE_TXN_VERSION;
     txNew.SetType(TXN_COINBASE);
     txNew.vin.resize(1);
     uint32_t nHeight = 0;  // bip34
@@ -339,7 +339,7 @@ static CBlock CreateGenesisBlockTestNet(uint32_t nTime, uint32_t nNonce, uint32_
     out->scriptPubKey = CScript() << OP_HASH160 << ParseHex("89ca93e03119d53fd9ad1e65ce22b6f8791f8a49") << OP_EQUAL;
     txNew.vpout.push_back(out);
 
-    // Reserved Particl for primary round
+    // Reserved Globe for primary round
     // rLWLm1Hp7im3mq44Y1DgyirYgwvrmRASib 9c8c6c8c698f074180ecfdb38e8265c11f2a62cf
     out = MAKE_OUTPUT<CTxOutStandard>();
     out->nValue = 996000 * COIN;
@@ -351,7 +351,7 @@ static CBlock CreateGenesisBlockTestNet(uint32_t nTime, uint32_t nNonce, uint32_
     genesis.nTime    = nTime;
     genesis.nBits    = nBits;
     genesis.nNonce   = nNonce;
-    genesis.nVersion = PARTICL_BLOCK_VERSION;
+    genesis.nVersion = GLOBE_BLOCK_VERSION;
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
 
     genesis.hashPrevBlock.SetNull();
@@ -363,10 +363,10 @@ static CBlock CreateGenesisBlockTestNet(uint32_t nTime, uint32_t nNonce, uint32_
 
 static CBlock CreateGenesisBlockMainNet(uint32_t nTime, uint32_t nNonce, uint32_t nBits)
 {
-    const char *pszTimestamp = "BTC 000000000000000000c679bc2209676d05129834627c7b1c02d1018b224c6f37";
+    const char *pszTimestamp = "GLB 000000000000000000c679bc2209676d05129834627c7b1c02d1018b224c6f37";
 
     CMutableTransaction txNew;
-    txNew.nVersion = PARTICL_TXN_VERSION;
+    txNew.nVersion = GLOBE_TXN_VERSION;
     txNew.SetType(TXN_COINBASE);
 
     txNew.vin.resize(1);
@@ -407,7 +407,7 @@ static CBlock CreateGenesisBlockMainNet(uint32_t nTime, uint32_t nNonce, uint32_
     out->scriptPubKey = CScript() << OP_HASH160 << ParseHex("727e5e75929bbf26912dd7833971d77e7450a33e") << OP_EQUAL;
     txNew.vpout.push_back(out);
 
-    // Reserved Particl for primary round
+    // Reserved Globe for primary round
     // RNnoeeqBTkpPQH8d29Gf45dszVj9RtbmCu
     out = MAKE_OUTPUT<CTxOutStandard>();
     out->nValue = 996000 * COIN;
@@ -419,7 +419,7 @@ static CBlock CreateGenesisBlockMainNet(uint32_t nTime, uint32_t nNonce, uint32_
     genesis.nTime    = nTime;
     genesis.nBits    = nBits;
     genesis.nNonce   = nNonce;
-    genesis.nVersion = PARTICL_BLOCK_VERSION;
+    genesis.nVersion = GLOBE_BLOCK_VERSION;
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
 
     genesis.hashPrevBlock.SetNull();
@@ -533,9 +533,9 @@ public:
         // This is fine at runtime as we'll fall back to using them as an addrfetch if they don't support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        vSeeds.emplace_back("mainnet-seed.particl.io");
-        vSeeds.emplace_back("dnsseed-mainnet.particl.io");
-        vSeeds.emplace_back("mainnet.particl.io");
+        vSeeds.emplace_back("mainnet-seed.globe.io");
+        vSeeds.emplace_back("dnsseed-mainnet.globe.io");
+        vSeeds.emplace_back("mainnet.globe.io");
         vSeeds.emplace_back("dnsseed.tecnovert.net");
 
 
@@ -557,8 +557,8 @@ public:
         base58Prefixes[STEALTH_ADDRESS]    = {0x14};
         base58Prefixes[EXT_KEY_HASH]       = {0x4b}; // X
         base58Prefixes[EXT_ACC_HASH]       = {0x17}; // A
-        base58Prefixes[EXT_PUBLIC_KEY_BTC] = {0x04, 0x88, 0xB2, 0x1E}; // xpub
-        base58Prefixes[EXT_SECRET_KEY_BTC] = {0x04, 0x88, 0xAD, 0xE4}; // xprv
+        base58Prefixes[EXT_PUBLIC_KEY_GLB] = {0x04, 0x88, 0xB2, 0x1E}; // xpub
+        base58Prefixes[EXT_SECRET_KEY_GLB] = {0x04, 0x88, 0xAD, 0xE4}; // xprv
 
         bech32Prefixes[PUBKEY_ADDRESS].assign       ("ph",(const char*)"ph"+2);
         bech32Prefixes[SCRIPT_ADDRESS].assign       ("pr",(const char*)"pr"+2);
@@ -737,8 +737,8 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("testnet-seed.particl.io");
-        vSeeds.emplace_back("dnsseed-testnet.particl.io");
+        vSeeds.emplace_back("testnet-seed.globe.io");
+        vSeeds.emplace_back("dnsseed-testnet.globe.io");
         vSeeds.emplace_back("dnsseed-testnet.tecnovert.net");
 
         vTreasuryFundSettings.push_back(std::make_pair(0, TreasuryFundSettings("rTvv9vsbu269mjYYEecPYinDG8Bt7D86qD", 10, 60)));
@@ -753,8 +753,8 @@ public:
         base58Prefixes[STEALTH_ADDRESS]    = {0x15}; // T
         base58Prefixes[EXT_KEY_HASH]       = {0x89}; // x
         base58Prefixes[EXT_ACC_HASH]       = {0x53}; // a
-        base58Prefixes[EXT_PUBLIC_KEY_BTC] = {0x04, 0x35, 0x87, 0xCF}; // tpub
-        base58Prefixes[EXT_SECRET_KEY_BTC] = {0x04, 0x35, 0x83, 0x94}; // tprv
+        base58Prefixes[EXT_PUBLIC_KEY_GLB] = {0x04, 0x35, 0x87, 0xCF}; // tpub
+        base58Prefixes[EXT_SECRET_KEY_GLB] = {0x04, 0x35, 0x83, 0x94}; // tprv
 
         bech32Prefixes[PUBKEY_ADDRESS].assign       ("tph",(const char*)"tph"+3);
         bech32Prefixes[SCRIPT_ADDRESS].assign       ("tpr",(const char*)"tpr"+3);
@@ -836,7 +836,7 @@ public:
 
         if (!args.IsArgSet("-signetchallenge")) {
             bin = ParseHex("512103ad5e0edad18cb1f0fc0d28a3d4f1f3e445640337489abb10404f2d1e086be430210359ef5021964fe22d6f8e05b2463c9540ce96883fe3b278760f048f5189f2e6c452ae");
-            vSeeds.emplace_back("seed.signet.bitcoin.sprovoost.nl.");
+            vSeeds.emplace_back("seed.signet.globe.sprovoost.nl.");
 
             // Hardcoded nodes can be removed once there are more DNS seeds
             vSeeds.emplace_back("178.128.221.177");
@@ -1061,8 +1061,8 @@ public:
         base58Prefixes[STEALTH_ADDRESS]    = {0x15}; // T
         base58Prefixes[EXT_KEY_HASH]       = {0x89}; // x
         base58Prefixes[EXT_ACC_HASH]       = {0x53}; // a
-        base58Prefixes[EXT_PUBLIC_KEY_BTC] = {0x04, 0x35, 0x87, 0xCF}; // tpub
-        base58Prefixes[EXT_SECRET_KEY_BTC] = {0x04, 0x35, 0x83, 0x94}; // tprv
+        base58Prefixes[EXT_PUBLIC_KEY_GLB] = {0x04, 0x35, 0x87, 0xCF}; // tpub
+        base58Prefixes[EXT_SECRET_KEY_GLB] = {0x04, 0x35, 0x83, 0x94}; // tprv
 
         bech32Prefixes[PUBKEY_ADDRESS].assign       ("tph",(const char*)"tph"+3);
         bech32Prefixes[SCRIPT_ADDRESS].assign       ("tpr",(const char*)"tpr"+3);
@@ -1231,11 +1231,11 @@ void SetOldParams(std::unique_ptr<CChainParams> &params)
     }
 };
 
-void ResetParams(std::string sNetworkId, bool fParticlModeIn)
+void ResetParams(std::string sNetworkId, bool fGlobeModeIn)
 {
     // Hack to pass old unit tests
     globalChainParams = CreateChainParams(gArgs, sNetworkId);
-    if (!fParticlModeIn) {
+    if (!fGlobeModeIn) {
         SetOldParams(globalChainParams);
     }
 };

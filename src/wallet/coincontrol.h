@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_COINCONTROL_H
-#define BITCOIN_WALLET_COINCONTROL_H
+#ifndef GLOBE_WALLET_COINCONTROL_H
+#define GLOBE_WALLET_COINCONTROL_H
 
 #include <outputtype.h>
 #include <policy/feerate.h>
@@ -87,7 +87,7 @@ public:
     //! SigningProvider that has pubkeys and scripts to do spend size estimation for external inputs
     FlatSigningProvider m_external_provider;
 
-    //! Particl
+    //! Globe
     int nCoinType = OUTPUT_STANDARD;
     mutable bool fHaveAnonOutputs = false;
     mutable bool fNeedHardwareKey = false;
@@ -207,4 +207,4 @@ public:
 };
 } // namespace wallet
 
-#endif // BITCOIN_WALLET_COINCONTROL_H
+#endif // GLOBE_WALLET_COINCONTROL_H

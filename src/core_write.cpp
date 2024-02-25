@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-// Particl
+// Globe
 #include <insight/spentindex.h>
 #include <blind.h>
 
@@ -349,7 +349,7 @@ void TxToUniv(const CTransaction& tx, const uint256& block_hash, UniValue& entry
         vout.push_back(out);
     }
 
-    if (!tx.IsParticlVersion())
+    if (!tx.IsGlobeVersion())
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
         const CTxOut& txout = tx.vout[i];
 

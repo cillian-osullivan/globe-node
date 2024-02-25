@@ -2,8 +2,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_CHAIN_TX_WHITELIST_H
-#define PARTICL_CHAIN_TX_WHITELIST_H
+#ifndef GLOBE_CHAIN_TX_WHITELIST_H
+#define GLOBE_CHAIN_TX_WHITELIST_H
 
 unsigned char tx_whitelist_data[] = {
   0x22, 0x26, 0xeb, 0xdb, 0x8b, 0x06, 0x4f, 0x0e, 0xaa, 0xfd, 0x62, 0x6e,
@@ -52,4 +52,4 @@ int64_t anon_index_whitelist2[] = {
 };
 size_t anon_index_whitelist2_size = sizeof(anon_index_whitelist2) / sizeof(int64_t);
 
-#endif // PARTICL_CHAIN_TX_WHITELIST_H
+#endif // GLOBE_CHAIN_TX_WHITELIST_H

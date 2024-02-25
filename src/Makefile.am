@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2016 The Bitcoin Core developers
+# Copyright (c) 2013-2016 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,54 +24,54 @@ noinst_PROGRAMS =
 TESTS =
 BENCHMARKS =
 
-BITCOIN_INCLUDES=-I$(builddir) -I$(srcdir)/$(MINISKETCH_INCLUDE_DIR_INT) -I$(srcdir)/secp256k1/include -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT) $(LEVELDB_CPPFLAGS)
+GLOBE_INCLUDES=-I$(builddir) -I$(srcdir)/$(MINISKETCH_INCLUDE_DIR_INT) -I$(srcdir)/secp256k1/include -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT) $(LEVELDB_CPPFLAGS)
 
-LIBPARTICL_NODE=libparticl_node.a
-LIBPARTICL_COMMON=libparticl_common.a
-LIBPARTICL_CONSENSUS=libparticl_consensus.a
-LIBPARTICL_CLI=libparticl_cli.a
-LIBPARTICL_UTIL=libparticl_util.a
-LIBPARTICL_CRYPTO_BASE=crypto/libparticl_crypto_base.la
-LIBPARTICLQT=qt/libparticlqt.a
+LIBGLOBE_NODE=libglobe_node.a
+LIBGLOBE_COMMON=libglobe_common.a
+LIBGLOBE_CONSENSUS=libglobe_consensus.a
+LIBGLOBE_CLI=libglobe_cli.a
+LIBGLOBE_UTIL=libglobe_util.a
+LIBGLOBE_CRYPTO_BASE=crypto/libglobe_crypto_base.la
+LIBGLOBEQT=qt/libglobeqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
-LIBPARTICL_SMSG=libparticl_smsg.a
-LIBPARTICL_MNEMONIC=libparticl_mnemonic.a
+LIBGLOBE_SMSG=libglobe_smsg.a
+LIBGLOBE_MNEMONIC=libglobe_mnemonic.a
 
 if ENABLE_ZMQ
-LIBPARTICL_ZMQ=libparticl_zmq.a
+LIBGLOBE_ZMQ=libglobe_zmq.a
 endif
-if BUILD_BITCOIN_LIBS
-LIBPARTICLCONSENSUS=libparticlconsensus.la
+if BUILD_GLOBE_LIBS
+LIBGLOBECONSENSUS=libglobeconsensus.la
 endif
-if BUILD_BITCOIN_KERNEL_LIB
-LIBPARTICLKERNEL=libparticlkernel.la
+if BUILD_GLOBE_KERNEL_LIB
+LIBGLOBEKERNEL=libglobekernel.la
 endif
 if ENABLE_WALLET
-LIBPARTICL_WALLET=libparticl_wallet.a
-LIBPARTICL_WALLET_TOOL=libparticl_wallet_tool.a
+LIBGLOBE_WALLET=libglobe_wallet.a
+LIBGLOBE_WALLET_TOOL=libglobe_wallet_tool.a
 endif
 if ENABLE_USBDEVICE
-LIBPARTICL_USBDEVICE=libparticl_usbdevice.a
+LIBGLOBE_USBDEVICE=libglobe_usbdevice.a
 endif
 
-LIBPARTICL_CRYPTO = $(LIBPARTICL_CRYPTO_BASE)
+LIBGLOBE_CRYPTO = $(LIBGLOBE_CRYPTO_BASE)
 if ENABLE_SSE41
-LIBPARTICL_CRYPTO_SSE41 = crypto/libparticl_crypto_sse41.la
-LIBPARTICL_CRYPTO += $(LIBPARTICL_CRYPTO_SSE41)
+LIBGLOBE_CRYPTO_SSE41 = crypto/libglobe_crypto_sse41.la
+LIBGLOBE_CRYPTO += $(LIBGLOBE_CRYPTO_SSE41)
 endif
 if ENABLE_AVX2
-LIBPARTICL_CRYPTO_AVX2 = crypto/libparticl_crypto_avx2.la
-LIBPARTICL_CRYPTO += $(LIBPARTICL_CRYPTO_AVX2)
+LIBGLOBE_CRYPTO_AVX2 = crypto/libglobe_crypto_avx2.la
+LIBGLOBE_CRYPTO += $(LIBGLOBE_CRYPTO_AVX2)
 endif
 if ENABLE_X86_SHANI
-LIBPARTICL_CRYPTO_X86_SHANI = crypto/libparticl_crypto_x86_shani.la
-LIBPARTICL_CRYPTO += $(LIBPARTICL_CRYPTO_X86_SHANI)
+LIBGLOBE_CRYPTO_X86_SHANI = crypto/libglobe_crypto_x86_shani.la
+LIBGLOBE_CRYPTO += $(LIBGLOBE_CRYPTO_X86_SHANI)
 endif
 if ENABLE_ARM_SHANI
-LIBPARTICL_CRYPTO_ARM_SHANI = crypto/libparticl_crypto_arm_shani.la
-LIBPARTICL_CRYPTO += $(LIBPARTICL_CRYPTO_ARM_SHANI)
+LIBGLOBE_CRYPTO_ARM_SHANI = crypto/libglobe_crypto_arm_shani.la
+LIBGLOBE_CRYPTO += $(LIBGLOBE_CRYPTO_ARM_SHANI)
 endif
-noinst_LTLIBRARIES += $(LIBPARTICL_CRYPTO)
+noinst_LTLIBRARIES += $(LIBGLOBE_CRYPTO)
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*.h) $(wildcard secp256k1/src/*.c) $(wildcard secp256k1/include/*)
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
@@ -79,52 +79,52 @@ $(LIBSECP256K1): $(wildcard secp256k1/src/*.h) $(wildcard secp256k1/src/*.c) $(w
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
 EXTRA_LIBRARIES += \
-  $(LIBPARTICL_UTIL) \
-  $(LIBPARTICL_COMMON) \
-  $(LIBPARTICL_CONSENSUS) \
-  $(LIBPARTICL_NODE) \
-  $(LIBPARTICL_CLI) \
-  $(LIBPARTICL_IPC) \
-  $(LIBPARTICL_WALLET) \
-  $(LIBPARTICL_WALLET_TOOL) \
-  $(LIBPARTICL_USBDEVICE) \
-  $(LIBPARTICL_SMSG) \
-  $(LIBPARTICL_MNEMONIC) \
-  $(LIBPARTICL_ZMQ)
+  $(LIBGLOBE_UTIL) \
+  $(LIBGLOBE_COMMON) \
+  $(LIBGLOBE_CONSENSUS) \
+  $(LIBGLOBE_NODE) \
+  $(LIBGLOBE_CLI) \
+  $(LIBGLOBE_IPC) \
+  $(LIBGLOBE_WALLET) \
+  $(LIBGLOBE_WALLET_TOOL) \
+  $(LIBGLOBE_USBDEVICE) \
+  $(LIBGLOBE_SMSG) \
+  $(LIBGLOBE_MNEMONIC) \
+  $(LIBGLOBE_ZMQ)
 
-if BUILD_BITCOIND
-  bin_PROGRAMS += particld
+if BUILD_GLOBED
+  bin_PROGRAMS += globed
 endif
 
-if BUILD_BITCOIN_NODE
-  bin_PROGRAMS += particl-node
+if BUILD_GLOBE_NODE
+  bin_PROGRAMS += globe-node
 endif
 
-if BUILD_BITCOIN_CLI
-  bin_PROGRAMS += particl-cli
+if BUILD_GLOBE_CLI
+  bin_PROGRAMS += globe-cli
 endif
 
-if BUILD_BITCOIN_TX
-  bin_PROGRAMS += particl-tx
+if BUILD_GLOBE_TX
+  bin_PROGRAMS += globe-tx
 endif
 
 if ENABLE_WALLET
-if BUILD_BITCOIN_WALLET
-  bin_PROGRAMS += particl-wallet
+if BUILD_GLOBE_WALLET
+  bin_PROGRAMS += globe-wallet
 endif
 endif
 
-if BUILD_BITCOIN_UTIL
-  bin_PROGRAMS += particl-util
+if BUILD_GLOBE_UTIL
+  bin_PROGRAMS += globe-util
 endif
 
-if BUILD_BITCOIN_CHAINSTATE
-  bin_PROGRAMS += particl-chainstate
+if BUILD_GLOBE_CHAINSTATE
+  bin_PROGRAMS += globe-chainstate
 endif
 
 .PHONY: FORCE check-symbols check-security
-# bitcoin core #
-BITCOIN_CORE_H = \
+# globe core #
+GLOBE_CORE_H = \
   addrdb.h \
   rctindex.h \
   addrman.h \
@@ -387,16 +387,16 @@ obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
 	@$(top_srcdir)/share/genbuild.sh "$(abs_top_builddir)/src/obj/build.h" \
 	  "$(abs_top_srcdir)"
-libparticl_util_a-clientversion.$(OBJEXT): obj/build.h
+libglobe_util_a-clientversion.$(OBJEXT): obj/build.h
 
 
-# server: shared between bitcoind and bitcoin-qt
+# server: shared between globed and globe-qt
 # Contains code accessing mempool and chain state that is meant to be separated
 # from wallet and gui code (see node/README.md). Shared code should go in
-# libbitcoin_common or libbitcoin_util libraries, instead.
-libparticl_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS) $(MINIUPNPC_CPPFLAGS) $(NATPMP_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
-libparticl_node_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_node_a_SOURCES = \
+# libglobe_common or libglobe_util libraries, instead.
+libglobe_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS) $(MINIUPNPC_CPPFLAGS) $(NATPMP_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
+libglobe_node_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_node_a_SOURCES = \
   addrdb.cpp \
   addrman.cpp \
   banman.cpp \
@@ -480,20 +480,20 @@ libparticl_node_a_SOURCES = \
   versionbits.cpp \
   insight/insight.cpp \
   insight/rpc.cpp \
-  $(BITCOIN_CORE_H)
+  $(GLOBE_CORE_H)
 
 if ENABLE_WALLET
-libparticl_node_a_SOURCES += wallet/init.cpp
-libparticl_node_a_CPPFLAGS += $(BDB_CPPFLAGS)
+libglobe_node_a_SOURCES += wallet/init.cpp
+libglobe_node_a_CPPFLAGS += $(BDB_CPPFLAGS)
 endif
 if !ENABLE_WALLET
-libparticl_node_a_SOURCES += dummywallet.cpp
+libglobe_node_a_SOURCES += dummywallet.cpp
 endif
 
 if ENABLE_ZMQ
-libparticl_zmq_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
-libparticl_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_zmq_a_SOURCES = \
+libglobe_zmq_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(ZMQ_CFLAGS)
+libglobe_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_zmq_a_SOURCES = \
   zmq/zmqabstractnotifier.cpp \
   zmq/zmqnotificationinterface.cpp \
   zmq/zmqpublishnotifier.cpp \
@@ -502,10 +502,10 @@ libparticl_zmq_a_SOURCES = \
 endif
 
 if ENABLE_USBDEVICE
-libparticl_usbdevice_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(AM_CPPFLAGS) $(PROTOBUF_CFLAGS)
-libparticl_usbdevice_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_usbdevice_a_CFLAGS = -DHAVE_HIDAPI $(AM_CFLAGS) $(PIE_FLAGS)
-libparticl_usbdevice_a_SOURCES = \
+libglobe_usbdevice_a_CPPFLAGS = $(GLOBE_INCLUDES) $(AM_CPPFLAGS) $(PROTOBUF_CFLAGS)
+libglobe_usbdevice_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_usbdevice_a_CFLAGS = -DHAVE_HIDAPI $(AM_CFLAGS) $(PIE_FLAGS)
+libglobe_usbdevice_a_SOURCES = \
   usbdevice/usbwrapper.cpp \
   usbdevice/usbwrapper.h \
   usbdevice/ledger/btchipApdu.h \
@@ -521,27 +521,27 @@ libparticl_usbdevice_a_SOURCES = \
   usbdevice/trezor/messages.proto \
   usbdevice/trezor/messages-common.proto \
   usbdevice/trezor/messages-management.proto \
-  usbdevice/trezor/messages-bitcoin.proto \
+  usbdevice/trezor/messages-globe.proto \
   usbdevice/trezordevice.h \
   usbdevice/trezordevice.cpp \
   usbdevice/rpcusbdevice.cpp
-nodist_libparticl_usbdevice_a_SOURCES = \
+nodist_libglobe_usbdevice_a_SOURCES = \
   usbdevice/trezor/messages.pb.h \
   usbdevice/trezor/messages.pb.cc \
   usbdevice/trezor/messages-common.pb.h \
   usbdevice/trezor/messages-common.pb.cc \
   usbdevice/trezor/messages-management.pb.h \
   usbdevice/trezor/messages-management.pb.cc \
-  usbdevice/trezor/messages-bitcoin.pb.h \
-  usbdevice/trezor/messages-bitcoin.pb.cc
-BUILT_SOURCES = $(nodist_libparticl_usbdevice_a_SOURCES)
+  usbdevice/trezor/messages-globe.pb.h \
+  usbdevice/trezor/messages-globe.pb.cc
+BUILT_SOURCES = $(nodist_libglobe_usbdevice_a_SOURCES)
 endif
 
-# wallet: shared between bitcoind and bitcoin-qt, but only linked
+# wallet: shared between globed and globe-qt, but only linked
 # when wallet enabled
-libparticl_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS) $(BDB_CPPFLAGS) $(SQLITE_CFLAGS)
-libparticl_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_wallet_a_SOURCES = \
+libglobe_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS) $(BDB_CPPFLAGS) $(SQLITE_CFLAGS)
+libglobe_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_wallet_a_SOURCES = \
   wallet/rpchdwallet.cpp \
   wallet/hdwallet.cpp \
   wallet/hdwallettypes.cpp \
@@ -577,32 +577,32 @@ libparticl_wallet_a_SOURCES = \
   policy/rbf.cpp \
   wallet/walletutil.cpp \
   wallet/coinselection.cpp \
-  $(BITCOIN_CORE_H)
+  $(GLOBE_CORE_H)
 
 if USE_SQLITE
-libparticl_wallet_a_SOURCES += wallet/sqlite.cpp
+libglobe_wallet_a_SOURCES += wallet/sqlite.cpp
 endif
 if USE_BDB
-libparticl_wallet_a_SOURCES += wallet/bdb.cpp wallet/salvage.cpp
+libglobe_wallet_a_SOURCES += wallet/bdb.cpp wallet/salvage.cpp
 endif
 
-libparticl_wallet_tool_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS)
-libparticl_wallet_tool_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_wallet_tool_a_SOURCES = \
+libglobe_wallet_tool_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS)
+libglobe_wallet_tool_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_wallet_tool_a_SOURCES = \
   wallet/wallettool.cpp \
-  $(BITCOIN_CORE_H)
+  $(GLOBE_CORE_H)
 
 # crypto primitives library
-crypto_libparticl_crypto_base_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libglobe_crypto_base_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 # Specify -static in both CXXFLAGS and LDFLAGS so libtool will only build a
 # static version of this library. We don't need a dynamic version, and a dynamic
 # version can't be used on windows anyway because the library doesn't currently
 # export DLL symbols.
-crypto_libparticl_crypto_base_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libparticl_crypto_base_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libglobe_crypto_base_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libglobe_crypto_base_la_LDFLAGS = $(AM_LDFLAGS) -static
 
-crypto_libparticl_crypto_base_la_SOURCES = \
+crypto_libglobe_crypto_base_la_SOURCES = \
   crypto/aes.cpp \
   crypto/aes.h \
   crypto/chacha_poly_aead.h \
@@ -634,49 +634,49 @@ crypto_libparticl_crypto_base_la_SOURCES = \
   crypto/siphash.h
 
 if USE_ASM
-crypto_libparticl_crypto_base_la_SOURCES += crypto/sha256_sse4.cpp
+crypto_libglobe_crypto_base_la_SOURCES += crypto/sha256_sse4.cpp
 endif
 
-# See explanation for -static in crypto_libparticl_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libglobe_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libparticl_crypto_sse41_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libparticl_crypto_sse41_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libparticl_crypto_sse41_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libparticl_crypto_sse41_la_CXXFLAGS += $(SSE41_CXXFLAGS)
-crypto_libparticl_crypto_sse41_la_CPPFLAGS += -DENABLE_SSE41
-crypto_libparticl_crypto_sse41_la_SOURCES = crypto/sha256_sse41.cpp
+crypto_libglobe_crypto_sse41_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libglobe_crypto_sse41_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libglobe_crypto_sse41_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libglobe_crypto_sse41_la_CXXFLAGS += $(SSE41_CXXFLAGS)
+crypto_libglobe_crypto_sse41_la_CPPFLAGS += -DENABLE_SSE41
+crypto_libglobe_crypto_sse41_la_SOURCES = crypto/sha256_sse41.cpp
 
-# See explanation for -static in crypto_libparticl_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libglobe_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libparticl_crypto_avx2_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libparticl_crypto_avx2_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libparticl_crypto_avx2_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libparticl_crypto_avx2_la_CXXFLAGS += $(AVX2_CXXFLAGS)
-crypto_libparticl_crypto_avx2_la_CPPFLAGS += -DENABLE_AVX2
-crypto_libparticl_crypto_avx2_la_SOURCES = crypto/sha256_avx2.cpp
+crypto_libglobe_crypto_avx2_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libglobe_crypto_avx2_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libglobe_crypto_avx2_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libglobe_crypto_avx2_la_CXXFLAGS += $(AVX2_CXXFLAGS)
+crypto_libglobe_crypto_avx2_la_CPPFLAGS += -DENABLE_AVX2
+crypto_libglobe_crypto_avx2_la_SOURCES = crypto/sha256_avx2.cpp
 
-# See explanation for -static in crypto_libparticl_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libglobe_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libparticl_crypto_x86_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libparticl_crypto_x86_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libparticl_crypto_x86_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libparticl_crypto_x86_shani_la_CXXFLAGS += $(X86_SHANI_CXXFLAGS)
-crypto_libparticl_crypto_x86_shani_la_CPPFLAGS += -DENABLE_X86_SHANI
-crypto_libparticl_crypto_x86_shani_la_SOURCES = crypto/sha256_x86_shani.cpp
+crypto_libglobe_crypto_x86_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libglobe_crypto_x86_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libglobe_crypto_x86_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libglobe_crypto_x86_shani_la_CXXFLAGS += $(X86_SHANI_CXXFLAGS)
+crypto_libglobe_crypto_x86_shani_la_CPPFLAGS += -DENABLE_X86_SHANI
+crypto_libglobe_crypto_x86_shani_la_SOURCES = crypto/sha256_x86_shani.cpp
 
-# See explanation for -static in crypto_libparticl_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libglobe_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libparticl_crypto_arm_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libparticl_crypto_arm_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libparticl_crypto_arm_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libparticl_crypto_arm_shani_la_CXXFLAGS += $(ARM_SHANI_CXXFLAGS)
-crypto_libparticl_crypto_arm_shani_la_CPPFLAGS += -DENABLE_ARM_SHANI
-crypto_libparticl_crypto_arm_shani_la_SOURCES = crypto/sha256_arm_shani.cpp
+crypto_libglobe_crypto_arm_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libglobe_crypto_arm_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libglobe_crypto_arm_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libglobe_crypto_arm_shani_la_CXXFLAGS += $(ARM_SHANI_CXXFLAGS)
+crypto_libglobe_crypto_arm_shani_la_CPPFLAGS += -DENABLE_ARM_SHANI
+crypto_libglobe_crypto_arm_shani_la_SOURCES = crypto/sha256_arm_shani.cpp
 
 # consensus: shared between all executables that validate any consensus rules.
-libparticl_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libparticl_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_consensus_a_SOURCES = \
+libglobe_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+libglobe_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_consensus_a_SOURCES = \
   arith_uint256.cpp \
   arith_uint256.h \
   consensus/amount.h \
@@ -694,7 +694,7 @@ libparticl_consensus_a_SOURCES = \
   primitives/transaction.h \
   pubkey.cpp \
   pubkey.h \
-  script/bitcoinconsensus.cpp \
+  script/globeconsensus.cpp \
   script/interpreter.cpp \
   script/interpreter.h \
   script/script.cpp \
@@ -710,10 +710,10 @@ libparticl_consensus_a_SOURCES = \
   util/strencodings.h \
   version.h
 
-# common: shared between bitcoind, and bitcoin-qt and non-server tools
-libparticl_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libparticl_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_common_a_SOURCES = \
+# common: shared between globed, and globe-qt and non-server tools
+libglobe_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+libglobe_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_common_a_SOURCES = \
   base58.cpp \
   bech32.cpp \
   chainparams.cpp \
@@ -753,12 +753,12 @@ libparticl_common_a_SOURCES = \
   script/signingprovider.cpp \
   script/standard.cpp \
   warnings.cpp \
-  $(BITCOIN_CORE_H)
+  $(GLOBE_CORE_H)
 
 # util: shared between all executables.
-libparticl_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS)
-libparticl_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_util_a_SOURCES = \
+libglobe_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS)
+libglobe_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_util_a_SOURCES = \
   support/lockedpool.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
@@ -798,16 +798,16 @@ libparticl_util_a_SOURCES = \
   util/syscall_sandbox.cpp \
   util/time.cpp \
   util/tokenpipe.cpp \
-  $(BITCOIN_CORE_H)
+  $(GLOBE_CORE_H)
 
 if USE_LIBEVENT
-libparticl_util_a_SOURCES += util/url.cpp
+libglobe_util_a_SOURCES += util/url.cpp
 endif
 
-libparticl_smsg_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libparticl_smsg_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_smsg_a_CFLAGS = $(AM_CFLAGS) $(PIE_FLAGS)
-libparticl_smsg_a_SOURCES = \
+libglobe_smsg_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+libglobe_smsg_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_smsg_a_CFLAGS = $(AM_CFLAGS) $(PIE_FLAGS)
+libglobe_smsg_a_SOURCES = \
   lz4/lz4.h \
   lz4/lz4.c \
   xxhash/xxhash.h \
@@ -822,10 +822,10 @@ libparticl_smsg_a_SOURCES = \
   smsg/rpcsmessage.cpp
 
 
-libparticl_mnemonic_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libparticl_mnemonic_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_mnemonic_a_CFLAGS = $(AM_CFLAGS) $(PIE_FLAGS)
-libparticl_mnemonic_a_SOURCES = \
+libglobe_mnemonic_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+libglobe_mnemonic_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_mnemonic_a_CFLAGS = $(AM_CFLAGS) $(PIE_FLAGS)
+libglobe_mnemonic_a_SOURCES = \
   unilib/uninorms.h \
   unilib/utf8.h \
   unilib/uninorms.cpp \
@@ -843,170 +843,170 @@ libparticl_mnemonic_a_SOURCES = \
   key/mnemonic.cpp \
   rpc/mnemonic.cpp
 
-# cli: shared between bitcoin-cli and bitcoin-qt
-libparticl_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libparticl_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libparticl_cli_a_SOURCES = \
+# cli: shared between globe-cli and globe-qt
+libglobe_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+libglobe_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_cli_a_SOURCES = \
   compat/stdin.h \
   compat/stdin.cpp \
   rpc/client.cpp \
-  $(BITCOIN_CORE_H)
+  $(GLOBE_CORE_H)
 
 
-nodist_libparticl_util_a_SOURCES = $(srcdir)/obj/build.h
+nodist_libglobe_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# bitcoind & bitcoin-node binaries #
-particl_daemon_sources = bitcoind.cpp
-particl_bin_cppflags = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-particl_bin_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
-particl_bin_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# globed & globe-node binaries #
+globe_daemon_sources = globed.cpp
+globe_bin_cppflags = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+globe_bin_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
+globe_bin_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-particl_daemon_sources += bitcoind-res.rc
+globe_daemon_sources += globed-res.rc
 endif
 
-particl_bin_ldadd = \
-  $(LIBPARTICL_WALLET) \
-  $(LIBPARTICL_COMMON) \
-  $(LIBPARTICL_UTIL) \
+globe_bin_ldadd = \
+  $(LIBGLOBE_WALLET) \
+  $(LIBGLOBE_COMMON) \
+  $(LIBGLOBE_UTIL) \
   $(LIBUNIVALUE) \
-  $(LIBPARTICL_ZMQ) \
-  $(LIBPARTICL_CONSENSUS) \
-  $(LIBPARTICL_CRYPTO) \
+  $(LIBGLOBE_ZMQ) \
+  $(LIBGLOBE_CONSENSUS) \
+  $(LIBGLOBE_CRYPTO) \
   $(LIBLEVELDB) \
   $(LIBMEMENV) \
   $(LIBSECP256K1) \
-  $(LIBPARTICL_SMSG) \
-  $(LIBPARTICL_MNEMONIC) \
-  $(LIBPARTICL_USBDEVICE)
+  $(LIBGLOBE_SMSG) \
+  $(LIBGLOBE_MNEMONIC) \
+  $(LIBGLOBE_USBDEVICE)
 
-particl_bin_ldadd += $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
+globe_bin_ldadd += $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
 if ENABLE_USBDEVICE
-particl_bin_ldadd += $(USB_LIBS) $(HIDAPI_LIBS) $(PROTOBUF_LIBS)
+globe_bin_ldadd += $(USB_LIBS) $(HIDAPI_LIBS) $(PROTOBUF_LIBS)
 endif
 
-particld_SOURCES = $(particl_daemon_sources) init/bitcoind.cpp
-particld_CPPFLAGS = $(particl_bin_cppflags)
-particld_CXXFLAGS = $(particl_bin_cxxflags)
-particld_LDFLAGS = $(particl_bin_ldflags)
-particld_LDADD = $(LIBPARTICL_NODE) $(particl_bin_ldadd)
+globed_SOURCES = $(globe_daemon_sources) init/globed.cpp
+globed_CPPFLAGS = $(globe_bin_cppflags)
+globed_CXXFLAGS = $(globe_bin_cxxflags)
+globed_LDFLAGS = $(globe_bin_ldflags)
+globed_LDADD = $(LIBGLOBE_NODE) $(globe_bin_ldadd)
 
-particl_node_SOURCES = $(particl_daemon_sources) init/bitcoin-node.cpp
-particl_node_CPPFLAGS = $(particl_bin_cppflags)
-particl_node_CXXFLAGS = $(particl_bin_cxxflags)
-particl_node_LDFLAGS = $(particl_bin_ldflags)
-particl_node_LDADD = $(LIBPARTICL_NODE) $(particl_bin_ldadd) $(LIBPARTICL_IPC) $(LIBMULTIPROCESS_LIBS)
+globe_node_SOURCES = $(globe_daemon_sources) init/globe-node.cpp
+globe_node_CPPFLAGS = $(globe_bin_cppflags)
+globe_node_CXXFLAGS = $(globe_bin_cxxflags)
+globe_node_LDFLAGS = $(globe_bin_ldflags)
+globe_node_LDADD = $(LIBGLOBE_NODE) $(globe_bin_ldadd) $(LIBGLOBE_IPC) $(LIBMULTIPROCESS_LIBS)
 
-# bitcoin-cli binary #
-particl_cli_SOURCES = bitcoin-cli.cpp
-particl_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-particl_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-particl_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# globe-cli binary #
+globe_cli_SOURCES = globe-cli.cpp
+globe_cli_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(EVENT_CFLAGS)
+globe_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+globe_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-particl_cli_SOURCES += bitcoin-cli-res.rc
+globe_cli_SOURCES += globe-cli-res.rc
 endif
 
-particl_cli_LDADD = \
-  $(LIBPARTICL_CLI) \
+globe_cli_LDADD = \
+  $(LIBGLOBE_CLI) \
   $(LIBUNIVALUE) \
-  $(LIBPARTICL_UTIL) \
-  $(LIBPARTICL_CRYPTO)
+  $(LIBGLOBE_UTIL) \
+  $(LIBGLOBE_CRYPTO)
 
-particl_cli_LDADD += $(EVENT_LIBS)
+globe_cli_LDADD += $(EVENT_LIBS)
 #
 
-# bitcoin-tx binary #
-particl_tx_SOURCES = bitcoin-tx.cpp
-particl_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-particl_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-particl_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# globe-tx binary #
+globe_tx_SOURCES = globe-tx.cpp
+globe_tx_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+globe_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+globe_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-particl_tx_SOURCES += bitcoin-tx-res.rc
+globe_tx_SOURCES += globe-tx-res.rc
 endif
 
-particl_tx_LDADD = \
+globe_tx_LDADD = \
   $(LIBUNIVALUE) \
-  $(LIBPARTICL_COMMON) \
-  $(LIBPARTICL_UTIL) \
-  $(LIBPARTICL_CONSENSUS) \
-  $(LIBPARTICL_CRYPTO) \
+  $(LIBGLOBE_COMMON) \
+  $(LIBGLOBE_UTIL) \
+  $(LIBGLOBE_CONSENSUS) \
+  $(LIBGLOBE_CRYPTO) \
   $(LIBSECP256K1) \
   $(LIBLEVELDB) \
   $(LIBLEVELDB_SSE42)
 
 #
 
-# bitcoin-wallet binary #
-particl_wallet_SOURCES = bitcoin-wallet.cpp
-particl_wallet_SOURCES += init/bitcoin-wallet.cpp
-particl_wallet_CPPFLAGS = $(particl_bin_cppflags)
-particl_wallet_CXXFLAGS = $(particl_bin_cxxflags)
-particl_wallet_LDFLAGS = $(particl_bin_ldflags)
-particl_wallet_LDADD = \
-  $(LIBPARTICL_WALLET_TOOL) \
-  $(LIBPARTICL_WALLET) \
-  $(LIBPARTICL_SMSG) \
-  $(LIBPARTICL_MNEMONIC) \
-  $(LIBPARTICL_USBDEVICE) \
-  $(LIBPARTICL_NODE) \
-  $(LIBPARTICL_COMMON) \
-  $(LIBPARTICL_CONSENSUS) \
-  $(LIBPARTICL_UTIL) \
-  $(LIBPARTICL_CRYPTO) \
-  $(LIBPARTICL_ZMQ) \
+# globe-wallet binary #
+globe_wallet_SOURCES = globe-wallet.cpp
+globe_wallet_SOURCES += init/globe-wallet.cpp
+globe_wallet_CPPFLAGS = $(globe_bin_cppflags)
+globe_wallet_CXXFLAGS = $(globe_bin_cxxflags)
+globe_wallet_LDFLAGS = $(globe_bin_ldflags)
+globe_wallet_LDADD = \
+  $(LIBGLOBE_WALLET_TOOL) \
+  $(LIBGLOBE_WALLET) \
+  $(LIBGLOBE_SMSG) \
+  $(LIBGLOBE_MNEMONIC) \
+  $(LIBGLOBE_USBDEVICE) \
+  $(LIBGLOBE_NODE) \
+  $(LIBGLOBE_COMMON) \
+  $(LIBGLOBE_CONSENSUS) \
+  $(LIBGLOBE_UTIL) \
+  $(LIBGLOBE_CRYPTO) \
+  $(LIBGLOBE_ZMQ) \
   $(LIBLEVELDB) \
   $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
   $(LIBSECP256K1) \
   $(LIBUNIVALUE)
-particl_wallet_LDADD += $(BDB_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(MINIUPNPC_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
+globe_wallet_LDADD += $(BDB_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(MINIUPNPC_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
 if ENABLE_USBDEVICE
-particl_wallet_LDADD += $(USB_LIBS) $(HIDAPI_LIBS) $(PROTOBUF_LIBS)
+globe_wallet_LDADD += $(USB_LIBS) $(HIDAPI_LIBS) $(PROTOBUF_LIBS)
 endif
 
 if TARGET_WINDOWS
-particl_wallet_SOURCES += bitcoin-wallet-res.rc
+globe_wallet_SOURCES += globe-wallet-res.rc
 endif
 #
 
-# bitcoin-util binary #
-particl_util_SOURCES = bitcoin-util.cpp
-particl_util_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-particl_util_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-particl_util_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# globe-util binary #
+globe_util_SOURCES = globe-util.cpp
+globe_util_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+globe_util_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+globe_util_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-particl_util_SOURCES += bitcoin-util-res.rc
+globe_util_SOURCES += globe-util-res.rc
 endif
 
-particl_util_LDADD = \
-  $(LIBPARTICL_COMMON) \
-  $(LIBPARTICL_UTIL) \
+globe_util_LDADD = \
+  $(LIBGLOBE_COMMON) \
+  $(LIBGLOBE_UTIL) \
   $(LIBUNIVALUE) \
-  $(LIBPARTICL_CONSENSUS) \
-  $(LIBPARTICL_CRYPTO) \
+  $(LIBGLOBE_CONSENSUS) \
+  $(LIBGLOBE_CRYPTO) \
   $(LIBSECP256K1)
 #
 
-# bitcoin-chainstate binary #
-particl_chainstate_SOURCES = bitcoin-chainstate.cpp
-particl_chainstate_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS)
-particl_chainstate_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+# globe-chainstate binary #
+globe_chainstate_SOURCES = globe-chainstate.cpp
+globe_chainstate_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS)
+globe_chainstate_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 # $(LIBTOOL_APP_LDFLAGS) deliberately omitted here so that we can test linking
-# bitcoin-chainstate against libbitcoinkernel as a shared or static library by
+# globe-chainstate against libglobekernel as a shared or static library by
 # setting --{en,dis}able-shared.
-particl_chainstate_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(PTHREAD_FLAGS)
-particl_chainstate_LDADD = \
-  $(LIBPARTICLKERNEL) \
-  $(LIBPARTICL_SMSG) \
-  $(LIBPARTICL_NODE) \
-  $(LIBPARTICL_COMMON) \
-  $(LIBPARTICL_UTIL) \
-  $(LIBPARTICL_CRYPTO) \
+globe_chainstate_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(PTHREAD_FLAGS)
+globe_chainstate_LDADD = \
+  $(LIBGLOBEKERNEL) \
+  $(LIBGLOBE_SMSG) \
+  $(LIBGLOBE_NODE) \
+  $(LIBGLOBE_COMMON) \
+  $(LIBGLOBE_UTIL) \
+  $(LIBGLOBE_CRYPTO) \
   $(LIBUNIVALUE) \
   $(LIBSECP256K1) \
   $(LIBLEVELDB) \
@@ -1014,36 +1014,36 @@ particl_chainstate_LDADD = \
   $(LIBMEMENV)
 #
 
-# bitcoinkernel library #
-if BUILD_BITCOIN_KERNEL_LIB
-lib_LTLIBRARIES += $(LIBPARTICLKERNEL)
+# globekernel library #
+if BUILD_GLOBE_KERNEL_LIB
+lib_LTLIBRARIES += $(LIBGLOBEKERNEL)
 
-libparticlkernel_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS) $(PTHREAD_FLAGS)
-libparticlkernel_la_LIBADD = $(LIBPARTICL_CRYPTO) $(LIBUNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(LIBSECP256K1)
-libparticlkernel_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT)
+libglobekernel_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS) $(PTHREAD_FLAGS)
+libglobekernel_la_LIBADD = $(LIBGLOBE_CRYPTO) $(LIBUNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(LIBSECP256K1)
+libglobekernel_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_GLOBE_INTERNAL $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT)
 
-# libbitcoinkernel requires default symbol visibility, explicitly specify that
+# libglobekernel requires default symbol visibility, explicitly specify that
 # here so that things still work even when user configures with
 #   --enable-reduce-exports
 #
 # Note this is a quick hack that will be removed as we incrementally define what
 # to export from the library.
-libparticlkernel_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fvisibility=default
+libglobekernel_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fvisibility=default
 
 # TODO: For now, Specify -static in both CXXFLAGS and LDFLAGS when building for
 #       windows targets so libtool will only build a static version of this
 #       library. There are unresolved problems when building dll's for mingw-w64
 #       and attempting to statically embed libstdc++, libpthread, etc.
 if TARGET_WINDOWS
-libparticlkernel_la_LDFLAGS += -static
-libparticlkernel_la_CXXFLAGS += -static
+libglobekernel_la_LDFLAGS += -static
+libglobekernel_la_CXXFLAGS += -static
 endif
 
-# TODO: libbitcoinkernel is a work in progress consensus engine library, as more
+# TODO: libglobekernel is a work in progress consensus engine library, as more
 #       and more modules are decoupled from the consensus engine, this list will
 #       shrink to only those which are absolutely necessary.
-libparticlkernel_la_SOURCES = \
-  kernel/bitcoinkernel.cpp \
+libglobekernel_la_SOURCES = \
+  kernel/globekernel.cpp \
   arith_uint256.cpp \
   chain.cpp \
   chainparamsbase.cpp \
@@ -1137,21 +1137,21 @@ libparticlkernel_la_SOURCES = \
 
 # Required for obj/build.h to be generated first.
 # More details: https://www.gnu.org/software/automake/manual/html_node/Built-Sources-Example.html
-libparticlkernel_la-clientversion.l$(OBJEXT): obj/build.h
-endif # BUILD_BITCOIN_KERNEL_LIB
+libglobekernel_la-clientversion.l$(OBJEXT): obj/build.h
+endif # BUILD_GLOBE_KERNEL_LIB
 #
 
-# bitcoinconsensus library #
-if BUILD_BITCOIN_LIBS
-lib_LTLIBRARIES += $(LIBPARTICLCONSENSUS)
+# globeconsensus library #
+if BUILD_GLOBE_LIBS
+lib_LTLIBRARIES += $(LIBGLOBECONSENSUS)
 
-include_HEADERS = script/particlconsensus.h
-libparticlconsensus_la_SOURCES = support/cleanse.cpp $(crypto_libparticl_crypto_base_la_SOURCES) $(libparticl_consensus_a_SOURCES)
+include_HEADERS = script/globeconsensus.h
+libglobeconsensus_la_SOURCES = support/cleanse.cpp $(crypto_libglobe_crypto_base_la_SOURCES) $(libglobe_consensus_a_SOURCES)
 
-libparticlconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libparticlconsensus_la_LIBADD = $(LIBSECP256K1)
-libparticlconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
-libparticlconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobeconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
+libglobeconsensus_la_LIBADD = $(LIBSECP256K1)
+libglobeconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_GLOBE_INTERNAL
+libglobeconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 endif
 #
@@ -1187,12 +1187,12 @@ CLEANFILES += obj/build.h
 EXTRA_DIST = $(CTAES_DIST)
 
 
-config/bitcoin-config.h: config/stamp-h1
+config/globe-config.h: config/stamp-h1
 	@$(MAKE) -C $(top_builddir) $(subdir)/$(@)
-config/stamp-h1: $(top_srcdir)/$(subdir)/config/bitcoin-config.h.in $(top_builddir)/config.status
+config/stamp-h1: $(top_srcdir)/$(subdir)/config/globe-config.h.in $(top_builddir)/config.status
 	$(AM_V_at)$(MAKE) -C $(top_builddir) $(subdir)/$(@)
-$(top_srcdir)/$(subdir)/config/bitcoin-config.h.in:  $(am__configure_deps)
-	$(AM_V_at)$(MAKE) -C $(top_srcdir) $(subdir)/config/bitcoin-config.h.in
+$(top_srcdir)/$(subdir)/config/globe-config.h.in:  $(am__configure_deps)
+	$(AM_V_at)$(MAKE) -C $(top_srcdir) $(subdir)/config/globe-config.h.in
 
 clean-local:
 	-$(MAKE) -C secp256k1 clean
@@ -1221,19 +1221,19 @@ if ENABLE_USBDEVICE
 	$(AM_V_GEN) $(PROTOC) --cpp_out=$(@D) --proto_path=$(<D) $<
 endif
 
-libparticl_ipc_mpgen_input = \
+libglobe_ipc_mpgen_input = \
   ipc/capnp/echo.capnp \
   ipc/capnp/init.capnp
-EXTRA_DIST += $(libparticl_ipc_mpgen_input)
+EXTRA_DIST += $(libglobe_ipc_mpgen_input)
 %.capnp:
 
 # Explicitly list dependencies on generated headers as described in
 # https://www.gnu.org/software/automake/manual/html_node/Built-Sources-Example.html#Recording-Dependencies-manually
-ipc/capnp/libparticl_ipc_a-protocol.$(OBJEXT): $(libparticl_ipc_mpgen_input:=.h)
+ipc/capnp/libglobe_ipc_a-protocol.$(OBJEXT): $(libglobe_ipc_mpgen_input:=.h)
 
 if BUILD_MULTIPROCESS
-LIBPARTICL_IPC=libparticl_ipc.a
-libparticl_ipc_a_SOURCES = \
+LIBGLOBE_IPC=libglobe_ipc.a
+libglobe_ipc_a_SOURCES = \
   ipc/capnp/context.h \
   ipc/capnp/init-types.h \
   ipc/capnp/protocol.cpp \
@@ -1244,20 +1244,20 @@ libparticl_ipc_a_SOURCES = \
   ipc/process.cpp \
   ipc/process.h \
   ipc/protocol.h
-libparticl_ipc_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libparticl_ipc_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(LIBMULTIPROCESS_CFLAGS)
+libglobe_ipc_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+libglobe_ipc_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(LIBMULTIPROCESS_CFLAGS)
 
 include $(MPGEN_PREFIX)/include/mpgen.mk
-libparticl_ipc_mpgen_output = \
-  $(libparticl_ipc_mpgen_input:=.c++) \
-  $(libparticl_ipc_mpgen_input:=.h) \
-  $(libparticl_ipc_mpgen_input:=.proxy-client.c++) \
-  $(libparticl_ipc_mpgen_input:=.proxy-server.c++) \
-  $(libparticl_ipc_mpgen_input:=.proxy-types.c++) \
-  $(libparticl_ipc_mpgen_input:=.proxy-types.h) \
-  $(libparticl_ipc_mpgen_input:=.proxy.h)
-nodist_libparticl_ipc_a_SOURCES = $(libparticl_ipc_mpgen_output)
-CLEANFILES += $(libparticl_ipc_mpgen_output)
+libglobe_ipc_mpgen_output = \
+  $(libglobe_ipc_mpgen_input:=.c++) \
+  $(libglobe_ipc_mpgen_input:=.h) \
+  $(libglobe_ipc_mpgen_input:=.proxy-client.c++) \
+  $(libglobe_ipc_mpgen_input:=.proxy-server.c++) \
+  $(libglobe_ipc_mpgen_input:=.proxy-types.c++) \
+  $(libglobe_ipc_mpgen_input:=.proxy-types.h) \
+  $(libglobe_ipc_mpgen_input:=.proxy.h)
+nodist_libglobe_ipc_a_SOURCES = $(libglobe_ipc_mpgen_output)
+CLEANFILES += $(libglobe_ipc_mpgen_output)
 endif
 
 %.raw.h: %.raw

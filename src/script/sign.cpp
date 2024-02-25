@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -202,7 +202,7 @@ static bool SignTaprootScript(const SigningProvider& provider, const BaseSignatu
     }
 
     // multi_a scripts (<key> OP_CHECKSIG <key> OP_CHECKSIGADD <key> OP_CHECKSIGADD <k> OP_NUMEQUAL)
-    if (!fParticlMode)
+    if (!fGlobeMode)
     if (auto match = MatchMultiA(script)) {
         std::vector<std::vector<unsigned char>> sigs;
         int good_sigs = 0;
@@ -460,7 +460,7 @@ bool ProduceSignature(const SigningProvider& provider, const BaseSignatureCreato
     bool P2SH = false;
     CScript subscript;
 
-    bool fIsP2SH = creator.IsParticlVersion()
+    bool fIsP2SH = creator.IsGlobeVersion()
         ? (whichType == TxoutType::SCRIPTHASH || whichType == TxoutType::SCRIPTHASH256)
         : whichType == TxoutType::SCRIPTHASH;
     if (solved && fIsP2SH)
@@ -510,7 +510,7 @@ bool ProduceSignature(const SigningProvider& provider, const BaseSignatureCreato
         result.push_back(std::vector<unsigned char>(subscript.begin(), subscript.end()));
     }
 
-    if (creator.IsParticlVersion()) {
+    if (creator.IsGlobeVersion()) {
         if (!sigdata.witness) {
             sigdata.scriptWitness.stack = result;
         }
@@ -542,8 +542,8 @@ public:
         return false;
     }
 
-    bool is_particl_tx = false;
-    bool IsParticlVersion() const override { return is_particl_tx; }
+    bool is_globe_tx = false;
+    bool IsGlobeVersion() const override { return is_globe_tx; }
 };
 
 struct Stacks
@@ -577,7 +577,7 @@ SignatureData DataFromTransaction(const CMutableTransaction& tx, unsigned int nI
     // Get signatures
     MutableTransactionSignatureChecker tx_checker(&tx, nIn, amount, MissingDataBehavior::FAIL);
     SignatureExtractorChecker extractor_checker(data, tx_checker);
-    extractor_checker.is_particl_tx = tx.IsParticlVersion();
+    extractor_checker.is_globe_tx = tx.IsGlobeVersion();
     if (VerifyScript(data.scriptSig, scriptPubKey, &data.scriptWitness, STANDARD_SCRIPT_VERIFY_FLAGS, extractor_checker)) {
         data.complete = true;
         return data;
@@ -595,7 +595,7 @@ SignatureData DataFromTransaction(const CMutableTransaction& tx, unsigned int nI
     SigVersion sigversion = SigVersion::BASE;
     CScript next_script = scriptPubKey;
 
-    if (tx.IsParticlVersion()) {
+    if (tx.IsGlobeVersion()) {
         if (script_type == TxoutType::PUBKEY || script_type == TxoutType::PUBKEYHASH || script_type == TxoutType::PUBKEYHASH256) {
             script_type = TxoutType::WITNESS_V0_KEYHASH;
         } else
@@ -724,7 +724,7 @@ bool SignSignature(const SigningProvider &provider, const CTransaction& txFrom, 
     assert(nIn < txTo.vin.size());
     const CTxIn& txin = txTo.vin[nIn];
 
-    if (txTo.IsParticlVersion()) {
+    if (txTo.IsGlobeVersion()) {
         assert(txin.prevout.n < txFrom.vpout.size());
         CScript scriptPubKey;
         std::vector<uint8_t> vamount;
@@ -784,20 +784,20 @@ public:
     }
 };
 
-class DummySignatureCheckerParticl : public DummySignatureChecker
+class DummySignatureCheckerGlobe : public DummySignatureChecker
 {
-// IsParticlVersion() must return true to skip stack evaluation
+// IsGlobeVersion() must return true to skip stack evaluation
 public:
-    DummySignatureCheckerParticl() : DummySignatureChecker() {}
-    bool IsParticlVersion() const override { return true; }
+    DummySignatureCheckerGlobe() : DummySignatureChecker() {}
+    bool IsGlobeVersion() const override { return true; }
 };
-const DummySignatureCheckerParticl DUMMY_CHECKER_PARTICL;
+const DummySignatureCheckerGlobe DUMMY_CHECKER_GLOBE;
 
-class DummySignatureCreatorParticl : public DummySignatureCreator {
+class DummySignatureCreatorGlobe : public DummySignatureCreator {
 public:
-    DummySignatureCreatorParticl() : DummySignatureCreator(33, 32) {}
-    const BaseSignatureChecker& Checker() const override { return DUMMY_CHECKER_PARTICL; }
-    bool IsParticlVersion() const override { return true; }
+    DummySignatureCreatorGlobe() : DummySignatureCreator(33, 32) {}
+    const BaseSignatureChecker& Checker() const override { return DUMMY_CHECKER_GLOBE; }
+    bool IsGlobeVersion() const override { return true; }
 };
 
 template<typename M, typename K, typename V>
@@ -815,7 +815,7 @@ bool LookupHelper(const M& map, const K& key, V& value)
 
 const BaseSignatureCreator& DUMMY_SIGNATURE_CREATOR = DummySignatureCreator(32, 32);
 const BaseSignatureCreator& DUMMY_MAXIMUM_SIGNATURE_CREATOR = DummySignatureCreator(33, 32);
-const BaseSignatureCreator& DUMMY_SIGNATURE_CREATOR_PARTICL = DummySignatureCreatorParticl();
+const BaseSignatureCreator& DUMMY_SIGNATURE_CREATOR_GLOBE = DummySignatureCreatorGlobe();
 
 bool IsSegWitOutput(const SigningProvider& provider, const CScript& script)
 {

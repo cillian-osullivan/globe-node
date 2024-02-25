@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,7 +21,7 @@ CAmount GetMinimumFee(const CWallet& wallet, unsigned int nTxBytes, const CCoinC
 {
     CAmount fee_needed = GetMinimumFeeRate(wallet, coin_control, feeCalc).GetFee(nTxBytes);
 
-    // Particl
+    // Globe
     if (coin_control.fHaveAnonOutputs) {
         fee_needed *= ANON_FEE_MULTIPLIER;
     }

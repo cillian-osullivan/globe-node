@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CONSENSUS_VALIDATION_H
-#define BITCOIN_CONSENSUS_VALIDATION_H
+#ifndef GLOBE_CONSENSUS_VALIDATION_H
+#define GLOBE_CONSENSUS_VALIDATION_H
 
 #include <string>
 #include <version.h>
@@ -165,7 +165,7 @@ public:
     bool fBulletproofsActive = false;
     bool rct_active = false;
     int m_spend_height = 0;
-    bool m_particl_mode = false;
+    bool m_globe_mode = false;
     bool m_skip_rangeproof = false;
     const Consensus::Params *m_consensus_params = nullptr;
     bool m_preserve_state = false; // Don't clear error during ActivateBestChain (debug)
@@ -185,7 +185,7 @@ public:
     CAmount tx_balances[6] = {0};
     std::set<CCmpPubKey> m_setHaveKI;
 
-    void SetStateInfo(int64_t time, int spend_height, const Consensus::Params& consensusParams, bool particl_mode, bool skip_rangeproof, bool in_block=false)
+    void SetStateInfo(int64_t time, int spend_height, const Consensus::Params& consensusParams, bool globe_mode, bool skip_rangeproof, bool in_block=false)
     {
         m_time = time;
         m_in_block = in_block;
@@ -196,7 +196,7 @@ public:
         if (spend_height > -1) {
             m_spend_height = spend_height; // Pass through connectblock->checkblock
         }
-        m_particl_mode = particl_mode;
+        m_globe_mode = globe_mode;
         m_skip_rangeproof = skip_rangeproof;
 
         m_clamp_tx_version = time >= consensusParams.clamp_tx_version_time;
@@ -221,7 +221,7 @@ public:
         rct_active = state_from.rct_active;
         m_spend_height = state_from.m_spend_height;
 
-        m_particl_mode = state_from.m_particl_mode;
+        m_globe_mode = state_from.m_globe_mode;
         m_skip_rangeproof = state_from.m_skip_rangeproof;
 
         m_clamp_tx_version = state_from.m_clamp_tx_version;
@@ -275,4 +275,4 @@ inline int GetWitnessCommitmentIndex(const CBlock& block)
 }
 
 
-#endif // BITCOIN_CONSENSUS_VALIDATION_H
+#endif // GLOBE_CONSENSUS_VALIDATION_H

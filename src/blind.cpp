@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 The Particl Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -213,7 +213,7 @@ bool IsWhitelistedAnonOutput(int64_t anon_index, int64_t time, const Consensus::
     return rct_whitelist.count(anon_index);
 }
 
-namespace particl {
+namespace globe {
 void ECC_Start_Blinding()
 {
     assert(secp256k1_ctx_blind == nullptr);
@@ -249,4 +249,4 @@ void ECC_Stop_Blinding()
         secp256k1_context_destroy(ctx);
     }
 }
-} // namespace particl
+} // namespace globe

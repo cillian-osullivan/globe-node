@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2021 The Bitcoin Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_RPC_UTIL_H
-#define BITCOIN_RPC_UTIL_H
+#ifndef GLOBE_RPC_UTIL_H
+#define GLOBE_RPC_UTIL_H
 
 #include <node/transaction.h>
 #include <outputtype.h>
@@ -39,9 +39,9 @@ extern const std::string UNIX_EPOCH_TIME;
  * Example bech32 addresses for the RPCExamples help documentation. They are intentionally
  * invalid to prevent accidental transactions by users.
  */
-extern const std::string EXAMPLE_ADDRESS_BTC[2];
+extern const std::string EXAMPLE_ADDRESS_GLB[2];
 extern const std::string EXAMPLE_ADDRESS_PART[2];
-#define EXAMPLE_ADDRESS (fParticlMode ? EXAMPLE_ADDRESS_PART : EXAMPLE_ADDRESS_BTC)
+#define EXAMPLE_ADDRESS (fGlobeMode ? EXAMPLE_ADDRESS_PART : EXAMPLE_ADDRESS_GLB)
 
 class FillableSigningProvider;
 class CPubKey;
@@ -394,4 +394,4 @@ private:
 
 void PushTime(UniValue &o, const char *name, int64_t nTime);
 
-#endif // BITCOIN_RPC_UTIL_H
+#endif // GLOBE_RPC_UTIL_H

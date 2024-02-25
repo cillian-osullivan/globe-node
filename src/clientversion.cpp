@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 The Bitcoin Core developers
+// Copyright (c) 2012-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 
 /**
  * Name of client reported in the 'version' message. Report the same name
- * for both bitcoind and bitcoin-qt, to make it harder for attackers to
+ * for both globed and globe-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
 const std::string CLIENT_NAME("Satoshi");
@@ -58,7 +58,7 @@ std::string FormatFullVersion()
 }
 
 /**
- * Format the subversion field according to BIP 14 spec (https://github.com/bitcoin/bips/blob/master/bip-0014.mediawiki)
+ * Format the subversion field according to BIP 14 spec (https://github.com/globe/bips/blob/master/bip-0014.mediawiki)
  */
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)
 {
@@ -79,24 +79,24 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
 
 std::string CopyrightHolders(const std::string& strPrefix)
 {
-    const int BTC_START_YEAR = 2009;
+    const int GLB_START_YEAR = 2009;
     const int PART_START_YEAR = 2017;
 
     std::string sRange = strprintf(" %i-%i ", PART_START_YEAR, COPYRIGHT_YEAR);
     const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS).translated, COPYRIGHT_HOLDERS_SUBSTITUTION);
     std::string strCopyrightHolders = strPrefix + sRange + copyright_devs;
 
-    // Make sure Bitcoin Core copyright is not removed by accident
-    if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
-        sRange = strprintf(" %i-%i ", BTC_START_YEAR, COPYRIGHT_YEAR_BTC);
-        strCopyrightHolders += "\n" + strPrefix + sRange + "The Bitcoin Core developers";
+    // Make sure Globe Core copyright is not removed by accident
+    if (copyright_devs.find("Globe Core") == std::string::npos) {
+        sRange = strprintf(" %i-%i ", GLB_START_YEAR, COPYRIGHT_YEAR_GLB);
+        strCopyrightHolders += "\n" + strPrefix + sRange + "The Globe Core developers";
     }
     return strCopyrightHolders;
 }
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/particl/particl-core>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/globe/globe-core>";
 
     return CopyrightHolders(strprintf(_("Copyright (C)").translated)) + "\n" +
            "\n" +

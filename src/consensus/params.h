@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CONSENSUS_PARAMS_H
-#define BITCOIN_CONSENSUS_PARAMS_H
+#ifndef GLOBE_CONSENSUS_PARAMS_H
+#define GLOBE_CONSENSUS_PARAMS_H
 
 #include <uint256.h>
 
@@ -126,7 +126,7 @@ struct Params {
     int m_frozen_blinded_height = 0;
     /** Maximum value of tainted blinded output that can be spent without being whitelisted */
     int64_t m_max_tainted_value_out = 200LL * 100000000LL /* COIN */;
-    /** Time taproot activates on Particl chain */
+    /** Time taproot activates on Globe chain */
     uint32_t m_taproot_time = 0xffffffff;
 
     /** Avoid circular dependency */
@@ -166,11 +166,11 @@ struct Params {
     /** By default assume that the signatures in ancestors of this block are valid */
     uint256 defaultAssumeValid;
 
-    /** Minimum depth a Particl Anon output is spendable at */
+    /** Minimum depth a Globe Anon output is spendable at */
     int nMinRCTOutputDepth;
 
     /**
-     * If true, witness commitments contain a payload equal to a Bitcoin Script solution
+     * If true, witness commitments contain a payload equal to a Globe Script solution
      * to the signet challenge. See BIP325.
      */
     bool signet_blocks{false};
@@ -196,4 +196,4 @@ struct Params {
 
 } // namespace Consensus
 
-#endif // BITCOIN_CONSENSUS_PARAMS_H
+#endif // GLOBE_CONSENSUS_PARAMS_H

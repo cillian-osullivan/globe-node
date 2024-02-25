@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CHAINPARAMS_H
-#define BITCOIN_CHAINPARAMS_H
+#ifndef GLOBE_CHAINPARAMS_H
+#define GLOBE_CHAINPARAMS_H
 
 #include <chainparamsbase.h>
 #include <consensus/params.h>
@@ -87,7 +87,7 @@ public:
 
 /**
  * CChainParams defines various tweakable parameters of a given instance of the
- * Bitcoin system.
+ * Globe system.
  */
 class CChainParams
 {
@@ -101,8 +101,8 @@ public:
         STEALTH_ADDRESS,
         EXT_KEY_HASH,
         EXT_ACC_HASH,
-        EXT_PUBLIC_KEY_BTC,
-        EXT_SECRET_KEY_BTC,
+        EXT_PUBLIC_KEY_GLB,
+        EXT_SECRET_KEY_GLB,
         PUBKEY_ADDRESS_256,
         SCRIPT_ADDRESS_256,
         STAKE_ONLY_PKADDR,
@@ -260,11 +260,11 @@ void SelectParams(const std::string& chain);
  * Toggle old parameters for unit tests
  */
 void SetOldParams(std::unique_ptr<CChainParams> &params);
-void ResetParams(std::string sNetworkId, bool fParticlModeIn);
+void ResetParams(std::string sNetworkId, bool fGlobeModeIn);
 
 /**
  * mutable handle to regtest params
  */
 CChainParams &RegtestParams();
 
-#endif // BITCOIN_CHAINPARAMS_H
+#endif // GLOBE_CHAINPARAMS_H

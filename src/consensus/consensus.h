@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2018 The Bitcoin Core developers
+// Copyright (c) 2009-2018 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CONSENSUS_CONSENSUS_H
-#define BITCOIN_CONSENSUS_CONSENSUS_H
+#ifndef GLOBE_CONSENSUS_CONSENSUS_H
+#define GLOBE_CONSENSUS_CONSENSUS_H
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@ static const int64_t MAX_BLOCK_SIGOPS_COST = 80000;
 static const int COINBASE_MATURITY = 100;
 
 static const int WITNESS_SCALE_FACTOR_PART = 2;
-static const int WITNESS_SCALE_FACTOR_BTC = 4;
+static const int WITNESS_SCALE_FACTOR_GLB = 4;
 extern int WITNESS_SCALE_FACTOR;
 
 static const size_t MIN_TRANSACTION_WEIGHT = WITNESS_SCALE_FACTOR * 60; // 60 is the lower bound for the size of a valid serialized CTransaction
@@ -33,4 +33,4 @@ static constexpr unsigned int LOCKTIME_VERIFY_SEQUENCE = (1 << 0);
 
 static const size_t MAX_DATA_OUTPUT_SIZE = 512;
 
-#endif // BITCOIN_CONSENSUS_CONSENSUS_H
+#endif // GLOBE_CONSENSUS_CONSENSUS_H

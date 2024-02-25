@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_SYNC_H
-#define BITCOIN_SYNC_H
+#ifndef GLOBE_SYNC_H
+#define GLOBE_SYNC_H
 
 #ifdef DEBUG_LOCKCONTENTION
 #include <logging.h>
@@ -136,7 +136,7 @@ using Mutex = AnnotatedMixin<std::mutex>;
  * eventually move all the mutexes into classes so they are not globally
  * visible.
  *
- * See: https://github.com/bitcoin/bitcoin/pull/20272#issuecomment-720755781
+ * See: https://github.com/globe/globe/pull/20272#issuecomment-720755781
  */
 class GlobalMutex : public Mutex { };
 
@@ -414,4 +414,4 @@ struct SCOPED_LOCKABLE LockAssertion
 };
 #define LOCK_ASSERTION(cs)   LockAssertion PASTE2(lockassertion, __COUNTER__)(#cs, __FILE__, __LINE__, &cs)
 
-#endif // BITCOIN_SYNC_H
+#endif // GLOBE_SYNC_H

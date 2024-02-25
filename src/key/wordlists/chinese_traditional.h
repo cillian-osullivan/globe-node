@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_CHINESE_T_H
 #define _WORDLIST_CHINESE_T_H 1
 
-// https://github.com/bitcoin/bips/blob/master/bip-0039/chinese_traditional.txt
+// https://github.com/globe/bips/blob/master/bip-0039/chinese_traditional.txt
 
 unsigned char chinese_traditional_txt[] = {
   0xe7, 0x9a, 0x84, 0x0a, 0xe4, 0xb8, 0x80, 0x0a, 0xe6, 0x98, 0xaf, 0x0a,

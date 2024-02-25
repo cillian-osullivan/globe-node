@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/globe-config.h>
 #endif
 
 #include <init.h>
@@ -124,7 +124,7 @@
 #include <zmq/zmqrpc.h>
 #endif
 
-// Particl
+// Globe
 #include <insight/insight.h>
 
 
@@ -178,7 +178,7 @@ LRESULT APIENTRY MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 int CreateMessageWindow()
 {
-    // Create a message-only window to intercept WM_CLOSE events from particld
+    // Create a message-only window to intercept WM_CLOSE events from globed
 
     WNDCLASSEX WindowClassEx;
     ZeroMemory(&WindowClassEx, sizeof(WNDCLASSEX));
@@ -225,11 +225,11 @@ static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
 /**
  * The PID file facilities.
  */
-static const char* BITCOIN_PID_FILENAME = "particl.pid";
+static const char* GLOBE_PID_FILENAME = "globe.pid";
 
 static fs::path GetPidFile(const ArgsManager& args)
 {
-    return AbsPathForConfigVal(args.GetPathArg("-pid", BITCOIN_PID_FILENAME));
+    return AbsPathForConfigVal(args.GetPathArg("-pid", GLOBE_PID_FILENAME));
 }
 
 [[nodiscard]] static bool CreatePidFile(const ArgsManager& args)
@@ -275,7 +275,7 @@ static fs::path GetPidFile(const ArgsManager& args)
 bool ShutdownRequestedMainThread()
 {
 #ifdef WIN32
-    // Only particld will create a hidden window to receive messages
+    // Only globed will create a hidden window to receive messages
     while (winHwnd && PeekMessage(&winMsg, 0, 0, 0, PM_REMOVE)) {
         TranslateMessage(&winMsg);
         DispatchMessage(&winMsg);
@@ -524,7 +524,7 @@ void SetupServerArgs(ArgsManager& argsman)
     argsman.AddArg("-blockreconstructionextratxn=<n>", strprintf("Extra transactions to keep in memory for compact block reconstructions (default: %u)", DEFAULT_BLOCK_RECONSTRUCTION_EXTRA_TXN), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-blocksonly", strprintf("Whether to reject transactions from network peers. Automatic broadcast and rebroadcast of any transactions from inbound peers is disabled, unless the peer has the 'forcerelay' permission. RPC transactions are not affected. (default: %u)", DEFAULT_BLOCKSONLY), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-coinstatsindex", strprintf("Maintain coinstats index used by the gettxoutsetinfo RPC (default: %u)", DEFAULT_COINSTATSINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-conf=<file>", strprintf("Specify path to read-only configuration file. Relative paths will be prefixed by datadir location (only useable from command line, not configuration file) (default: %s)", BITCOIN_CONF_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-conf=<file>", strprintf("Specify path to read-only configuration file. Relative paths will be prefixed by datadir location (only useable from command line, not configuration file) (default: %s)", GLOBE_CONF_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-datadir=<dir>", "Specify data directory", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-dbbatchsize", strprintf("Maximum database write batch size in bytes (default: %u)", nDefaultDbBatchSize), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::OPTIONS);
     argsman.AddArg("-dbcache=<n>", strprintf("Maximum database cache size <n> MiB (%d to %d, default: %d). In addition, unused mempool memory is shared for this cache (see -maxmempool).", nMinDbCache, nMaxDbCache, nDefaultDbCache), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
@@ -537,13 +537,13 @@ void SetupServerArgs(ArgsManager& argsman)
     argsman.AddArg("-par=<n>", strprintf("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)",
         -GetNumCores(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-persistmempool", strprintf("Whether to save the mempool on shutdown and load on restart (default: %u)", DEFAULT_PERSIST_MEMPOOL), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-pid=<file>", strprintf("Specify pid file. Relative paths will be prefixed by a net-specific datadir location. (default: %s)", BITCOIN_PID_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-pid=<file>", strprintf("Specify pid file. Relative paths will be prefixed by a net-specific datadir location. (default: %s)", GLOBE_PID_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-prune=<n>", strprintf("Reduce storage requirements by enabling pruning (deleting) of old blocks. This allows the pruneblockchain RPC to be called to delete specific blocks and enables automatic pruning of old blocks if a target size in MiB is provided. This mode is incompatible with -txindex. "
             "Warning: Reverting this setting requires re-downloading the entire blockchain. "
             "(default: 0 = disable pruning blocks, 1 = allow manual pruning via RPC, >=%u = automatically prune block files to stay under the specified target size in MiB)", MIN_DISK_SPACE_FOR_BLOCK_FILES / 1024 / 1024), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-reindex", "Rebuild chain state and block index from the blk*.dat files on disk. This will also rebuild active optional indexes.", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-reindex-chainstate", "Rebuild chain state from the currently indexed blocks. When in pruning mode or if blocks on disk might be corrupted, use full -reindex instead. Deactivate all optional indexes before running this.", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-settings=<file>", strprintf("Specify path to dynamic settings data file. Can be disabled with -nosettings. File is written at runtime and not meant to be edited by users (use %s instead for custom settings). Relative paths will be prefixed by datadir location. (default: %s)", BITCOIN_CONF_FILENAME, BITCOIN_SETTINGS_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-settings=<file>", strprintf("Specify path to dynamic settings data file. Can be disabled with -nosettings. File is written at runtime and not meant to be edited by users (use %s instead for custom settings). Relative paths will be prefixed by datadir location. (default: %s)", GLOBE_CONF_FILENAME, GLOBE_SETTINGS_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 #if HAVE_SYSTEM
     argsman.AddArg("-startupnotify=<cmd>", "Execute command on startup.", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 #endif
@@ -558,16 +558,16 @@ void SetupServerArgs(ArgsManager& argsman)
                  " If <type> is not supplied or if <type> = 1, indexes for all known types are enabled.",
                  ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 
-    // Particl specific
-    argsman.AddArg("-addressindex", strprintf("Maintain a full address index, used to query for the balance, txids and unspent outputs for addresses (default: %u)", particl::DEFAULT_ADDRESSINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-timestampindex", strprintf("Maintain a timestamp index for block hashes, used to query blocks hashes by a range of timestamps (default: %u)", particl::DEFAULT_TIMESTAMPINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-spentindex", strprintf("Maintain a full spent index, used to query the spending txid and input index for an outpoint (default: %u)", particl::DEFAULT_SPENTINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-balancesindex", strprintf("Maintain a balances index per block (default: %u)", particl::DEFAULT_BALANCESINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-csindex", strprintf("Maintain an index of outputs by coldstaking address (default: %u)", particl::DEFAULT_CSINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    // Globe specific
+    argsman.AddArg("-addressindex", strprintf("Maintain a full address index, used to query for the balance, txids and unspent outputs for addresses (default: %u)", globe::DEFAULT_ADDRESSINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-timestampindex", strprintf("Maintain a timestamp index for block hashes, used to query blocks hashes by a range of timestamps (default: %u)", globe::DEFAULT_TIMESTAMPINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-spentindex", strprintf("Maintain a full spent index, used to query the spending txid and input index for an outpoint (default: %u)", globe::DEFAULT_SPENTINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-balancesindex", strprintf("Maintain a balances index per block (default: %u)", globe::DEFAULT_BALANCESINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-csindex", strprintf("Maintain an index of outputs by coldstaking address (default: %u)", globe::DEFAULT_CSINDEX), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-cswhitelist", strprintf("Only index coldstaked outputs with matching stake address. Can be specified multiple times."), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 
-    argsman.AddArg("-dbmaxopenfiles", strprintf("Maximum number of open files parameter passed to level-db (default: %u)", particl::DEFAULT_DB_MAX_OPEN_FILES), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-dbcompression", strprintf("Database compression parameter passed to level-db (default: %s)", particl::DEFAULT_DB_COMPRESSION ? "true" : "false"), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-dbmaxopenfiles", strprintf("Maximum number of open files parameter passed to level-db (default: %u)", globe::DEFAULT_DB_MAX_OPEN_FILES), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-dbcompression", strprintf("Database compression parameter passed to level-db (default: %s)", globe::DEFAULT_DB_COMPRESSION ? "true" : "false"), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 
     argsman.AddArg("-findpeers", "Node will search for peers (default: 1)", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
 
@@ -576,17 +576,17 @@ void SetupServerArgs(ArgsManager& argsman)
     argsman.AddArg("-displaylocaltime", "Display human readable time strings in local timezone (default: false)", ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
     argsman.AddArg("-displayutctime", "Display human readable time strings in UTC (default: false)", ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
     argsman.AddArg("-rebuildrollingindices", "Force rebuild of rolling indices (default: false)", ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
-    argsman.AddArg("-acceptanontxn", strprintf("Relay and mine \"anon\" transactions (default: %u)", particl::DEFAULT_ACCEPT_ANON_TX), ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
-    argsman.AddArg("-acceptblindtxn", strprintf("Relay and mine \"anon\" transactions (default: %u)", particl::DEFAULT_ACCEPT_BLIND_TX), ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
+    argsman.AddArg("-acceptanontxn", strprintf("Relay and mine \"anon\" transactions (default: %u)", globe::DEFAULT_ACCEPT_ANON_TX), ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
+    argsman.AddArg("-acceptblindtxn", strprintf("Relay and mine \"anon\" transactions (default: %u)", globe::DEFAULT_ACCEPT_BLIND_TX), ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
     argsman.AddArg("-checkpeerheight", "Consider peer height for initial-block-download status (default: true)", ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
     argsman.AddArg("-skiprangeproofverify", "Skip verifying rangeproofs when reindexing or importing (default: false)", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
-    argsman.AddArg("-rpccorsdomain=<domain>", "Allow JSON-RPC connections from specified domain (e.g. http://localhost:4200 or \"*\"). This needs to be set if you are using the Particl GUI in a browser.", ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
-    argsman.AddArg("-automaticbans", strprintf("Whether to automatically ban misbehaving nodes. (default: %u)", particl::DEFAULT_AUTOMATIC_BANS), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-rpccorsdomain=<domain>", "Allow JSON-RPC connections from specified domain (e.g. http://localhost:4200 or \"*\"). This needs to be set if you are using the Globe GUI in a browser.", ArgsManager::ALLOW_ANY, OptionsCategory::RPC);
+    argsman.AddArg("-automaticbans", strprintf("Whether to automatically ban misbehaving nodes. (default: %u)", globe::DEFAULT_AUTOMATIC_BANS), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-banscore=<n>", strprintf("Threshold for disconnecting misbehaving peers (default: %u)", DISCOURAGEMENT_THRESHOLD), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
 
     hidden_args.emplace_back("-btcmode");
     hidden_args.emplace_back("-debugdevice");  // Disable to allow usbdevices in regtest mode
-    // end Particl specific
+    // end Globe specific
 
     argsman.AddArg("-addnode=<ip>", strprintf("Add a node to connect to and attempt to keep the connection open (see the addnode RPC help for more info). This option can be specified multiple times to add multiple nodes; connections are limited to %u at a time and are counted separately from the -maxconnections limit.", MAX_ADDNODE_CONNECTIONS), ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::CONNECTION);
     argsman.AddArg("-asmap=<file>", strprintf("Specify asn mapping used for bucketing of the peers (default: %s). Relative paths will be prefixed by the net-specific datadir location.", DEFAULT_ASMAP_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
@@ -614,7 +614,7 @@ void SetupServerArgs(ArgsManager& argsman)
     argsman.AddArg("-peerbloomfilters", strprintf("Support filtering of blocks and transaction with bloom filters (default: %u)", DEFAULT_PEERBLOOMFILTERS), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-peerblockfilters", strprintf("Serve compact block filters to peers per BIP 157 (default: %u)", DEFAULT_PEERBLOCKFILTERS), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     // TODO: remove the sentence "Nodes not using ... incoming connections." once the changes from
-    // https://github.com/bitcoin/bitcoin/pull/23542 have become widespread.
+    // https://github.com/globe/globe/pull/23542 have become widespread.
     argsman.AddArg("-port=<port>", strprintf("Listen for connections on <port>. Nodes not using the default ports (default: %u, testnet: %u, signet: %u, regtest: %u) are unlikely to get incoming connections. Not relevant for I2P (see doc/i2p.md).", defaultChainParams->GetDefaultPort(), testnetChainParams->GetDefaultPort(), signetChainParams->GetDefaultPort(), regtestChainParams->GetDefaultPort()), ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::CONNECTION);
     argsman.AddArg("-proxy=<ip:port>", "Connect through SOCKS5 proxy, set -noproxy to disable (default: disabled)", ArgsManager::ALLOW_ANY | ArgsManager::DISALLOW_ELISION, OptionsCategory::CONNECTION);
     argsman.AddArg("-proxyrandomize", strprintf("Randomize credentials for every proxy connection. This enables Tor stream isolation (default: %u)", DEFAULT_PROXYRANDOMIZE), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
@@ -650,7 +650,7 @@ void SetupServerArgs(ArgsManager& argsman)
 
     g_wallet_init_interface.AddWalletOptions(argsman);
 #ifdef ENABLE_WALLET
-    if (fParticlMode) {
+    if (fGlobeMode) {
         CHDWallet::AddOptions(argsman);
     }
 #endif
@@ -667,7 +667,7 @@ void SetupServerArgs(ArgsManager& argsman)
     argsman.AddArg("-zmqpubrawtxhwm=<n>", strprintf("Set publish raw transaction outbound message high water mark (default: %d)", CZMQAbstractNotifier::DEFAULT_ZMQ_SNDHWM), ArgsManager::ALLOW_ANY, OptionsCategory::ZMQ);
     argsman.AddArg("-zmqpubsequencehwm=<n>", strprintf("Set publish hash sequence message high water mark (default: %d)", CZMQAbstractNotifier::DEFAULT_ZMQ_SNDHWM), ArgsManager::ALLOW_ANY, OptionsCategory::ZMQ);
 
-    // Particl
+    // Globe
     argsman.AddArg("-zmqpubhashwtx=<address>", "Enable publish hash transaction received by wallets in <address>", ArgsManager::ALLOW_ANY, OptionsCategory::ZMQ);
     argsman.AddArg("-zmqpubsmsg=<address>", "Enable publish secure message in <address>", ArgsManager::ALLOW_ANY, OptionsCategory::ZMQ);
     argsman.AddArg("-serverkeyzmq=<secret_key>", "Base64 encoded string of the z85 encoded secret key for CurveZMQ.", ArgsManager::ALLOW_ANY, OptionsCategory::ZMQ);
@@ -685,7 +685,7 @@ void SetupServerArgs(ArgsManager& argsman)
     hidden_args.emplace_back("-zmqpubrawtxhwm=<n>");
     hidden_args.emplace_back("-zmqpubsequencehwm=<n>");
 
-    // Particl
+    // Globe
     hidden_args.emplace_back("-zmqpubhashwtx=<address>");
     hidden_args.emplace_back("-zmqpubsmsg=<address>");
     hidden_args.emplace_back("-serverkeyzmq=<secret_key>");
@@ -761,7 +761,7 @@ void SetupServerArgs(ArgsManager& argsman)
 #endif
 
 #if defined(USE_SYSCALL_SANDBOX)
-    argsman.AddArg("-sandbox=<mode>", "Use the experimental syscall sandbox in the specified mode (-sandbox=log-and-abort or -sandbox=abort). Allow only expected syscalls to be used by bitcoind. Note that this is an experimental new feature that may cause bitcoind to exit or crash unexpectedly: use with caution. In the \"log-and-abort\" mode the invocation of an unexpected syscall results in a debug handler being invoked which will log the incident and terminate the program (without executing the unexpected syscall). In the \"abort\" mode the invocation of an unexpected syscall results in the entire process being killed immediately by the kernel without executing the unexpected syscall.", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-sandbox=<mode>", "Use the experimental syscall sandbox in the specified mode (-sandbox=log-and-abort or -sandbox=abort). Allow only expected syscalls to be used by globed. Note that this is an experimental new feature that may cause globed to exit or crash unexpectedly: use with caution. In the \"log-and-abort\" mode the invocation of an unexpected syscall results in a debug handler being invoked which will log the incident and terminate the program (without executing the unexpected syscall). In the \"abort\" mode the invocation of an unexpected syscall results in the entire process being killed immediately by the kernel without executing the unexpected syscall.", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 #endif // USE_SYSCALL_SANDBOX
 
     // Add the hidden options
@@ -977,12 +977,12 @@ bool AppInitBasicSetup(const ArgsManager& args)
 
 bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandbox)
 {
-    fParticlMode = !args.GetBoolArg("-btcmode", false); // qa tests
-    if (!fParticlMode) {
-        WITNESS_SCALE_FACTOR = WITNESS_SCALE_FACTOR_BTC;
+    fGlobeMode = !args.GetBoolArg("-btcmode", false); // qa tests
+    if (!fGlobeMode) {
+        WITNESS_SCALE_FACTOR = WITNESS_SCALE_FACTOR_GLB;
         if (args.GetChainName() == CBaseChainParams::REGTEST ||
             args.GetChainName() == CBaseChainParams::TESTNET) {
-            ResetParams(args.GetChainName(), fParticlMode);
+            ResetParams(args.GetChainName(), fGlobeMode);
         }
     } else {
         MIN_BLOCKS_TO_KEEP = 1024;
@@ -1058,10 +1058,10 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
         #define CHECK_ARG_FOR_PRUNE_MODE(name, default_mode)                                \
         if (gArgs.GetBoolArg(name, default_mode)) {                                         \
             return InitError(_("Prune mode is incompatible with " name ".")); }
-        CHECK_ARG_FOR_PRUNE_MODE("-addressindex", particl::DEFAULT_ADDRESSINDEX)
-        CHECK_ARG_FOR_PRUNE_MODE("-timestampindex", particl::DEFAULT_TIMESTAMPINDEX)
-        CHECK_ARG_FOR_PRUNE_MODE("-spentindex", particl::DEFAULT_SPENTINDEX)
-        CHECK_ARG_FOR_PRUNE_MODE("-csindex", particl::DEFAULT_CSINDEX)
+        CHECK_ARG_FOR_PRUNE_MODE("-addressindex", globe::DEFAULT_ADDRESSINDEX)
+        CHECK_ARG_FOR_PRUNE_MODE("-timestampindex", globe::DEFAULT_TIMESTAMPINDEX)
+        CHECK_ARG_FOR_PRUNE_MODE("-spentindex", globe::DEFAULT_SPENTINDEX)
+        CHECK_ARG_FOR_PRUNE_MODE("-csindex", globe::DEFAULT_CSINDEX)
         #undef CHECK_ARG_FOR_PRUNE_MODE
     }
 
@@ -1224,7 +1224,7 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
         if (use_syscall_sandbox) {
             SetSyscallSandboxPolicy(SyscallSandboxPolicy::INITIALIZATION);
         }
-        LogPrintf("Experimental syscall sandbox enabled (-sandbox=%s): bitcoind will terminate if an unexpected (not allowlisted) syscall is invoked.\n", sandbox_arg);
+        LogPrintf("Experimental syscall sandbox enabled (-sandbox=%s): globed will terminate if an unexpected (not allowlisted) syscall is invoked.\n", sandbox_arg);
     }
 #endif // USE_SYSCALL_SANDBOX
 
@@ -1233,7 +1233,7 @@ bool AppInitParameterInteraction(const ArgsManager& args, bool use_syscall_sandb
 
 static bool LockDataDirectory(bool probeOnly)
 {
-    // Make sure only a single Bitcoin process is using the data directory.
+    // Make sure only a single Globe process is using the data directory.
     const fs::path& datadir = gArgs.GetDataDirNet();
     if (!DirIsWritable(datadir)) {
         return InitError(strprintf(_("Cannot write to data directory '%s'; check permissions."), fs::PathToString(datadir)));
@@ -1305,9 +1305,9 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     // Warn about relative -datadir path.
     if (args.IsArgSet("-datadir") && !args.GetPathArg("-datadir").is_absolute()) {
         LogPrintf("Warning: relative datadir option '%s' specified, which will be interpreted relative to the " /* Continued */
-                  "current working directory '%s'. This is fragile, because if bitcoin is started in the future "
+                  "current working directory '%s'. This is fragile, because if globe is started in the future "
                   "from a different location, it will be unable to locate the current data files. There could "
-                  "also be data loss if bitcoin is started while in a temporary directory.\n",
+                  "also be data loss if globe is started while in a temporary directory.\n",
                   args.GetArg("-datadir", ""), fs::PathToString(fs::current_path()));
     }
 
@@ -1585,7 +1585,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     // ********************************************************* Step 7: load block chain
 
     fReindex = args.GetBoolArg("-reindex", false);
-    particl::fSkipRangeproof = args.GetBoolArg("-skiprangeproofverify", false);
+    globe::fSkipRangeproof = args.GetBoolArg("-skiprangeproofverify", false);
     bool fReindexChainState = args.GetBoolArg("-reindex-chainstate", false);
 
     fs::path blocksDir = gArgs.GetDataDirNet() / "blocks";
@@ -1607,8 +1607,8 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     LogPrintf("* Using %.1f MiB for chain state database\n", cache_sizes.coins_db * (1.0 / 1024 / 1024));
 
     // block tree db settings
-    cache_sizes.max_open_files = gArgs.GetIntArg("-dbmaxopenfiles", particl::DEFAULT_DB_MAX_OPEN_FILES);
-    cache_sizes.compression = gArgs.GetBoolArg("-dbcompression", particl::DEFAULT_DB_COMPRESSION);
+    cache_sizes.max_open_files = gArgs.GetIntArg("-dbmaxopenfiles", globe::DEFAULT_DB_MAX_OPEN_FILES);
+    cache_sizes.compression = gArgs.GetBoolArg("-dbcompression", globe::DEFAULT_DB_COMPRESSION);
 
     LogPrintf("Block index database configuration:\n");
     LogPrintf("* Using %d max open files\n", cache_sizes.max_open_files);
@@ -1654,10 +1654,10 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         options.check_level = args.GetIntArg("-checklevel", DEFAULT_CHECKLEVEL);
         options.check_interrupt = ShutdownRequested;
         node::ChainstateLoadArgs csl_args;
-        csl_args.address_index = args.GetBoolArg("-addressindex", particl::DEFAULT_ADDRESSINDEX);
-        csl_args.spent_index = args.GetBoolArg("-spentindex", particl::DEFAULT_SPENTINDEX);
-        csl_args.timestamp_index = args.GetBoolArg("-timestampindex", particl::DEFAULT_TIMESTAMPINDEX);
-        csl_args.balances_index = args.GetBoolArg("-balancesindex", particl::DEFAULT_BALANCESINDEX);
+        csl_args.address_index = args.GetBoolArg("-addressindex", globe::DEFAULT_ADDRESSINDEX);
+        csl_args.spent_index = args.GetBoolArg("-spentindex", globe::DEFAULT_SPENTINDEX);
+        csl_args.timestamp_index = args.GetBoolArg("-timestampindex", globe::DEFAULT_TIMESTAMPINDEX);
+        csl_args.balances_index = args.GetBoolArg("-balancesindex", globe::DEFAULT_BALANCESINDEX);
         options.args = csl_args;
 
         options.coins_error_cb = [] {
@@ -1676,7 +1676,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
                 return std::make_tuple(node::ChainstateLoadStatus::FAILURE, _("Error opening block database"));
             }
         };
-        auto [status, error] = catch_exceptions([&]{ options.reindex = options.reindex || node::particl::ShouldAutoReindex(chainman, cache_sizes, options);
+        auto [status, error] = catch_exceptions([&]{ options.reindex = options.reindex || node::globe::ShouldAutoReindex(chainman, cache_sizes, options);
                                                      return LoadChainstate(chainman, cache_sizes, options); });
         if (status == node::ChainstateLoadStatus::SUCCESS) {
             uiInterface.InitMessage(_("Verifying blocks…").translated);
@@ -1739,7 +1739,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
         g_txindex = std::make_unique<TxIndex>(interfaces::MakeChain(node), cache_sizes.tx_index, false, fReindex);
 
-        if (gArgs.GetBoolArg("-csindex", particl::DEFAULT_CSINDEX)) {
+        if (gArgs.GetBoolArg("-csindex", globe::DEFAULT_CSINDEX)) {
             g_txindex->m_cs_index = true;
             for (const auto &addr : gArgs.GetArgs("-cswhitelist")) {
                 g_txindex->AppendCSAddress(addr);
@@ -1846,7 +1846,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     smsgModule.m_node = &node;
     bool start_smsg_without_wallet = true;
-    if (fParticlMode && gArgs.GetBoolArg("-smsg", true)) { // SMSG breaks functional tests with services flag, see version msg
+    if (fGlobeMode && gArgs.GetBoolArg("-smsg", true)) { // SMSG breaks functional tests with services flag, see version msg
 #ifdef ENABLE_WALLET
         if (node.wallet_loader && node.wallet_loader->context()) {
             auto vpwallets = GetWallets(*node.wallet_loader->context());
@@ -1911,7 +1911,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     const auto BadPortWarning = [](const char* prefix, uint16_t port) {
         return strprintf(_("%s request to listen on port %u. This port is considered \"bad\" and "
-                           "thus it is unlikely that any Bitcoin Core peers connect to it. See "
+                           "thus it is unlikely that any Globe Core peers connect to it. See "
                            "doc/p2p-bad-ports.md for details and a full list."),
                          prefix,
                          port);
@@ -2026,7 +2026,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     // ********************************************************* Step 12.5: start staking
 #ifdef ENABLE_WALLET
-    if (fParticlMode) {
+    if (fGlobeMode) {
         // Must recheck num_wallets as smsg may be disabled.
         size_t num_wallets = 0;
         if (node.wallet_loader && node.wallet_loader->context()) {

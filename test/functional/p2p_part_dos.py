@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-# Copyright (c) 2017-2022 The Particl Core developers
+# Copyright (c) 2017-2022 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 import time
 
-from test_framework.test_particl import ParticlTestFramework
+from test_framework.test_globe import GlobeTestFramework
 from test_framework.messages import (
     CBlockHeader,
     CBlock,
@@ -18,7 +18,7 @@ _compactblocks = __import__('p2p_compactblocks')
 TestP2PConn = _compactblocks.TestP2PConn
 
 
-class DoSTest(ParticlTestFramework):
+class DoSTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

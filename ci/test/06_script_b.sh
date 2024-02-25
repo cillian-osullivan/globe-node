@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2018-2021 The Bitcoin Core developers
+# Copyright (c) 2018-2021 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -27,18 +27,18 @@ if [ "$RUN_UNIT_TESTS" = "true" ]; then
 fi
 
 if [ "$RUN_UNIT_TESTS_SEQUENTIAL" = "true" ]; then
-  CI_EXEC "${TEST_RUNNER_ENV}" DIR_UNIT_TEST_DATA="${DIR_UNIT_TEST_DATA}" LD_LIBRARY_PATH="${DEPENDS_DIR}/${HOST}/lib" "${BASE_OUTDIR}/bin/test_particl" --catch_system_errors=no -l test_suite
+  CI_EXEC "${TEST_RUNNER_ENV}" DIR_UNIT_TEST_DATA="${DIR_UNIT_TEST_DATA}" LD_LIBRARY_PATH="${DEPENDS_DIR}/${HOST}/lib" "${BASE_OUTDIR}/bin/test_globe" --catch_system_errors=no -l test_suite
 fi
 
 if [ "$RUN_FUNCTIONAL_TESTS" = "true" ]; then
-  CI_EXEC LD_LIBRARY_PATH="${DEPENDS_DIR}/${HOST}/lib" "${TEST_RUNNER_ENV}" test/functional/test_runner.py --ci "$MAKEJOBS" --tmpdirprefix "${BASE_SCRATCH_DIR}/test_runner/" --ansi --combinedlogslen=4000 --timeout-factor="${TEST_RUNNER_TIMEOUT_FACTOR}" "${TEST_RUNNER_EXTRA}" --quiet --failfast --particl --insight "${TEST_RUNNER_BITCOIN}"
+  CI_EXEC LD_LIBRARY_PATH="${DEPENDS_DIR}/${HOST}/lib" "${TEST_RUNNER_ENV}" test/functional/test_runner.py --ci "$MAKEJOBS" --tmpdirprefix "${BASE_SCRATCH_DIR}/test_runner/" --ansi --combinedlogslen=4000 --timeout-factor="${TEST_RUNNER_TIMEOUT_FACTOR}" "${TEST_RUNNER_EXTRA}" --quiet --failfast --globe --insight "${TEST_RUNNER_GLOBE}"
 fi
 
 if [ "${RUN_TIDY}" = "true" ]; then
   set -eo pipefail
-  export P_CI_DIR="${BASE_BUILD_DIR}/particl-$HOST/src/"
+  export P_CI_DIR="${BASE_BUILD_DIR}/globe-$HOST/src/"
   ( CI_EXEC run-clang-tidy -quiet "${MAKEJOBS}" ) | grep -C5 "error"
-  export P_CI_DIR="${BASE_BUILD_DIR}/particl-$HOST/"
+  export P_CI_DIR="${BASE_BUILD_DIR}/globe-$HOST/"
   CI_EXEC "python3 ${DIR_IWYU}/include-what-you-use/iwyu_tool.py"\
           " src/compat"\
           " src/dbwrapper.cpp"\
@@ -68,7 +68,7 @@ if [ "${RUN_TIDY}" = "true" ]; then
           " src/util/string.cpp"\
           " src/util/syserror.cpp"\
           " src/util/url.cpp"\
-          " -p . ${MAKEJOBS} -- -Xiwyu --cxx17ns -Xiwyu --mapping_file=${BASE_BUILD_DIR}/particl-$HOST/contrib/devtools/iwyu/bitcoin.core.imp"
+          " -p . ${MAKEJOBS} -- -Xiwyu --cxx17ns -Xiwyu --mapping_file=${BASE_BUILD_DIR}/globe-$HOST/contrib/devtools/iwyu/globe.core.imp"
 fi
 
 if [ "$RUN_SECURITY_TESTS" = "true" ]; then

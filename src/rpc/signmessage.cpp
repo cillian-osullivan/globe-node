@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -19,10 +19,10 @@ static RPCHelpMan verifymessage()
     return RPCHelpMan{"verifymessage",
         "Verify a signed message.",
         {
-            {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The particl address to use for the signature."},
+            {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The globe address to use for the signature."},
             {"signature", RPCArg::Type::STR, RPCArg::Optional::NO, "The signature provided by the signer in base 64 encoding (see signmessage)."},
             {"message", RPCArg::Type::STR, RPCArg::Optional::NO, "The message that was signed."},
-            {"message_magic", RPCArg::Type::STR, RPCArg::Default{"Particl Signed Message:\\n"}, "The magic string to use."},
+            {"message_magic", RPCArg::Type::STR, RPCArg::Default{"Globe Signed Message:\\n"}, "The magic string to use."},
         },
         RPCResult{
             RPCResult::Type::BOOL, "", "If the signature is verified or not."
@@ -70,7 +70,7 @@ static RPCHelpMan signmessagewithprivkey()
         {
             {"privkey", RPCArg::Type::STR, RPCArg::Optional::NO, "The private key to sign the message with."},
             {"message", RPCArg::Type::STR, RPCArg::Optional::NO, "The message to create a signature of."},
-            {"message_magic", RPCArg::Type::STR, RPCArg::Default{"Particl Signed Message:\\n"}, "The magic string to use."},
+            {"message_magic", RPCArg::Type::STR, RPCArg::Default{"Globe Signed Message:\\n"}, "The magic string to use."},
         },
         RPCResult{
             RPCResult::Type::STR, "signature", "The signature of the message encoded in base 64"

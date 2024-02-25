@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2015 The Bitcoin Core developers
+// Copyright (c) 2009-2015 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_INSIGHT_SPENTINDEX_H
-#define BITCOIN_INSIGHT_SPENTINDEX_H
+#ifndef GLOBE_INSIGHT_SPENTINDEX_H
+#define GLOBE_INSIGHT_SPENTINDEX_H
 
 #include <uint256.h>
 #include <consensus/amount.h>
@@ -91,4 +91,4 @@ struct CSpentIndexKeyCompare
     }
 };
 
-#endif // BITCOIN_INSIGHT_SPENTINDEX_H
+#endif // GLOBE_INSIGHT_SPENTINDEX_H

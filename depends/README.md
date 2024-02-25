@@ -12,7 +12,7 @@ For example:
 
     make HOST=x86_64-w64-mingw32 -j4
 
-**Bitcoin Core's `configure` script by default will ignore the depends output.** In
+**Globe Core's `configure` script by default will ignore the depends output.** In
 order for it to pick up libraries, tools, and settings from the depends build,
 you must set the `CONFIG_SITE` environment variable to point to a `config.site` settings file.
 In the above example, a file named `depends/x86_64-w64-mingw32/share/config.site` will be
@@ -120,10 +120,10 @@ The following can be set when running make: `make FOO=bar`
   resides in the `depends` directory, and the log file is printed out automatically in case
   of build error. After successful build log files are moved along with package archives
 - `LTO`: Use LTO when building packages.
-- `PROTOBUF`: build protobuf (required for Particl usb device support)
+- `PROTOBUF`: build protobuf (required for Globe usb device support)
 
 If some packages are not built, for example `make NO_WALLET=1`, the appropriate
-options will be passed to bitcoin's configure. In this case, `--disable-wallet`.
+options will be passed to globe's configure. In this case, `--disable-wallet`.
 
 ### Additional targets
 

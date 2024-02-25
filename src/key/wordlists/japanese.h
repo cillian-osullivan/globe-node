@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_JAPANESE_H
 #define _WORDLIST_JAPANESE_H 1
 
-// https://github.com/bitcoin/bips/blob/master/bip-0039/japanese.txt
+// https://github.com/globe/bips/blob/master/bip-0039/japanese.txt
 
 unsigned char japanese_txt[] = {
   0xe3, 0x81, 0x82, 0xe3, 0x81, 0x84, 0xe3, 0x81, 0x93, 0xe3, 0x81, 0x8f,

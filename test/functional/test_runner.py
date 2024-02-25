@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2021 The Bitcoin Core developers
+# Copyright (c) 2014-2021 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Run regression test suite.
@@ -8,7 +8,7 @@ This module calls down into individual test cases via subprocess. It will
 forward all unrecognized arguments onto the individual test scripts.
 
 For a description of arguments recognized by test scripts, see
-`test/functional/test_framework/test_framework.py:BitcoinTestFramework.main`.
+`test/functional/test_framework/test_framework.py:GlobeTestFramework.main`.
 
 """
 
@@ -139,8 +139,8 @@ BASE_SCRIPTS = [
     'feature_fee_estimation.py',
     'interface_zmq.py',
     'rpc_invalid_address_message.py',
-    'interface_bitcoin_cli.py --legacy-wallet',
-    'interface_bitcoin_cli.py --descriptors',
+    'interface_globe_cli.py --legacy-wallet',
+    'interface_globe_cli.py --descriptors',
     'feature_bind_extra.py',
     'mempool_resurrect.py',
     'wallet_txn_doublespend.py --mineblock',
@@ -347,7 +347,7 @@ BASE_SCRIPTS = [
     # Put them in a random line within the section that fits their approximate run-time
 ]
 
-PARTICL_SCRIPTS = [
+GLOBE_SCRIPTS = [
     'p2p_part_fork.py',
     'feature_part_pos.py',
     'feature_part_extkey.py',
@@ -355,7 +355,7 @@ PARTICL_SCRIPTS = [
     'feature_part_blind.py',
     'feature_part_anon.py',
     'feature_part_taproot.py',
-    'wallet_part_particl.py',
+    'wallet_part_globe.py',
     'rpc_part_mnemonic.py',
     'feature_part_smsg.py',
     'feature_part_smsgpaid.py',
@@ -376,7 +376,7 @@ PARTICL_SCRIPTS = [
     'p2p_part_disable_types.py',
 ]
 
-PARTICL_SCRIPTS_EXT = [
+GLOBE_SCRIPTS_EXT = [
     'feature_part_smsg_multiwallet.py',
     'feature_part_smsg_rollingcache.py',
     'feature_part_treasury_fund.py',
@@ -397,7 +397,7 @@ INSIGHT_SCRIPTS = [
 ]
 
 # Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
-ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS + PARTICL_SCRIPTS + INSIGHT_SCRIPTS + PARTICL_SCRIPTS_EXT
+ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS + GLOBE_SCRIPTS + INSIGHT_SCRIPTS + GLOBE_SCRIPTS_EXT
 
 NON_SCRIPTS = [
     # These are python files that live in the functional tests directory, but are not test scripts.
@@ -422,9 +422,9 @@ def main():
     parser.add_argument('--ci', action='store_true', help='Run checks and code that are usually only enabled in a continuous integration environment')
     parser.add_argument('--exclude', '-x', help='specify a comma-separated-list of scripts to exclude.')
     parser.add_argument('--extended', action='store_true', help='run the extended test suite in addition to the basic tests')
-    parser.add_argument('--bitcoin', action='store_true', help='run Bitcoin specific tests')
-    parser.add_argument('--particl', action='store_true', help='run Particl specific tests')
-    parser.add_argument('--particlext', action='store_true', help='run Particl extended tests')
+    parser.add_argument('--globe', action='store_true', help='run Globe specific tests')
+    parser.add_argument('--globe', action='store_true', help='run Globe specific tests')
+    parser.add_argument('--globeext', action='store_true', help='run Globe extended tests')
     parser.add_argument('--insight', action='store_true', help='run Insight specific tests')
     parser.add_argument('--withstdout', action='store_true', help='print stdout when test passed also')
     parser.add_argument('--help', '-h', '-?', action='store_true', help='print help text and exit')
@@ -460,15 +460,15 @@ def main():
     logging.basicConfig(format='%(message)s', level=logging_level)
 
     # Create base test directory
-    tmpdir = "%s/particl_test_runner_P_🏃_%s" % (args.tmpdirprefix, datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    tmpdir = "%s/globe_test_runner_P_🏃_%s" % (args.tmpdirprefix, datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
 
     os.makedirs(tmpdir)
 
     logging.debug("Temporary test directory at %s" % tmpdir)
 
-    enable_bitcoind = config["components"].getboolean("ENABLE_BITCOIND")
+    enable_globed = config["components"].getboolean("ENABLE_GLOBED")
 
-    if not enable_bitcoind:
+    if not enable_globed:
         print("No functional tests to run.")
         print("Rerun ./configure with --with-daemon and then make")
         sys.exit(0)
@@ -505,14 +505,14 @@ def main():
         test_list = []
         if args.extended:
             test_list += EXTENDED_SCRIPTS
-        if args.particl:
-            test_list += PARTICL_SCRIPTS
+        if args.globe:
+            test_list += GLOBE_SCRIPTS
         if args.insight:
             test_list += INSIGHT_SCRIPTS
-        if args.bitcoin:
+        if args.globe:
             test_list += BASE_SCRIPTS
-        if args.particlext:
-            test_list += PARTICL_SCRIPTS_EXT
+        if args.globeext:
+            test_list += GLOBE_SCRIPTS_EXT
 
     # Remove the test cases that the user has explicitly asked to exclude.
     if args.exclude:
@@ -556,17 +556,17 @@ def main():
         combined_logs_len=args.combinedlogslen,
         failfast=args.failfast,
         use_term_control=args.ansi,
-        create_cache=(True if args.bitcoin or (not args.particl and not args.insight) else False)
+        create_cache=(True if args.globe or (not args.globe and not args.insight) else False)
     )
 
 def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=False, args=None, combined_logs_len=0, failfast=False, use_term_control, create_cache=True):
     args = args or []
 
-    # Warn if bitcoind is already running
+    # Warn if globed is already running
     try:
         # pgrep exits with code zero when one or more matching processes found
-        if subprocess.run(["pgrep", "-x", "particld"], stdout=subprocess.DEVNULL).returncode == 0:
-            print("%sWARNING!%s There is already a particld process running on this system. Tests may fail unexpectedly due to resource contention!" % (BOLD[1], BOLD[0]))
+        if subprocess.run(["pgrep", "-x", "globed"], stdout=subprocess.DEVNULL).returncode == 0:
+            print("%sWARNING!%s There is already a globed process running on this system. Tests may fail unexpectedly due to resource contention!" % (BOLD[1], BOLD[0]))
     except OSError:
         # pgrep not supported
         pass
@@ -847,7 +847,7 @@ class RPCCoverage():
     Coverage calculation works by having each test script subprocess write
     coverage files into a particular directory. These files contain the RPC
     commands invoked during testing, as well as a complete listing of RPC
-    commands per `bitcoin-cli help` (`rpc_interface.txt`).
+    commands per `globe-cli help` (`rpc_interface.txt`).
 
     After all tests complete, the commands run are combined and diff'd against
     the complete list to calculate uncovered RPC commands.

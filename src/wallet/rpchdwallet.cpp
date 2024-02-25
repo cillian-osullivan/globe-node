@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -81,11 +81,11 @@ static int ExtractBip32InfoV(const std::vector<uint8_t> &vchKey, UniValue &keyIn
 
     CChainParams::Base58Type typePk = CChainParams::EXT_PUBLIC_KEY;
     if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0) {
-        keyInfo.pushKV("type", "Particl extended secret key");
+        keyInfo.pushKV("type", "Globe extended secret key");
     } else
-    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0) {
-        keyInfo.pushKV("type", "Bitcoin extended secret key");
-        typePk = CChainParams::EXT_PUBLIC_KEY_BTC;
+    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_GLB)[0], 4) == 0) {
+        keyInfo.pushKV("type", "Globe extended secret key");
+        typePk = CChainParams::EXT_PUBLIC_KEY_GLB;
     } else {
         keyInfo.pushKV("type", "Unknown extended secret key");
     }
@@ -102,11 +102,11 @@ static int ExtractBip32InfoV(const std::vector<uint8_t> &vchKey, UniValue &keyIn
 
     CKey key;
     key.Set(&vchKey[46], true);
-    keyInfo.pushKV("privkey", CBitcoinSecret(key).ToString());
+    keyInfo.pushKV("privkey", CGlobeSecret(key).ToString());
     CPubKey pk = key.GetPubKey();
     keyInfo.pushKV("pubkey", HexStr(pk));
     CKeyID id = pk.GetID();
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     addr.Set(id, CChainParams::EXT_KEY_HASH);
     keyInfo.pushKV("id", addr.ToString());
     addr.Set(id);
@@ -124,10 +124,10 @@ static int ExtractBip32InfoP(const std::vector<uint8_t> &vchKey, UniValue &keyIn
     CExtPubKey pk;
 
     if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4) == 0) {
-        keyInfo.pushKV("type", "Particl extended public key");
+        keyInfo.pushKV("type", "Globe extended public key");
     } else
-    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY_BTC)[0], 4) == 0)  {
-        keyInfo.pushKV("type", "Bitcoin extended public key");
+    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY_GLB)[0], 4) == 0)  {
+        keyInfo.pushKV("type", "Globe extended public key");
     } else {
         keyInfo.pushKV("type", "Unknown extended public key");
     }
@@ -142,7 +142,7 @@ static int ExtractBip32InfoP(const std::vector<uint8_t> &vchKey, UniValue &keyIn
     CPubKey key;
     key.Set(&vchKey[45], &vchKey[78]);
     CKeyID id = key.GetID();
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     addr.Set(id, CChainParams::EXT_KEY_HASH);
 
     keyInfo.pushKV("id", addr.ToString());
@@ -176,7 +176,7 @@ static int ExtKeyPathV(const std::string &sPath, const std::vector<uint8_t> &vch
         vkWork = vkOut;
     }
 
-    CBitcoinExtKey ekOut;
+    CGlobeExtKey ekOut;
     ekOut.SetKey(vkOut);
     keyInfo.pushKV("result", ekOut.ToString());
 
@@ -217,7 +217,7 @@ static int ExtKeyPathP(const std::string &sPath, const std::vector<uint8_t> &vch
         pkWork = pkOut;
     }
 
-    CBitcoinExtPubKey ekOut;
+    CGlobeExtPubKey ekOut;
     ekOut.SetKey(pkOut);
     keyInfo.pushKV("result", ekOut.ToString());
 
@@ -272,7 +272,7 @@ static int AccountInfo(CHDWallet *pwallet, CExtKeyAccount *pa, int nShowKeys, bo
         obj.pushKV("encrypted", (sekAccount->nFlags & EAF_IS_CRYPTED) ? "true" : "false");
     }
 
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     addr.Set(pa->idMaster, CChainParams::EXT_KEY_HASH);
     obj.pushKV("root_key_id", addr.ToString());
 
@@ -463,7 +463,7 @@ static int KeyInfo(CHDWallet *pwallet, CKeyID &idMaster, CKeyID &idKey, CStoredE
         obj.pushKV("current_master", "true");
     }
 
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     mvi = sek.mapValue.find(EKVT_ROOT_ID);
     if (mvi != sek.mapValue.end()) {
         CKeyID idRoot;
@@ -491,7 +491,7 @@ static int KeyInfo(CHDWallet *pwallet, CKeyID &idMaster, CKeyID &idKey, CStoredE
         std::string sKey;
         if (sek.kp.IsValidV()) {
             if (fBip44Root) {
-                eKey58.SetKey(sek.kp, CChainParams::EXT_SECRET_KEY_BTC);
+                eKey58.SetKey(sek.kp, CChainParams::EXT_SECRET_KEY_GLB);
             } else {
                 eKey58.SetKeyV(sek.kp);
             }
@@ -505,7 +505,7 @@ static int KeyInfo(CHDWallet *pwallet, CKeyID &idMaster, CKeyID &idKey, CStoredE
 
     if (nShowKeys > 0) {
         if (fBip44Root) {
-            eKey58.SetKey(sek.kp, CChainParams::EXT_PUBLIC_KEY_BTC);
+            eKey58.SetKey(sek.kp, CChainParams::EXT_PUBLIC_KEY_GLB);
         } else {
             eKey58.SetKeyP(sek.kp);
         }
@@ -744,7 +744,7 @@ static int ExtractExtKeyId(const std::string &sInKey, CKeyID &keyId, CChainParam
 {
     CExtKey58 eKey58;
     CExtKeyPair ekp;
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
 
     if (addr.SetString(sInKey)
         && addr.IsValid(prefix)
@@ -826,7 +826,7 @@ void ParseCoinControlOptions(const UniValue &obj, const CHDWallet *pwallet, CCoi
         if (!fHaveScript) {
             CTxDestination dest = DecodeDestination(sChangeAddress);
             if (!IsValidDestination(dest)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "changeAddress must be a valid particl address");
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "changeAddress must be a valid globe address");
             }
             coin_control.destChange = dest;
         }
@@ -1019,7 +1019,7 @@ static RPCHelpMan extkey()
     //   - locked wallets must be able to derive new keys as they receive
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -1043,8 +1043,8 @@ static RPCHelpMan extkey()
         }
     }
 
-    CBitcoinExtKey bvk;
-    CBitcoinExtPubKey bpk;
+    CGlobeExtKey bvk;
+    CGlobeExtPubKey bpk;
     std::vector<uint8_t> vchVersionIn(4);
 
     UniValue result(UniValue::VOBJ);
@@ -1081,13 +1081,13 @@ static RPCHelpMan extkey()
         }
 
         if (memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0
-            || memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0) {
+            || memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_GLB)[0], 4) == 0) {
             if (ExtKeyPathV(sMode, vchOut, keyInfo, sError) != 0) {
                 throw JSONRPCError(RPC_MISC_ERROR, strprintf("ExtKeyPathV failed %s.", sError.c_str()));
             }
         } else
         if (memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4) == 0
-            || memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY_BTC)[0], 4) == 0) {
+            || memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY_GLB)[0], 4) == 0) {
             if (ExtKeyPathP(sMode, vchOut, keyInfo, sError) != 0) {
                 throw JSONRPCError(RPC_MISC_ERROR, strprintf("ExtKeyPathP failed %s.", sError.c_str()));
             }
@@ -1205,19 +1205,19 @@ static RPCHelpMan extkey()
         }
 
         if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)
-            && (eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC) || eKey58.IsValid(CChainParams::EXT_SECRET_KEY))) {
+            && (eKey58.IsValid(CChainParams::EXT_SECRET_KEY_GLB) || eKey58.IsValid(CChainParams::EXT_SECRET_KEY))) {
             throw JSONRPCError(RPC_WALLET_ERROR, "Error: Private keys are disabled for this wallet");
         }
 
         if (fBip44) {
-            if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC)) {
-                throw JSONRPCError(RPC_INVALID_PARAMETER, "Import failed - BIP44 key must begin with a bitcoin secret key prefix.");
+            if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_GLB)) {
+                throw JSONRPCError(RPC_INVALID_PARAMETER, "Import failed - BIP44 key must begin with a globe secret key prefix.");
             }
         } else {
             if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
-                && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC)
+                && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_GLB)
                 && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY)) {
-                throw JSONRPCError(RPC_INVALID_PARAMETER, "Import failed - Key must begin with a particl prefix.");
+                throw JSONRPCError(RPC_INVALID_PARAMETER, "Import failed - Key must begin with a globe prefix.");
             }
         }
 
@@ -1241,7 +1241,7 @@ static RPCHelpMan extkey()
                 throw JSONRPCError(RPC_MISC_ERROR, "TxnCommit failed.");
             }
 
-            CBitcoinAddress addr;
+            CGlobeAddress addr;
             addr.Set(fBip44 ? idDerived : sek.GetID(), CChainParams::EXT_KEY_HASH);
             result.pushKV("result", "Success.");
             result.pushKV("id", addr.ToString());
@@ -1305,7 +1305,7 @@ static RPCHelpMan extkey()
         }
 
         if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)
-            && (eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC) || eKey58.IsValid(CChainParams::EXT_SECRET_KEY))) {
+            && (eKey58.IsValid(CChainParams::EXT_SECRET_KEY_GLB) || eKey58.IsValid(CChainParams::EXT_SECRET_KEY))) {
             throw JSONRPCError(RPC_WALLET_ERROR, "Error: Private keys are disabled for this wallet");
         }
 
@@ -1397,7 +1397,7 @@ static RPCHelpMan extkey()
 
         CKeyID idNewDefault;
         CKeyID idOldDefault = pwallet->idDefaultAccount;
-        CBitcoinAddress addr;
+        CGlobeAddress addr;
 
         if (addr.SetString(sInKey)
             && addr.IsValid(CChainParams::EXT_ACC_HASH)
@@ -1502,7 +1502,7 @@ static RPCHelpMan extkey()
             nParamOffset++;
         }
 
-        CBitcoinAddress addr;
+        CGlobeAddress addr;
 
         CKeyID id;
         if (!addr.SetString(sInKey)) {
@@ -1620,7 +1620,7 @@ static UniValue extkeyimportinternal(const JSONRPCRequest &request, bool fGenesi
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -1718,7 +1718,7 @@ static UniValue extkeyimportinternal(const JSONRPCRequest &request, bool fGenesi
     CExtKeyPair ekp;
     if (eKey58.Set58(sMnemonic.c_str()) == 0) {
         if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
-            && !eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC)) {
+            && !eKey58.IsValid(CChainParams::EXT_SECRET_KEY_GLB)) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Please specify a private extkey or mnemonic phrase.");
         }
 
@@ -1843,7 +1843,7 @@ static UniValue extkeyimportinternal(const JSONRPCRequest &request, bool fGenesi
         }
     }
 
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     addr.Set(idDerived, CChainParams::EXT_KEY_HASH);
     result.pushKV("result", "Success.");
     result.pushKV("master_id", addr.ToString());
@@ -1953,8 +1953,8 @@ static RPCHelpMan extkeyaltversion()
 {
     return RPCHelpMan{"extkeyaltversion",
                 "\nReturns the provided ext_key encoded with alternate version bytes.\n"
-                "If the provided ext_key has a Bitcoin prefix the output will be encoded with a Particl prefix.\n"
-                "If the provided ext_key has a Particl prefix the output will be encoded with a Bitcoin prefix.\n",
+                "If the provided ext_key has a Globe prefix the output will be encoded with a Globe prefix.\n"
+                "If the provided ext_key has a Globe prefix the output will be encoded with a Globe prefix.\n",
                 {
                     {"ext_key", RPCArg::Type::STR, RPCArg::Optional::NO, ""},
                 },
@@ -1974,18 +1974,18 @@ static RPCHelpMan extkeyaltversion()
     }
 
     // TODO: handle testnet keys on main etc
-    if (eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC)) {
+    if (eKey58.IsValid(CChainParams::EXT_SECRET_KEY_GLB)) {
         return eKey58.ToStringVersion(CChainParams::EXT_SECRET_KEY);
     }
     if (eKey58.IsValid(CChainParams::EXT_SECRET_KEY)) {
-        return eKey58.ToStringVersion(CChainParams::EXT_SECRET_KEY_BTC);
+        return eKey58.ToStringVersion(CChainParams::EXT_SECRET_KEY_GLB);
     }
 
-    if (eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC)) {
+    if (eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_GLB)) {
         return eKey58.ToStringVersion(CChainParams::EXT_PUBLIC_KEY);
     }
     if (eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY)) {
-        return eKey58.ToStringVersion(CChainParams::EXT_PUBLIC_KEY_BTC);
+        return eKey58.ToStringVersion(CChainParams::EXT_PUBLIC_KEY_GLB);
     }
 
     throw JSONRPCError(RPC_INVALID_PARAMETER, "Unknown input key version.");
@@ -1997,7 +1997,7 @@ static RPCHelpMan extkeyaltversion()
 static RPCHelpMan getnewextaddress()
 {
         return RPCHelpMan{"getnewextaddress",
-                "\nReturns a new Particl ext address for receiving payments." +
+                "\nReturns a new Globe ext address for receiving payments." +
                 HELP_REQUIRING_PASSPHRASE,
                 {
                     {"label", RPCArg::Type::STR, RPCArg::Default{""}, "If specified the key is added to the address book."},
@@ -2017,7 +2017,7 @@ static RPCHelpMan getnewextaddress()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -2054,8 +2054,8 @@ static RPCHelpMan getnewextaddress()
         throw JSONRPCError(RPC_WALLET_ERROR, "NewExtKeyFromAccount failed.");
     }
 
-    // CBitcoinAddress displays public key only
-    return CBitcoinAddress(MakeExtPubKey(sek->kp), fBech32).ToString();
+    // CGlobeAddress displays public key only
+    return CGlobeAddress(MakeExtPubKey(sek->kp), fBech32).ToString();
 },
     };
 }
@@ -2063,7 +2063,7 @@ static RPCHelpMan getnewextaddress()
 static RPCHelpMan getnewstealthaddress()
 {
         return RPCHelpMan{"getnewstealthaddress",
-                "\nReturns a new Particl stealth address for receiving payments." +
+                "\nReturns a new Globe stealth address for receiving payments." +
                 HELP_REQUIRING_PASSPHRASE,
                 {
                     {"label", RPCArg::Type::STR, RPCArg::Default{""}, "If specified the key is added to the address book."},
@@ -2087,7 +2087,7 @@ static RPCHelpMan getnewstealthaddress()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -2164,7 +2164,7 @@ static RPCHelpMan importstealthaddress()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: Private keys are disabled for this wallet");
@@ -2199,7 +2199,7 @@ static RPCHelpMan importstealthaddress()
     bool fBech32 = request.params.size() > 5 ? request.params[5].get_bool() : false;
 
     std::vector<uint8_t> vchScanSecret, vchSpendSecret;
-    CBitcoinSecret wifScanSecret, wifSpendSecret;
+    CGlobeSecret wifScanSecret, wifSpendSecret;
     CKey skScan, skSpend;
     CPubKey pkSpend;
     if (IsHex(sScanSecret)) {
@@ -2348,12 +2348,12 @@ int ListLooseStealthAddresses(UniValue &arr, const CHDWallet *pwallet, bool fSho
         obj.pushKV("Address", it->ToString(bech32));
 
         if (fShowSecrets) {
-            obj.pushKV("Scan Secret", CBitcoinSecret(it->scan_secret).ToString());
+            obj.pushKV("Scan Secret", CGlobeSecret(it->scan_secret).ToString());
 
             CKeyID sid = it->GetSpendKeyID();
             CKey skSpend;
             if (pwallet->GetKey(sid, skSpend)) {
-                obj.pushKV("Spend Secret", CBitcoinSecret(skSpend).ToString());
+                obj.pushKV("Spend Secret", CGlobeSecret(skSpend).ToString());
             }
         }
 
@@ -2433,7 +2433,7 @@ static RPCHelpMan liststealthaddresses()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     bool fShowSecrets = request.params.size() > 0 ? GetBool(request.params[0]) : false;
 
@@ -2525,14 +2525,14 @@ static RPCHelpMan liststealthaddresses()
             objA.pushKV("Address", sxAddr.ToString(show_in_bech32 || is_v2_address));
 
             if (fShowSecrets) {
-                objA.pushKV("Scan Secret", CBitcoinSecret(aks.skScan).ToString());
+                objA.pushKV("Scan Secret", CGlobeSecret(aks.skScan).ToString());
                 objA.pushKV("scan_public_key", HexStr(aks.pkScan));
                 std::string sSpend;
                 CStoredExtKey *sekAccount = ea->ChainAccount();
                 if (sekAccount && !sekAccount->fLocked) {
                     CKey skSpend;
                     if (ea->GetKey(aks.akSpend, skSpend)) {
-                        sSpend = CBitcoinSecret(skSpend).ToString();
+                        sSpend = CGlobeSecret(skSpend).ToString();
                     } else {
                         sSpend = "Extract failed.";
                     }
@@ -2596,7 +2596,7 @@ static RPCHelpMan reservebalance()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     if (request.params.size() > 0) {
         EnsureWalletIsUnlocked(pwallet);
@@ -2657,7 +2657,7 @@ static RPCHelpMan deriverangekeys()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     // TODO: manage nGenerated, nHGenerated properly
 
@@ -2814,7 +2814,7 @@ static RPCHelpMan deriverangekeys()
         CStoredExtKey sekLoose, sekDB;
         if (!sek) {
             CExtKey58 eKey58;
-            CBitcoinAddress addr;
+            CGlobeAddress addr;
             CKeyID idk;
 
             if (addr.SetString(sInKey)
@@ -2876,9 +2876,9 @@ static RPCHelpMan deriverangekeys()
             CKeyID256 idk256;
             if (f256bit) {
                 idk256 = newKey.GetID256();
-                result.push_back(CBitcoinAddress(idk256).ToString());
+                result.push_back(CGlobeAddress(idk256).ToString());
             } else {
-                result.push_back(CBitcoinAddress(PKHash(idk)).ToString());
+                result.push_back(CGlobeAddress(PKHash(idk)).ToString());
             }
 
             if (fSave) {
@@ -2937,7 +2937,7 @@ static RPCHelpMan clearwallettransactions()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -3052,7 +3052,7 @@ static bool ParseOutput(
     bool                      &watch_only_out
 ) EXCLUSIVE_LOCKS_REQUIRED(pwallet->cs_wallet)
 {
-    CBitcoinAddress addr;
+    CGlobeAddress addr;
     watch_only_out = false;
 
     std::string sKey = strprintf("n%d", o.vout);
@@ -3443,7 +3443,7 @@ static void ParseRecords(
             }
         }
 
-        CBitcoinAddress addr;
+        CGlobeAddress addr;
         CTxDestination  dest;
         bool extracted = ExtractDestination(record.scriptPubKey, dest);
 
@@ -3703,7 +3703,7 @@ static RPCHelpMan filtertransactions()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
@@ -3872,7 +3872,7 @@ static RPCHelpMan filtertransactions()
     if (fWithReward) {
         const auto v = Params().GetTreasuryFundSettings();
         for (const auto &s : v) {
-            CTxDestination dfDest = CBitcoinAddress(s.second.sTreasuryFundAddresses).Get();
+            CTxDestination dfDest = CGlobeAddress(s.second.sTreasuryFundAddresses).Get();
             if (dfDest.index() == DI::_CNoDestination) {
                 continue;
             }
@@ -4049,7 +4049,7 @@ static RPCHelpMan filteraddresses()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
@@ -4168,7 +4168,7 @@ static RPCHelpMan filteraddresses()
             auto &item = *vit;
             UniValue entry(UniValue::VOBJ);
 
-            CBitcoinAddress address(item->first, item->second.fBech32);
+            CGlobeAddress address(item->first, item->second.fBech32);
             entry.pushKV("address", address.ToString());
             entry.pushKV("label", item->second.GetLabel());
             entry.pushKV("owned", item->second.nOwned == 1 ? "true" : "false");
@@ -4185,7 +4185,7 @@ static RPCHelpMan filteraddresses()
                         if (!wdb.ReadExtKeyIndex(index, accId)) {
                             entry.pushKV("root", "error");
                         } else {
-                            CBitcoinAddress addr;
+                            CGlobeAddress addr;
                             addr.Set(accId, CChainParams::EXT_ACC_HASH);
                             std::string sTmp = addr.ToString();
                             entry.pushKV("root", sTmp);
@@ -4230,7 +4230,7 @@ static RPCHelpMan manageaddressbook()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
@@ -4255,7 +4255,7 @@ static RPCHelpMan manageaddressbook()
         fHavePurpose = true;
     }
 
-    CBitcoinAddress address(sAddress);
+    CGlobeAddress address(sAddress);
     CTxDestination dest;
 
     if (address.IsValid()) {
@@ -4264,7 +4264,7 @@ static RPCHelpMan manageaddressbook()
         // Try decode as segwit address
         dest = DecodeDestination(sAddress);
         if (!IsValidDestination(dest)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Particl address");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Globe address");
         }
     }
 
@@ -4406,7 +4406,7 @@ static RPCHelpMan getstakinginfo()
                         {RPCResult::Type::BOOL, "staking", "If this wallet is currently staking"},
                         {RPCResult::Type::STR, "warnings", "Node warnings messages"},
                         {RPCResult::Type::STR_AMOUNT, "percentyearreward", "Current stake reward percentage"},
-                        {RPCResult::Type::STR_AMOUNT, "moneysupply", "The total amount of particl in the network"},
+                        {RPCResult::Type::STR_AMOUNT, "moneysupply", "The total amount of globe in the network"},
                         {RPCResult::Type::STR_AMOUNT, "reserve", /*optional=*/true, "The reserve balance of the wallet in " + CURRENCY_UNIT},
                         {RPCResult::Type::STR_AMOUNT, "wallettreasurydonationpercent", /*optional=*/true, "User set percentage of the block reward ceded to the treasury"},
                         {RPCResult::Type::STR_AMOUNT, "treasurydonationpercent", /*optional=*/true, "Network enforced percentage of the block reward ceded to the treasury"},
@@ -4432,7 +4432,7 @@ static RPCHelpMan getstakinginfo()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
     ChainstateManager *pchainman{nullptr};
     if (pwallet->HaveChain()) {
         pchainman = pwallet->chain().getChainman();
@@ -4563,7 +4563,7 @@ static RPCHelpMan getcoldstakinginfo()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
     if (!pwallet->HaveChain()) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Unable to get chain");
     }
@@ -4615,7 +4615,7 @@ static RPCHelpMan getcoldstakinginfo()
         if (scriptPubKey->IsPayToPublicKeyHash256_CS() || scriptPubKey->IsPayToScriptHash256_CS() || scriptPubKey->IsPayToScriptHash_CS()) {
             // Show output on both the spending and staking wallets
             if (!out.spendable) {
-                if (!particl::ExtractStakingKeyID(*scriptPubKey, keyID) ||
+                if (!globe::ExtractStakingKeyID(*scriptPubKey, keyID) ||
                     !pwallet->HaveKey(keyID)) {
                     continue;
                 }
@@ -4625,7 +4625,7 @@ static RPCHelpMan getcoldstakinginfo()
             continue;
         }
 
-        if (!particl::ExtractStakingKeyID(*scriptPubKey, keyID)) {
+        if (!globe::ExtractStakingKeyID(*scriptPubKey, keyID)) {
             continue;
         }
 
@@ -4640,7 +4640,7 @@ static RPCHelpMan getcoldstakinginfo()
 
     bool fEnabled = false;
     UniValue jsonSettings;
-    CBitcoinAddress addrColdStaking;
+    CGlobeAddress addrColdStaking;
     if (pwallet->GetSetting("changeaddress", jsonSettings) &&
         jsonSettings["coldstakingaddress"].isStr()) {
         std::string sAddress;
@@ -4649,7 +4649,7 @@ static RPCHelpMan getcoldstakinginfo()
             return error("%s: Get coldstakingaddress failed %s.", __func__, e.what());
         }
 
-        addrColdStaking = CBitcoinAddress(sAddress);
+        addrColdStaking = CGlobeAddress(sAddress);
         if (addrColdStaking.IsValid()) {
             fEnabled = true;
         }
@@ -4660,7 +4660,7 @@ static RPCHelpMan getcoldstakinginfo()
         CTxDestination dest = addrColdStaking.Get();
         CExtPubKey kp = std::get<CExtPubKey>(dest);
         CKeyID idk = kp.GetID();
-        CBitcoinAddress addr;
+        CGlobeAddress addr;
         addr.Set(idk, CChainParams::EXT_KEY_HASH);
         obj.pushKV("coldstaking_extkey_id", addr.ToString());
     }
@@ -4687,9 +4687,9 @@ static RPCHelpMan listunspentanon()
                 {
                     {"minconf", RPCArg::Type::NUM, RPCArg::Default{1}, "The minimum confirmations to filter"},
                     {"maxconf", RPCArg::Type::NUM, RPCArg::Default{9999999}, "The maximum confirmations to filter"},
-                    {"addresses", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of particl addresses to filter",
+                    {"addresses", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of globe addresses to filter",
                         {
-                            {"address", RPCArg::Type::STR, RPCArg::Default{""}, "particl address"},
+                            {"address", RPCArg::Type::STR, RPCArg::Default{""}, "globe address"},
                         },
                     },
                     {"include_unsafe", RPCArg::Type::BOOL, RPCArg::Default{true}, "Include outputs that are not safe to spend\n"
@@ -4714,7 +4714,7 @@ static RPCHelpMan listunspentanon()
                         {
                             {RPCResult::Type::STR_HEX, "txid", "the transaction id"},
                             {RPCResult::Type::NUM, "vout", "the vout value"},
-                            {RPCResult::Type::STR, "address", "the particl address"},
+                            {RPCResult::Type::STR, "address", "the globe address"},
                             {RPCResult::Type::STR, "label", /*optional=*/true, "The associated label, or \"\" for the default label"},
                             {RPCResult::Type::STR_AMOUNT, "amount", "the transaction output amount in " + CURRENCY_UNIT},
                             {RPCResult::Type::NUM, "confirmations", "The number of confirmations"},
@@ -4736,7 +4736,7 @@ static RPCHelpMan listunspentanon()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     int nMinDepth = 1;
     if (request.params.size() > 0 && !request.params[0].isNull()) {
@@ -4750,15 +4750,15 @@ static RPCHelpMan listunspentanon()
         nMaxDepth = request.params[1].getInt<int>();
     }
 
-    std::set<CBitcoinAddress> setAddress;
+    std::set<CGlobeAddress> setAddress;
     if (request.params.size() > 2 && !request.params[2].isNull()) {
         RPCTypeCheckArgument(request.params[2], UniValue::VARR);
         UniValue inputs = request.params[2].get_array();
         for (unsigned int idx = 0; idx < inputs.size(); idx++) {
             const UniValue& input = inputs[idx];
-            CBitcoinAddress address(input.get_str());
+            CGlobeAddress address(input.get_str());
             if (!address.IsValidStealthAddress()) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Particl stealth address: ") + input.get_str());
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Globe stealth address: ") + input.get_str());
             }
             if (setAddress.count(address)) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ") + input.get_str());
@@ -4876,7 +4876,7 @@ static RPCHelpMan listunspentanon()
                     if (i != pwallet->m_address_book.end()) {
                         entry.pushKV("label", i->second.GetLabel());
                     }
-                    if (setAddress.size() && !setAddress.count(CBitcoinAddress(CTxDestination(sx)))) {
+                    if (setAddress.size() && !setAddress.count(CGlobeAddress(CTxDestination(sx)))) {
                         continue;
                     }
                 }
@@ -4933,9 +4933,9 @@ static RPCHelpMan listunspentblind()
                 {
                     {"minconf", RPCArg::Type::NUM, RPCArg::Default{1}, "The minimum confirmations to filter"},
                     {"maxconf", RPCArg::Type::NUM, RPCArg::Default{9999999}, "The maximum confirmations to filter"},
-                    {"addresses", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of particl addresses to filter",
+                    {"addresses", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of globe addresses to filter",
                         {
-                            {"address", RPCArg::Type::STR, RPCArg::Default{""}, "particl address"},
+                            {"address", RPCArg::Type::STR, RPCArg::Default{""}, "globe address"},
                         },
                     },
                     {"include_unsafe", RPCArg::Type::BOOL, RPCArg::Default{true}, "Include outputs that are not safe to spend\n"
@@ -4958,7 +4958,7 @@ static RPCHelpMan listunspentblind()
                         {
                             {RPCResult::Type::STR_HEX, "txid", "the transaction id"},
                             {RPCResult::Type::NUM, "vout", "the vout value"},
-                            {RPCResult::Type::STR, "address", "the particl address"},
+                            {RPCResult::Type::STR, "address", "the globe address"},
                             {RPCResult::Type::STR, "stealth_address", /*optional=*/true, "The associated stealth_address the transaction was received on"},
                             {RPCResult::Type::STR, "label", /*optional=*/true, "The associated label, or \"\" for the default label"},
                             {RPCResult::Type::STR, "scriptPubKey", "the script key"},
@@ -4985,7 +4985,7 @@ static RPCHelpMan listunspentblind()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     bool avoid_reuse = pwallet->IsWalletFlagSet(WALLET_FLAG_AVOID_REUSE);
 
@@ -5049,9 +5049,9 @@ static RPCHelpMan listunspentblind()
         UniValue inputs = request.params[2].get_array();
         for (unsigned int idx = 0; idx < inputs.size(); idx++) {
             const UniValue& input = inputs[idx];
-            CBitcoinAddress address(input.get_str());
+            CGlobeAddress address(input.get_str());
             if (!address.IsValidStealthAddress() && !address.IsValid()) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Particl address or stealth address: ")+input.get_str());
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Globe address or stealth address: ")+input.get_str());
             }
             if (setAddress.count(address.Get())) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ")+input.get_str());
@@ -5205,7 +5205,7 @@ static RPCHelpMan getlockedbalances()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
@@ -5304,8 +5304,8 @@ static UniValue SendToInner(const JSONRPCRequest &request, OutputTypes typeIn, O
     const Consensus::Params& consensusParams = Params().GetConsensus();
 
     bool exploit_fix_2_active = GetTime() >= consensusParams.exploit_fix_2_time;
-    bool default_accept_anon = exploit_fix_2_active ? true : particl::DEFAULT_ACCEPT_ANON_TX;
-    bool default_accept_blind = exploit_fix_2_active ? true : particl::DEFAULT_ACCEPT_BLIND_TX;
+    bool default_accept_anon = exploit_fix_2_active ? true : globe::DEFAULT_ACCEPT_ANON_TX;
+    bool default_accept_blind = exploit_fix_2_active ? true : globe::DEFAULT_ACCEPT_BLIND_TX;
     if (!gArgs.GetBoolArg("-acceptanontxn", default_accept_anon) &&
         (typeIn == OUTPUT_RINGCT || typeOut == OUTPUT_RINGCT)) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Disabled output type.");
@@ -5320,7 +5320,7 @@ static UniValue SendToInner(const JSONRPCRequest &request, OutputTypes typeIn, O
 
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
@@ -5362,12 +5362,12 @@ static UniValue SendToInner(const JSONRPCRequest &request, OutputTypes typeIn, O
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Must provide an address.");
         }
 
-        CBitcoinAddress address(sAddress);
+        CGlobeAddress address(sAddress);
         CTxDestination dest;
 
         if (typeOut == OUTPUT_RINGCT
             && !address.IsValidStealthAddress()) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Particl stealth address");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Globe stealth address");
         }
 
         if (address.IsValid() || obj.exists("script")) {
@@ -5376,7 +5376,7 @@ static UniValue SendToInner(const JSONRPCRequest &request, OutputTypes typeIn, O
             // Try decode as segwit address
             dest = DecodeDestination(sAddress);
             if (!IsValidDestination(dest)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Particl address");
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Globe address");
             }
         }
 
@@ -5633,7 +5633,7 @@ static UniValue SendToInner(const JSONRPCRequest &request, OutputTypes typeIn, O
         for (const auto &r : vecSend) {
             if (!r.fChange
                 && r.nAmount != r.nAmountSelected) {
-                std::string sAddr = CBitcoinAddress(r.address).ToString();
+                std::string sAddr = CGlobeAddress(r.address).ToString();
 
                 if (mapChanged.count(sAddr)) {
                     mapChanged[sAddr] += r.nAmount;
@@ -5730,7 +5730,7 @@ static RPCHelpMan sendtypeto()
                         {
                             {"", RPCArg::Type::OBJ, RPCArg::Optional::NO, "",
                                 {
-                                    {"address", RPCArg::Type::STR, RPCArg::Default{""}, "The particl address to send to."},
+                                    {"address", RPCArg::Type::STR, RPCArg::Default{""}, "The globe address to send to."},
                                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Default{""}, "The amount in " + CURRENCY_UNIT + " to send. eg 0.1."},
                                     {"narr", RPCArg::Type::STR, RPCArg::Default{""}, "Up to 24 character narration sent with the transaction."},
                                     {"blindingfactor", RPCArg::Type::STR_HEX, RPCArg::Default{""}, "The blinding factor, 32 bytes and hex encoded."},
@@ -5751,7 +5751,7 @@ static RPCHelpMan sendtypeto()
                     {"test_fee", RPCArg::Type::BOOL, RPCArg::Default{false}, "Only return the fee it would cost to send, txn is discarded."},
                     {"coin_control", RPCArg::Type::OBJ, RPCArg::Default{UniValue::VOBJ}, "",
                         {
-                            {"changeaddress", RPCArg::Type::STR, RPCArg::Default{""}, "The particl address to receive the change"},
+                            {"changeaddress", RPCArg::Type::STR, RPCArg::Default{""}, "The globe address to receive the change"},
                             {"inputs", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of json objects",
                                 {
                                     {"", RPCArg::Type::OBJ, RPCArg::Default{UniValue::VOBJ}, "",
@@ -6059,7 +6059,7 @@ static RPCHelpMan createsignaturewithwallet()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
     ChainstateManager *pchainman{nullptr};
@@ -6157,7 +6157,7 @@ static void traceFrozenPrevout(WalletContext& context, const COutPoint &op_trace
 
     std::vector<std::shared_ptr<CWallet> > wallets = GetWallets(context);
     for (auto &wallet : wallets) {
-        CHDWallet *pwallet = GetParticlWallet(wallet.get());
+        CHDWallet *pwallet = GetGlobeWallet(wallet.get());
         CTransactionRecord rtx;
         {
         LOCK(pwallet->cs_wallet);
@@ -6337,7 +6337,7 @@ static void traceFrozenOutputs(WalletContext& context, UniValue &rv, CAmount min
 
     // Ensure all wallets are unlocked
     for (auto &wallet : wallets) {
-        const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+        const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
         if (pwallet->IsLocked() || pwallet->fUnlockForStakingOnly) {
             throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED,
                 strprintf("Error: Wallet %s is locked, please unlock all loaded wallets for this command.", pwallet->GetDisplayName()));
@@ -6351,7 +6351,7 @@ static void traceFrozenOutputs(WalletContext& context, UniValue &rv, CAmount min
 
     const Consensus::Params &consensusParams = Params().GetConsensus();
     for (auto &wallet : wallets) {
-        CHDWallet *pwallet = GetParticlWallet(wallet.get());
+        CHDWallet *pwallet = GetGlobeWallet(wallet.get());
         LOCK(pwallet->cs_wallet);
 
         CHDWalletDB wdb(pwallet->GetDatabase());
@@ -6444,7 +6444,7 @@ static void traceFrozenOutputs(WalletContext& context, UniValue &rv, CAmount min
 
     // Fill in all known tx outputs, external script needs to know them all to check tx outputs == txinputs
     for (auto &wallet : wallets) {
-        CHDWallet *pwallet = GetParticlWallet(wallet.get());
+        CHDWallet *pwallet = GetGlobeWallet(wallet.get());
         LOCK(pwallet->cs_wallet);
 
         CHDWalletDB wdb(pwallet->GetDatabase());
@@ -6576,7 +6576,7 @@ static RPCHelpMan debugwallet()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
     WalletContext& context = EnsureWalletContext(request.context);
 
     // Make sure the results are valid at least up to the most recent block
@@ -6663,7 +6663,7 @@ static RPCHelpMan debugwallet()
     if (downgrade_wallets) {
         std::vector<std::shared_ptr<CWallet> > wallets = GetWallets(context);
         for (auto &wallet : wallets) {
-            CHDWallet *pw = GetParticlWallet(wallet.get());
+            CHDWallet *pw = GetGlobeWallet(wallet.get());
             pw->Downgrade();
         }
         StartShutdown();
@@ -6833,9 +6833,9 @@ static RPCHelpMan debugwallet()
 
     if (clear_stakes_seen) {
         LOCK(cs_main);
-        particl::mapStakeConflict.clear();
-        particl::mapStakeSeen.clear();
-        particl::listStakeSeen.clear();
+        globe::mapStakeConflict.clear();
+        globe::mapStakeSeen.clear();
+        globe::listStakeSeen.clear();
         return "Cleared stakes seen.";
     }
 
@@ -6928,7 +6928,7 @@ static RPCHelpMan debugwallet()
 
                             UniValue tmp(UniValue::VOBJ);
                             CKeyID idChain = sek->GetID();
-                            CBitcoinAddress addr;
+                            CGlobeAddress addr;
                             addr.Set(idChain, CChainParams::EXT_KEY_HASH);
                             tmp.pushKV("type", "HW device account chain path too long.");
                             tmp.pushKV("chain", addr.ToString());
@@ -6971,7 +6971,7 @@ static RPCHelpMan debugwallet()
                     if (!sea->GetPubKey(idk, pk)) {
                         UniValue tmp(UniValue::VOBJ);
                         tmp.pushKV("position", (int)i);
-                        tmp.pushKV("address", CBitcoinAddress(PKHash(idk)).ToString());
+                        tmp.pushKV("address", CGlobeAddress(PKHash(idk)).ToString());
 
                         if (attempt_repair) {
                             uint32_t nChain;
@@ -7169,7 +7169,7 @@ static RPCHelpMan walletsettings()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
@@ -7271,7 +7271,7 @@ static RPCHelpMan walletsettings()
                 }
 
                 std::string sAddress = json["coldstakingaddress"].get_str();
-                CBitcoinAddress addr(sAddress);
+                CGlobeAddress addr(sAddress);
                 if (!addr.IsValid()) {
                     throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid coldstakingaddress.");
                 }
@@ -7325,7 +7325,7 @@ static RPCHelpMan walletsettings()
                     throw JSONRPCError(RPC_INVALID_PARAMETER, "rewardaddress must be a string.");
                 }
 
-                CBitcoinAddress addr(json["rewardaddress"].get_str());
+                CGlobeAddress addr(json["rewardaddress"].get_str());
                 if (!addr.IsValid() || addr.Get().index() == DI::_CNoDestination) {
                     throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid rewardaddress.");
                 }
@@ -7446,7 +7446,7 @@ static RPCHelpMan transactionblinds()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -7503,9 +7503,9 @@ static RPCHelpMan derivefromstealthaddress()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
-    CBitcoinAddress addr(request.params[0].get_str());
+    CGlobeAddress addr(request.params[0].get_str());
     if (!addr.IsValidStealthAddress()) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Must input a stealthaddress.");
     }
@@ -7585,7 +7585,7 @@ static RPCHelpMan derivefromstealthaddress()
         result.pushKV("ephemeral_privatekey", HexStr(Span<const unsigned char>(sEphem.begin(), 32)));
     }
     if (sSpendR.IsValid()) {
-        result.pushKV("privatekey", CBitcoinSecret(sSpendR).ToString());
+        result.pushKV("privatekey", CGlobeSecret(sSpendR).ToString());
     }
 
     return result;
@@ -7615,7 +7615,7 @@ static RPCHelpMan getkeyimage()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -7679,7 +7679,7 @@ static RPCHelpMan setvote()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -7775,7 +7775,7 @@ static RPCHelpMan votehistory()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
     if (!pwallet->HaveChain()) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Unable to get chain");
     }
@@ -8088,7 +8088,7 @@ static RPCHelpMan createrawparttransaction()
                         {
                             {"", RPCArg::Type::OBJ, RPCArg::Default{UniValue::VOBJ}, "",
                                 {
-                                    {"address", RPCArg::Type::STR, RPCArg::Default{""}, "The particl address."},
+                                    {"address", RPCArg::Type::STR, RPCArg::Default{""}, "The globe address."},
                                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Default{""}, "The numeric value (can be string) in " + CURRENCY_UNIT + " of the output."},
                                     {"data", RPCArg::Type::STR_HEX, RPCArg::Default{""}, "The key is \"data\", the value is hex encoded data."},
                                     {"data_ct_fee", RPCArg::Type::AMOUNT, RPCArg::Default{""}, "If type is \"data\" and output is at index 0, then it will be treated as a CT fee output."},
@@ -8137,7 +8137,7 @@ static RPCHelpMan createrawparttransaction()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -8150,7 +8150,7 @@ static RPCHelpMan createrawparttransaction()
     UniValue outputs = request.params[1].get_array();
 
     CMutableTransaction rawTx;
-    rawTx.nVersion = PARTICL_TXN_VERSION;
+    rawTx.nVersion = GLOBE_TXN_VERSION;
 
 
     if (!request.params[2].isNull()) {
@@ -8468,7 +8468,7 @@ static RPCHelpMan fundrawtransactionfrom()
                                     },
                                 },
                             },
-                            {"changeAddress", RPCArg::Type::STR, RPCArg::Default{""}, "The particl address to receive the change."},
+                            {"changeAddress", RPCArg::Type::STR, RPCArg::Default{""}, "The globe address to receive the change."},
                             {"changepubkey", RPCArg::Type::STR, RPCArg::Default{""}, "The public key to use for the change output if changeAddress isn't set."},
                             {"changePosition", RPCArg::Type::NUM, RPCArg::Default{"random"}, "The index of the change output."},
                             //{"change_type", RPCArg::Type::STR, RPCArg::Default{""}, "The output type to use. Only valid if changeAddress is not specified. Options are \"legacy\", \"p2sh-segwit\", and \"bech32\". Default is set by -changetype."},
@@ -8478,7 +8478,7 @@ static RPCHelpMan fundrawtransactionfrom()
                             {"subtractFeeFromOutputs", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "A json array of integers.\n"
                             "                              The fee will be equally deducted from the amount of each specified output.\n"
                             "                              The outputs are specified by their zero-based index, before any change output is added.\n"
-                            "                              Those recipients will receive less particl than you enter in their corresponding amount field.\n"
+                            "                              Those recipients will receive less globe than you enter in their corresponding amount field.\n"
                             "                              If no outputs are specified here, the sender pays the fee.",
                                 {
                                     {"vout_index", RPCArg::Type::NUM, RPCArg::Default{""}, ""},
@@ -8531,7 +8531,7 @@ static RPCHelpMan fundrawtransactionfrom()
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    CHDWallet *const pwallet = GetParticlWallet(wallet.get());
+    CHDWallet *const pwallet = GetGlobeWallet(wallet.get());
 
     RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VSTR, UniValue::VOBJ, UniValue::VOBJ, UniValue::VOBJ}, true);
 
@@ -8622,7 +8622,7 @@ static RPCHelpMan fundrawtransactionfrom()
 
     // parse hex string from parameter
     CMutableTransaction tx;
-    tx.nVersion = PARTICL_TXN_VERSION;
+    tx.nVersion = GLOBE_TXN_VERSION;
     if (!DecodeHexTx(tx, request.params[1].get_str(), true)) {
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
     }
@@ -9215,7 +9215,7 @@ static RPCHelpMan verifyrawtransaction()
                             {"returndecoded", RPCArg::Type::BOOL, RPCArg::Default{false}, "Return the decoded txn as a json object."},
                             {"checkvalues", RPCArg::Type::BOOL, RPCArg::Default{true}, "Check amounts and amount commitments match up."},
                             {"checkoutputs", RPCArg::Type::BOOL, RPCArg::Default{true}, "Check tx attributes and outputs."},
-                            {"particlmode", RPCArg::Type::BOOL, RPCArg::Default{true}, "Check amounts and amount commitments match up."},
+                            {"globemode", RPCArg::Type::BOOL, RPCArg::Default{true}, "Check amounts and amount commitments match up."},
                             {"spendheight", RPCArg::Type::NUM, RPCArg::Default{"chainheight"}, "Height the tx is spent at, set to current chain height if not provided."},
                         },
                         "options"},
@@ -9258,7 +9258,7 @@ static RPCHelpMan verifyrawtransaction()
     bool return_decoded = false;
     bool check_values = true;
     bool check_outputs = true;
-    bool particl_mode = true;
+    bool globe_mode = true;
     int nSpendHeight = -1;
     int64_t nSpendTime = 0;
 
@@ -9270,7 +9270,7 @@ static RPCHelpMan verifyrawtransaction()
                 {"returndecoded",            UniValueType(UniValue::VBOOL)},
                 {"checkvalues",              UniValueType(UniValue::VBOOL)},
                 {"checkoutputs",             UniValueType(UniValue::VBOOL)},
-                {"particlmode",              UniValueType(UniValue::VBOOL)},
+                {"globemode",              UniValueType(UniValue::VBOOL)},
                 {"spendheight",              UniValueType(UniValue::VNUM)},
             }, true, false);
 
@@ -9283,8 +9283,8 @@ static RPCHelpMan verifyrawtransaction()
         if (options.exists("checkoutputs")) {
             check_outputs = options["checkoutputs"].get_bool();
         }
-        if (options.exists("particlmode")) {
-            particl_mode = options["particlmode"].get_bool();
+        if (options.exists("globemode")) {
+            globe_mode = options["globemode"].get_bool();
         }
         if (options.exists("spendheight")) {
             nSpendHeight = options["spendheight"].getInt<int>();
@@ -9425,7 +9425,7 @@ static RPCHelpMan verifyrawtransaction()
 
      if (check_outputs) {
         TxValidationState state;
-        state.SetStateInfo(nSpendTime, nSpendHeight, consensusParams, particl_mode, false /* skip_rangeproof */);
+        state.SetStateInfo(nSpendTime, nSpendHeight, consensusParams, globe_mode, false /* skip_rangeproof */);
         if (!CheckTransaction(txConst, state)) {
             result.pushKV("outputs_valid", false);
             vErrors.push_back("CheckTransaction: \"" + state.GetRejectReason() + "\"");
@@ -9436,7 +9436,7 @@ static RPCHelpMan verifyrawtransaction()
 
     if (check_values) {
         TxValidationState state;
-        state.SetStateInfo(nSpendTime, nSpendHeight, consensusParams, particl_mode, false /* skip_rangeproof */);
+        state.SetStateInfo(nSpendTime, nSpendHeight, consensusParams, globe_mode, false /* skip_rangeproof */);
         CAmount nFee = 0;
         if (!Consensus::CheckTxInputs(txConst, state, view, nSpendHeight, nFee)) {
             result.pushKV("inputs_valid", false);
@@ -9710,7 +9710,7 @@ static RPCHelpMan rehashblock()
 {
     std::shared_ptr<const CWallet> wallet = GetWalletForJSONRPCRequest(request);
     if (!wallet) return UniValue::VNULL;
-    const CHDWallet *pwallet = GetParticlWallet(wallet.get());
+    const CHDWallet *pwallet = GetGlobeWallet(wallet.get());
 
 
     std::shared_ptr<CBlock> blockptr = std::make_shared<CBlock>();
@@ -9808,8 +9808,8 @@ static RPCHelpMan resendwallettransactions()
 
     std::vector<uint256> txids = pwallet->ResendWalletTransactionsBefore(GetTime());
     UniValue result(UniValue::VARR);
-    if (pwallet->IsParticlWallet()) {
-        CHDWallet *phdw = GetParticlWallet(pwallet.get());
+    if (pwallet->IsGlobeWallet()) {
+        CHDWallet *phdw = GetGlobeWallet(pwallet.get());
         std::vector<uint256> txidsRec;
         txidsRec = phdw->ResendRecordTransactionsBefore(GetTime());
 

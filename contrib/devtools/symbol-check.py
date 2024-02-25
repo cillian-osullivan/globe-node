@@ -43,7 +43,7 @@ MAX_VERSIONS = {
     lief.ELF.ARCH.RISCV:  (2,27),
 },
 'LIBATOMIC': (1,0),
-'V':         (0,5,0),  # xkb (bitcoin-qt only)
+'V':         (0,5,0),  # xkb (globe-qt only)
 'LIBUDEV':   (183,)
 }
 
@@ -79,7 +79,7 @@ ELF_INTERPRETER_NAMES: Dict[lief.ELF.ARCH, Dict[lief.ENDIANNESS, str]] = {
 
 # Allowed NEEDED libraries
 ELF_ALLOWED_LIBRARIES = {
-# bitcoind and bitcoin-qt
+# globed and globe-qt
 'libgcc_s.so.1', # GCC base support
 'libc.so.6', # C library
 'libpthread.so.0', # threading
@@ -93,7 +93,7 @@ ELF_ALLOWED_LIBRARIES = {
 'ld64.so.1', # POWER64 ABIv1 dynamic linker
 'ld64.so.2', # POWER64 ABIv2 dynamic linker
 'ld-linux-riscv64-lp64d.so.1', # 64-bit RISC-V dynamic linker
-# bitcoin-qt only
+# globe-qt only
 'libxcb.so.1', # part of X11
 'libxkbcommon.so.0', # keyboard keymapping
 'libxkbcommon-x11.so.0', # keyboard keymapping
@@ -116,10 +116,10 @@ ELF_ALLOWED_LIBRARIES = {
 }
 
 MACHO_ALLOWED_LIBRARIES = {
-# bitcoind and bitcoin-qt
+# globed and globe-qt
 'libc++.1.dylib', # C++ Standard Library
 'libSystem.B.dylib', # libc, libm, libpthread, libinfo
-# bitcoin-qt only
+# globe-qt only
 'AppKit', # user interface
 'ApplicationServices', # common application tasks.
 'Carbon', # deprecated c back-compat API
@@ -147,7 +147,7 @@ PE_ALLOWED_LIBRARIES = {
 'SHELL32.dll', # shell API
 'USER32.dll', # user interface
 'WS2_32.dll', # sockets
-# bitcoin-qt only
+# globe-qt only
 'dwmapi.dll', # desktop window manager
 'GDI32.dll', # graphics device interface
 'IMM32.dll', # input method editor
@@ -160,7 +160,7 @@ PE_ALLOWED_LIBRARIES = {
 'VERSION.dll', # version checking
 'WINMM.dll', # WinMM audio API
 'WTSAPI32.dll',
-'SETUPAPI.dll', # Particl, usb devices
+'SETUPAPI.dll', # Globe, usb devices
 }
 
 def check_version(max_versions, version, arch) -> bool:

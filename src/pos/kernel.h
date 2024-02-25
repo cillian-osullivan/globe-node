@@ -1,11 +1,11 @@
 // Copyright (c) 2012-2013 The PPCoin developers
 // Copyright (c) 2014 The BlackCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_POS_KERNEL_H
-#define PARTICL_POS_KERNEL_H
+#ifndef GLOBE_POS_KERNEL_H
+#define GLOBE_POS_KERNEL_H
 
 #include <consensus/amount.h>
 #include <sync.h>
@@ -63,4 +63,4 @@ bool CheckCoinStakeTimestamp(int nHeight, int64_t nTimeBlock);
  */
 bool CheckKernel(Chainstate &chain_state, const CBlockIndex *pindexPrev, unsigned int nBits, int64_t nTime, const COutPoint &prevout, int64_t* pBlockTime = nullptr);
 
-#endif // PARTICL_POS_KERNEL_H
+#endif // GLOBE_POS_KERNEL_H

@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_POS_MINER_H
-#define PARTICL_POS_MINER_H
+#ifndef GLOBE_POS_MINER_H
+#define GLOBE_POS_MINER_H
 
 #include <thread>
 #include <threadinterrupt.h>
@@ -51,4 +51,4 @@ bool ThreadStakeMinerStopped();
 
 void ThreadStakeMiner(size_t nThreadID, std::vector<std::shared_ptr<wallet::CWallet>> &vpwallets, size_t nStart, size_t nEnd, ChainstateManager *chainman);
 
-#endif // PARTICL_POS_MINER_H
+#endif // GLOBE_POS_MINER_H

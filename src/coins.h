@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_COINS_H
-#define BITCOIN_COINS_H
+#ifndef GLOBE_COINS_H
+#define GLOBE_COINS_H
 
 #include <compressor.h>
 #include <core_memusage.h>
@@ -24,7 +24,7 @@
 #include <rctindex.h>
 #include <smsg/types.h>
 
-extern bool fParticlMode;
+extern bool fGlobeMode;
 
 /**
  * A UTXO entry.
@@ -45,10 +45,10 @@ public:
     //! at which height this containing transaction was included in the active block chain
     uint32_t nHeight : 31;
 
-    //! type of output (Particl)
+    //! type of output (Globe)
     uint8_t nType = OUTPUT_STANDARD;
 
-    //! commitment used for CT outputs (Particl)
+    //! commitment used for CT outputs (Globe)
     secp256k1_pedersen_commitment commitment;
 
     //! construct a Coin from a CTxOut and height/coinbase information.
@@ -94,7 +94,7 @@ public:
         uint32_t code = nHeight * uint32_t{2} + fCoinBase;
         ::Serialize(s, VARINT(code));
         ::Serialize(s, Using<TxOutCompression>(out));
-        if (!fParticlMode) return;
+        if (!fGlobeMode) return;
         ::Serialize(s, nType);
         if (nType == OUTPUT_CT) {
             s.write(AsBytes(Span{(char*)&commitment.data[0], 33}));
@@ -108,7 +108,7 @@ public:
         nHeight = code >> 1;
         fCoinBase = code & 1;
         ::Unserialize(s, Using<TxOutCompression>(out));
-        if (!fParticlMode) return;
+        if (!fGlobeMode) return;
         ::Unserialize(s, nType);
         if (nType == OUTPUT_CT) {
             s.read(AsWritableBytes(Span{(char*)&commitment.data[0], 33}));
@@ -433,7 +433,7 @@ const Coin& AccessByTxid(const CCoinsViewCache& cache, const uint256& txid);
 /**
  * This is a minimally invasive approach to shutdown on LevelDB read errors from the
  * chainstate, while keeping user interface out of the common library, which is shared
- * between bitcoind, and bitcoin-qt and non-server tools.
+ * between globed, and globe-qt and non-server tools.
  *
  * Writes do not need similar protection, as failure to write is handled by the caller.
 */
@@ -454,4 +454,4 @@ private:
 
 };
 
-#endif // BITCOIN_COINS_H
+#endif // GLOBE_COINS_H

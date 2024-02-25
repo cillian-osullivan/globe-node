@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -706,7 +706,7 @@ bool BlockManager::WriteUndoDataForBlock(const CBlockUndo& blockundo, BlockValid
         if (!FindUndoPos(state, pindex->nFile, _pos, ::GetSerializeSize(blockundo, CLIENT_VERSION) + 40)) {
             return error("ConnectBlock(): FindUndoPos failed");
         }
-        uint256 prev_hash; // Particl genesis block txns are valid
+        uint256 prev_hash; // Globe genesis block txns are valid
         if (pindex->pprev) {
             prev_hash = pindex->pprev->GetBlockHash();
         }
@@ -749,7 +749,7 @@ bool ReadBlockFromDisk(CBlock& block, const FlatFilePos& pos, const Consensus::P
     }
 
     // Check the header
-    if (fParticlMode) {
+    if (fGlobeMode) {
         // Only run CheckProofOfWork for genesis blocks
         if (block.hashPrevBlock.IsNull() &&
             !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams, 0, Params().GetLastImportHeight())) {
@@ -888,7 +888,7 @@ void ThreadImport(ChainstateManager& chainman, std::vector<fs::path> vImportFile
     SetSyscallSandboxPolicy(SyscallSandboxPolicy::INITIALIZATION_LOAD_BLOCKS);
     ScheduleBatchPriority();
 
-    particl::fBusyImporting = true;
+    globe::fBusyImporting = true;
     {
         CImportingNow imp;
 
@@ -947,7 +947,7 @@ void ThreadImport(ChainstateManager& chainman, std::vector<fs::path> vImportFile
             state.m_chainman = &chainman;
             if (!chainstate->ActivateBestChain(state, nullptr)) {
                 LogPrintf("Failed to connect best block (%s)\n", state.ToString());
-                // Particl - Don't exit.  May be missing PoS info for valid blocks.
+                // Globe - Don't exit.  May be missing PoS info for valid blocks.
                 //StartShutdown();
                 //return;
             }
@@ -960,6 +960,6 @@ void ThreadImport(ChainstateManager& chainman, std::vector<fs::path> vImportFile
         }
     } // End scope of CImportingNow
     chainman.ActiveChainstate().LoadMempool(mempool_path);
-    particl::fBusyImporting = false;
+    globe::fBusyImporting = false;
 }
 } // namespace node

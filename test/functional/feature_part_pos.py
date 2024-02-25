@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-# Copyright (c) 2017-2021 The Particl Core developers
+# Copyright (c) 2017-2021 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-from test_framework.test_particl import ParticlTestFramework, isclose
+from test_framework.test_globe import GlobeTestFramework, isclose
 from test_framework.authproxy import JSONRPCException
 from test_framework.script import (
     CScript,
@@ -12,7 +12,7 @@ from test_framework.script import (
 import decimal
 
 
-class PosTest(ParticlTestFramework):
+class PosTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 4

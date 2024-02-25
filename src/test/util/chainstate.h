@@ -1,9 +1,9 @@
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //
-#ifndef BITCOIN_TEST_UTIL_CHAINSTATE_H
-#define BITCOIN_TEST_UTIL_CHAINSTATE_H
+#ifndef GLOBE_TEST_UTIL_CHAINSTATE_H
+#define GLOBE_TEST_UTIL_CHAINSTATE_H
 
 #include <clientversion.h>
 #include <fs.h>
@@ -51,4 +51,4 @@ CreateAndActivateUTXOSnapshot(node::NodeContext& node, const fs::path root, F ma
 }
 
 
-#endif // BITCOIN_TEST_UTIL_CHAINSTATE_H
+#endif // GLOBE_TEST_UTIL_CHAINSTATE_H

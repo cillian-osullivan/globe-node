@@ -1,5 +1,5 @@
 // Copyright (c) 2014 The ShadowCoin developers
-// Copyright (c) 2017-2020 The Particl Core developers
+// Copyright (c) 2017-2020 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -126,7 +126,7 @@ int CStealthAddress::ToRaw(std::vector<uint8_t> &raw) const
 
 std::string CStealthAddress::Encoded(bool fBech32) const
 {
-    return CBitcoinAddress(*this, fBech32).ToString();
+    return CGlobeAddress(*this, fBech32).ToString();
 };
 
 int CStealthAddress::SetScanPubKey(CPubKey pk)
@@ -457,7 +457,7 @@ int PrepareStealthOutput(const CStealthAddress &sx, const std::string &sNarratio
     return 0;
 };
 
-namespace particl {
+namespace globe {
 void ECC_Start_Stealth()
 {
     assert(secp256k1_ctx_stealth == nullptr);
@@ -485,4 +485,4 @@ void ECC_Stop_Stealth()
         secp256k1_context_destroy(ctx);
     }
 }
-} // namespace particl
+} // namespace globe

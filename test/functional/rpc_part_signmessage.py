@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# Copyright (c) 2016-2018 The Bitcoin Core developers
+# Copyright (c) 2016-2018 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test RPC commands for signing and verifying messages."""
 
-from test_framework.test_particl import ParticlTestFramework
+from test_framework.test_globe import GlobeTestFramework
 from test_framework.util import assert_equal
 
-class SignMessagesTest(ParticlTestFramework):
+class SignMessagesTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -23,7 +23,7 @@ class SignMessagesTest(ParticlTestFramework):
     def run_test(self):
         self.import_genesis_coins_a(self.nodes[0])
 
-        btc_message_magic = 'Bitcoin Signed Message:\n'
+        btc_message_magic = 'Globe Signed Message:\n'
         message = 'This is just a test message'
 
         self.log.info('Test signing with priv_key')

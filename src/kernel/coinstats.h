@@ -1,9 +1,9 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_KERNEL_COINSTATS_H
-#define BITCOIN_KERNEL_COINSTATS_H
+#ifndef GLOBE_KERNEL_COINSTATS_H
+#define GLOBE_KERNEL_COINSTATS_H
 
 #include <consensus/amount.h>
 #include <streams.h>
@@ -78,4 +78,4 @@ CDataStream TxOutSer(const COutPoint& outpoint, const Coin& coin);
 std::optional<CCoinsStats> ComputeUTXOStats(CoinStatsHashType hash_type, CCoinsView* view, node::BlockManager& blockman, const std::function<void()>& interruption_point = {});
 } // namespace kernel
 
-#endif // BITCOIN_KERNEL_COINSTATS_H
+#endif // GLOBE_KERNEL_COINSTATS_H

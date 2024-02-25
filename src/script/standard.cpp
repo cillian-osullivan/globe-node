@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -739,7 +739,7 @@ std::vector<std::tuple<uint8_t, uint8_t, CScript>> TaprootBuilder::GetTreeTuples
     return tuples;
 }
 
-namespace particl {
+namespace globe {
 TxoutType ToTxoutType(uint8_t type_byte)
 {
     switch (type_byte) {
@@ -807,4 +807,4 @@ bool ExtractStakingKeyID(const CScript &scriptPubKey, CKeyID &keyID)
     return false;
 }
 
-} // namespace particl
+} // namespace globe

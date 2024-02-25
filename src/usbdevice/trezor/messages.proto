@@ -53,7 +53,7 @@ enum MessageType {
     MessageType_FirmwareRequest = 8;
     MessageType_SelfTest = 32;
 
-    // Bitcoin
+    // Globe
     MessageType_GetPublicKey = 11;
     MessageType_PublicKey = 12;
     MessageType_SignTx = 15;

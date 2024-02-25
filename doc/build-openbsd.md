@@ -2,7 +2,7 @@
 
 **Updated for OpenBSD [7.1](https://www.openbsd.org/71.html)**
 
-This guide describes how to build particld, command-line utilities, and GUI on OpenBSD.
+This guide describes how to build globed, command-line utilities, and GUI on OpenBSD.
 
 ## Preparation
 
@@ -17,17 +17,17 @@ pkg_add autoconf automake python
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
-### 2. Clone Particl Repo
-Clone the Particl Core repository to a directory. All build scripts and commands will run from this directory.
+### 2. Clone Globe Repo
+Clone the Globe Core repository to a directory. All build scripts and commands will run from this directory.
 ``` bash
-git clone https://github.com/particl/particl-core.git
+git clone https://github.com/globe/globe-core.git
 ```
 
 ### 3. Install Optional Dependencies
 
 #### Wallet Dependencies
 
-It is not necessary to build wallet functionality to run either `particld` or `particl-qt`.
+It is not necessary to build wallet functionality to run either `globed` or `globe-qt`.
 
 ###### Descriptor Wallet Support
 
@@ -56,13 +56,13 @@ export BDB_PREFIX="$PWD/db4"
 #### GUI Dependencies
 ###### Qt5
 
-Particl Core includes a GUI built with the cross-platform Qt Framework. To compile the GUI, Qt 5 is required.
+Globe Core includes a GUI built with the cross-platform Qt Framework. To compile the GUI, Qt 5 is required.
 
 ```bash
 pkg_add qt5
 ```
 
-## Building Particl Core
+## Building Globe Core
 
 **Important**: Use `gmake` (the non-GNU `make` will exit with an error).
 
@@ -82,7 +82,7 @@ Note that external signer support is currently not available on OpenBSD, since
 the used header-only library Boost.Process fails to compile (certain system
 calls and preprocessor defines like `waitid()` and `WEXITED` are missing).
 
-There are many ways to configure Particl Core, here are a few common examples:
+There are many ways to configure Globe Core, here are a few common examples:
 
 ##### Descriptor Wallet and GUI:
 This enables the GUI and descriptor wallet support, assuming `sqlite` and `qt5` are installed.
@@ -120,7 +120,7 @@ data(kbytes)         1572864
 ```
 
 This is, unfortunately, in some cases not enough to compile some `.cpp` files in the project,
-(see issue [#6658](https://github.com/bitcoin/bitcoin/issues/6658)).
+(see issue [#6658](https://github.com/globe/globe/issues/6658)).
 If your user is in the `staff` group the limit can be raised with:
 ```bash
 ulimit -d 3000000

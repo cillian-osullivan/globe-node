@@ -1,9 +1,9 @@
-// Copyright (c) 2014-2021 The Bitcoin Core developers
+// Copyright (c) 2014-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/globe-config.h>
 #endif
 
 #include <timedata.h>
@@ -42,17 +42,17 @@ int64_t GetAdjustedTimeInt()
     return GetTime() + GetTimeOffset();
 }
 
-#define BITCOIN_TIMEDATA_MAX_SAMPLES 200
+#define GLOBE_TIMEDATA_MAX_SAMPLES 200
 
 static std::set<CNetAddr> g_sources;
-static CMedianFilter<int64_t> g_time_offsets{BITCOIN_TIMEDATA_MAX_SAMPLES, 0};
+static CMedianFilter<int64_t> g_time_offsets{GLOBE_TIMEDATA_MAX_SAMPLES, 0};
 static bool g_warning_emitted;
 
 void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample)
 {
     LOCK(g_timeoffset_mutex);
     // Ignore duplicates
-    if (g_sources.size() == BITCOIN_TIMEDATA_MAX_SAMPLES)
+    if (g_sources.size() == GLOBE_TIMEDATA_MAX_SAMPLES)
         return;
     if (!g_sources.insert(ip).second)
         return;
@@ -120,6 +120,6 @@ void TestOnlyResetTimeData()
     LOCK(g_timeoffset_mutex);
     nTimeOffset = 0;
     g_sources.clear();
-    g_time_offsets = CMedianFilter<int64_t>{BITCOIN_TIMEDATA_MAX_SAMPLES, 0};
+    g_time_offsets = CMedianFilter<int64_t>{GLOBE_TIMEDATA_MAX_SAMPLES, 0};
     g_warning_emitted = false;
 }

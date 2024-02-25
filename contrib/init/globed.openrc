@@ -1,0 +1,93 @@
+#!/sbin/openrc-run
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/globe/.globe" ]; then
+	GLOBED_DEFAULT_DATADIR="/var/lib/globe/.globe"
+else
+	GLOBED_DEFAULT_DATADIR="/var/lib/globed"
+fi
+
+GLOBED_CONFIGFILE=${GLOBED_CONFIGFILE:-/etc/globe/globe.conf}
+GLOBED_PIDDIR=${GLOBED_PIDDIR:-/var/run/globed}
+GLOBED_PIDFILE=${GLOBED_PIDFILE:-${GLOBED_PIDDIR}/globed.pid}
+GLOBED_DATADIR=${GLOBED_DATADIR:-${GLOBED_DEFAULT_DATADIR}}
+GLOBED_USER=${GLOBED_USER:-${GLOBE_USER:-globe}}
+GLOBED_GROUP=${GLOBED_GROUP:-globe}
+GLOBED_BIN=${GLOBED_BIN:-/usr/bin/globed}
+GLOBED_NICE=${GLOBED_NICE:-${NICELEVEL:-0}}
+GLOBED_OPTS="${GLOBED_OPTS:-${GLOBE_OPTS}}"
+
+name="Globe Core Daemon"
+description="Globe cryptocurrency P2P network daemon"
+
+command="/usr/bin/globed"
+command_args="-pid=\"${GLOBED_PIDFILE}\" \
+		-conf=\"${GLOBED_CONFIGFILE}\" \
+		-datadir=\"${GLOBED_DATADIR}\" \
+		-daemon \
+		${GLOBED_OPTS}"
+
+required_files="${GLOBED_CONFIGFILE}"
+start_stop_daemon_args="-u ${GLOBED_USER} \
+			-N ${GLOBED_NICE} -w 2000"
+pidfile="${GLOBED_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${GLOBED_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${GLOBED_USER}:${GLOBED_GROUP}" \
+	"${GLOBED_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${GLOBED_USER}:${GLOBED_GROUP}" \
+	"${GLOBED_PIDDIR}"
+
+	checkpath -f \
+	-o "${GLOBED_USER}:${GLOBED_GROUP}" \
+	-m 0660 \
+	"${GLOBED_CONFIGFILE}"
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if grep -qs '^rpcuser=' "${GLOBED_CONFIGFILE}" && \
+		! grep -qs '^rpcpassword=' "${GLOBED_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run globed."
+		eerror "The setting must appear in ${GLOBED_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Globe Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

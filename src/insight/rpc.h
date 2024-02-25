@@ -1,12 +1,12 @@
-// Copyright (c) 2018 The Particl Core developers
+// Copyright (c) 2018 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_INSIGHT_RPC_H
-#define PARTICL_INSIGHT_RPC_H
+#ifndef GLOBE_INSIGHT_RPC_H
+#define GLOBE_INSIGHT_RPC_H
 
 class CRPCTable;
 
 void RegisterInsightRPCCommands(CRPCTable &t);
 
-#endif // PARTICL_INSIGHT_RPC_H
+#endif // GLOBE_INSIGHT_RPC_H

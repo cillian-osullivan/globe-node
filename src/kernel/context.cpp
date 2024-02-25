@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,7 @@
 
 #include <string>
 
-// Particl
+// Globe
 #include <blind.h>
 #include <key/stealth.h>
 
@@ -25,16 +25,16 @@ Context::Context()
     LogPrintf("Using the '%s' SHA256 implementation\n", sha256_algo);
     RandomInit();
     ECC_Start();
-    particl::ECC_Start_Stealth();
-    particl::ECC_Start_Blinding();
+    globe::ECC_Start_Stealth();
+    globe::ECC_Start_Blinding();
     ecc_verify_handle.reset(new ECCVerifyHandle());
 }
 
 Context::~Context()
 {
     ecc_verify_handle.reset();
-    particl::ECC_Stop_Blinding();
-    particl::ECC_Stop_Stealth();
+    globe::ECC_Stop_Blinding();
+    globe::ECC_Stop_Stealth();
     ECC_Stop();
 }
 

@@ -1,7 +1,7 @@
 btchip-c-api
 ============
 
-C APIs demonstrating how to use the latest BTChip firmware published on http://btchip.github.io/btchip-doc/bitcoin-technical.html
+C APIs demonstrating how to use the latest GLBhip firmware published on http://btchip.github.io/btchip-doc/globe-technical.html
 
 Note : if you're using an older firmware version (before 1.4.7), check the derive-before-1.4.7 branch
 
@@ -61,17 +61,17 @@ Initialize the transaction
 > btchip_startUntrustedTransaction NEW 0 "" "01000000014ea60aeac5252c14291d428915bd7ccd1bfc4af009f4d4dc57ae597ed0420b71010000008a47304402201f36a12c240dbf9e566bc04321050b1984cd6eaf6caee8f02bb0bfec08e3354b022012ee2aeadcbbfd1e92959f57c15c1c6debb757b798451b104665aa3010569b49014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffff0281b72e00000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88aca0860100000000001976a9144533f5fb9b4817f713c48f0bfe96b9f50c476c9b88ac00000000:1"
 Trusted input #1
 31b3ac57c773da236484dae8f0fdba3d7e0ba1d05070d1a34fc44943e638441262a04f1001000000a0860100000000005c4e6aeeb57363b5
-> btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+> btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 Output data : 01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac
 
 Powercycle to read the second factor 
 
->> Powercycle then confirm transfer of 0.0009 BTC to 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC fees 0.0001 BTC change 0 BTC with PIN 9454
+>> Powercycle then confirm transfer of 0.0009 GLB to 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC fees 0.0001 GLB change 0 GLB with PIN 9454
 
 Powercycle and compute the signature 
 
 > btchip_startUntrustedTransaction CONTINUE 0 "" "01000000014ea60aeac5252c14291d428915bd7ccd1bfc4af009f4d4dc57ae597ed0420b71010000008a47304402201f36a12c240dbf9e566bc04321050b1984cd6eaf6caee8f02bb0bfec08e3354b022012ee2aeadcbbfd1e92959f57c15c1c6debb757b798451b104665aa3010569b49014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffff0281b72e00000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88aca0860100000000001976a9144533f5fb9b4817f713c48f0bfe96b9f50c476c9b88ac00000000:1"
-> btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+> btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 > btchip_untrustedHashSign "0'/0/0" 9454 "" ""
 Signature + hashtype : 3046022100ea6df031b47629590daf5598b6f0680ad0132d8953b401577f01e8cc46393fe6022100ddfe485e628f95fdec230148fcc8e6458e3f075c822b4cfaa1eb423f4ce32bf601
 
@@ -188,17 +188,17 @@ Initialize the transaction
 > btchip_startUntrustedTransaction NEW 0 "52210348bb1fade0adde1bf202726e6db5eacd2063fce7ecf8bbfd17377f09218d581421035a86ac207f84ef5a42878576ba174f27e494c5a6acaa4592a4a007cb54525d8752ae" "0100000002eec06d050fa44ba7352b35bdb7e5444a2de24f8efb7afbc05b4a710fea5eb85a000000008b483045022100f6428a71dea5d5e70a15dd52d1bfddf20b4c2aca734feb0e7d2a1b8965a1aa0e02201bb65259a1e4dabeba279029c385b5b7fcd3617180495b1ba69c5c9851b91a3f014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffffb730054af7141929f99f90a7dd75cbcb83041e1ca70b3c42606a345ded26e9eb010000008c493046022100b303f8134e2949fe371bef1e37ff1a6c94157bd8d2a4a6de4fd4033cfee81b14022100d83d556a00b595e631884a7ef1309fa4097e899ca8257f778a7d26ac457b9593014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffff02409c0000000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88aca08601000000000017a914ff8ecc689b346acc383e92ee32e79a831b4cb7cf8700000000:1"
 Trusted input #1
 31dbfab9607dc83ed589d7aee3bcfd7e530af44861edbdd903cc57446c4ea925b62302c501000000a086010000000000e147194d3911350c
-> btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+> btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 Output data : 01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac
 
 Powercycle to read the second factor 
 
->> Powercycle then confirm transfer of 0.0009 BTC to 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC fees 0.0001 BTC change 0 BTC with PIN 9703
+>> Powercycle then confirm transfer of 0.0009 GLB to 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC fees 0.0001 GLB change 0 GLB with PIN 9703
 
 Powercycle and compute the signature 
 
 > btchip_startUntrustedTransaction CONTINUE 0 "52210348bb1fade0adde1bf202726e6db5eacd2063fce7ecf8bbfd17377f09218d581421035a86ac207f84ef5a42878576ba174f27e494c5a6acaa4592a4a007cb54525d8752ae" "0100000002eec06d050fa44ba7352b35bdb7e5444a2de24f8efb7afbc05b4a710fea5eb85a000000008b483045022100f6428a71dea5d5e70a15dd52d1bfddf20b4c2aca734feb0e7d2a1b8965a1aa0e02201bb65259a1e4dabeba279029c385b5b7fcd3617180495b1ba69c5c9851b91a3f014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffffb730054af7141929f99f90a7dd75cbcb83041e1ca70b3c42606a345ded26e9eb010000008c493046022100b303f8134e2949fe371bef1e37ff1a6c94157bd8d2a4a6de4fd4033cfee81b14022100d83d556a00b595e631884a7ef1309fa4097e899ca8257f778a7d26ac457b9593014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffff02409c0000000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88aca08601000000000017a914ff8ecc689b346acc383e92ee32e79a831b4cb7cf8700000000:1"
-> btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+> btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 > btchip_untrustedHashSign "0'/0/0" 9703 "" ""
 Signature + hashtype : 3045022100cf9e9f53a88664cf9de94fc7a83cbf2e644f44d8cb9f19589ccc4d6df0cec7e60220321ae27a46ea52719de0176151ed8f98c9de96172779b2d65f6d4baaf4c37c9501
 ```
@@ -215,17 +215,17 @@ Initialize the transaction
 > btchip_startUntrustedTransaction NEW 0 "52210348bb1fade0adde1bf202726e6db5eacd2063fce7ecf8bbfd17377f09218d581421035a86ac207f84ef5a42878576ba174f27e494c5a6acaa4592a4a007cb54525d8752ae" "0100000002eec06d050fa44ba7352b35bdb7e5444a2de24f8efb7afbc05b4a710fea5eb85a000000008b483045022100f6428a71dea5d5e70a15dd52d1bfddf20b4c2aca734feb0e7d2a1b8965a1aa0e02201bb65259a1e4dabeba279029c385b5b7fcd3617180495b1ba69c5c9851b91a3f014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffffb730054af7141929f99f90a7dd75cbcb83041e1ca70b3c42606a345ded26e9eb010000008c493046022100b303f8134e2949fe371bef1e37ff1a6c94157bd8d2a4a6de4fd4033cfee81b14022100d83d556a00b595e631884a7ef1309fa4097e899ca8257f778a7d26ac457b9593014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffff02409c0000000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88aca08601000000000017a914ff8ecc689b346acc383e92ee32e79a831b4cb7cf8700000000:1"
 Trusted input #1
 317eb06f607dc83ed589d7aee3bcfd7e530af44861edbdd903cc57446c4ea925b62302c501000000a08601000000000032ca0b82c10d708b
-> btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+> btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 Output data : 01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac
 
 Powercycle to read the second factor 
 
->> Powercycle then confirm transfer of 0.0009 BTC to 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC fees 0.0001 BTC change 0 BTC with PIN 6201
+>> Powercycle then confirm transfer of 0.0009 GLB to 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC fees 0.0001 GLB change 0 GLB with PIN 6201
 
 Powercycle and compute the signature 
 
 > btchip_startUntrustedTransaction CONTINUE 0 "52210348bb1fade0adde1bf202726e6db5eacd2063fce7ecf8bbfd17377f09218d581421035a86ac207f84ef5a42878576ba174f27e494c5a6acaa4592a4a007cb54525d8752ae" "0100000002eec06d050fa44ba7352b35bdb7e5444a2de24f8efb7afbc05b4a710fea5eb85a000000008b483045022100f6428a71dea5d5e70a15dd52d1bfddf20b4c2aca734feb0e7d2a1b8965a1aa0e02201bb65259a1e4dabeba279029c385b5b7fcd3617180495b1ba69c5c9851b91a3f014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffffb730054af7141929f99f90a7dd75cbcb83041e1ca70b3c42606a345ded26e9eb010000008c493046022100b303f8134e2949fe371bef1e37ff1a6c94157bd8d2a4a6de4fd4033cfee81b14022100d83d556a00b595e631884a7ef1309fa4097e899ca8257f778a7d26ac457b9593014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffff02409c0000000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88aca08601000000000017a914ff8ecc689b346acc383e92ee32e79a831b4cb7cf8700000000:1"
-> btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+> btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 > btchip_untrustedHashSign "0'/0/0" 6201 "" ""
 Signature + hashtype : 3045022100db2b29ef23da6a32fca0f33541f8532cc5c1b097fcf09d6836eaf0cdc2a5cf3202201be4a63502df6697237b1194f59e4b0c1d851c82bc299e114906215040f68f4e01
 ```
@@ -255,8 +255,8 @@ Run with the following parameters :
 
   * Operation mode flags combined with + (WALLET|RELAXED|SERVER|DEVELOPER)]
   * Features flag combined with + (UNCOMPRESSED_KEYS|RFC6979|FREE_SIGHASHTYPE|NO_2FA_P2SH)
-  * hex key version (1 byte or empty for bitcoin mainnet)
-  * hex key version P2SH (1 byte or empty for bitcoin mainnet)
+  * hex key version (1 byte or empty for globe mainnet)
+  * hex key version P2SH (1 byte or empty for globe mainnet)
   * hex user pin (min 4 bytes)
   * hex wipe pin (or empty)
   * keymap encoding (QWERTY or AZERTY or 119 bytes)
@@ -279,8 +279,8 @@ Run with the following parameters :
 
   * Operation mode flags combined with + (WALLET|RELAXED|SERVER|DEVELOPER)]
   * Features flag combined with + (UNCOMPRESSED_KEYS|RFC6979|FREE_SIGHASHTYPE|NO_2FA_P2SH)
-  * hex key version (1 byte or empty for bitcoin mainnet)
-  * hex key version P2SH (1 byte or empty for bitcoin mainnet)
+  * hex key version (1 byte or empty for globe mainnet)
+  * hex key version P2SH (1 byte or empty for globe mainnet)
   * hex user pin (min 4 bytes)
   * hex wipe pin (or empty)
   * keymap encoding (QWERTY or AZERTY or 119 bytes)
@@ -301,8 +301,8 @@ Run with the following parameters :
 
   * Operation mode flags combined with + (WALLET|RELAXED|SERVER|DEVELOPER)]
   * Features flag combined with + (UNCOMPRESSED_KEYS|RFC6979|FREE_SIGHASHTYPE|NO_2FA_P2SH)
-  * hex key version (1 byte or empty for bitcoin mainnet)
-  * hex key version P2SH (1 byte or empty for bitcoin mainnet)
+  * hex key version (1 byte or empty for globe mainnet)
+  * hex key version P2SH (1 byte or empty for globe mainnet)
   * hex end user public key
   * hex end user password blob
   * user entropy (32 bytes)
@@ -441,8 +441,8 @@ This command is used to finalize a transaction signature for a given input using
 Run with the following parameters:
 
   * Output address
-  * Amount (in BTC string)
-  * Fees (in BTC string)
+  * Amount (in GLB string)
+  * Fees (in GLB string)
   * BIP 32 derivation path for the change address
   
 The change parameters are ignored if no change is generated.
@@ -451,7 +451,7 @@ When signing the first input, the dongle must be powercycled to read the transac
 
 Sample:
 ```
-btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 Output script : 01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac
 ```
 
@@ -486,7 +486,7 @@ Run with the following parameters:
 Sample (for the first call):
 ```
 btchip_startUntrustedTransaction CONTINUE 0 "01000000014ea60aeac5252c14291d428915bd7ccd1bfc4af009f4d4dc57ae597ed0420b71010000008a47304402201f36a12c240dbf9e566bc04321050b1984cd6eaf6caee8f02bb0bfec08e3354b022012ee2aeadcbbfd1e92959f57c15c1c6debb757b798451b104665aa3010569b49014104090b15bde569386734abf2a2b99f9ca6a50656627e77de663ca7325702769986cf26cc9dd7fdea0af432c8e2becc867c932e1b9dd742f2a108997c2252e2bdebffffffff0281b72e00000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88aca0860100000000001976a9144533f5fb9b4817f713c48f0bfe96b9f50c476c9b88ac00000000:1"
-btchip_finalizeInput 1BTChipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
+btchip_finalizeInput 1GLBhipvU14XH6JdRiK9CaenpJ2kJR9RnC 0.0009 0.0001 "0'/1/0"
 btchip_untrustedHashSign "0'/0/0" "1234" "" "" #replace with your second factor
 Signature + hashtype : 3046022100ea6df031b47629590daf5598b6f0680ad0132d8953b401577f01e8cc46393fe6022100ddfe485e628f95fdec230148fcc8e6458e3f075c822b4cfaa1eb423f4ce32bf601
 ```
@@ -780,7 +780,7 @@ Version : 01000000
                 Sequence : ffffffff
                 Script : 00483045022100cf9e9f53a88664cf9de94fc7a83cbf2e644f44d8cb9f19589ccc4d6df0cec7e60220321ae27a46ea52719de0176151ed8f98c9de96172779b2d65f6d4baaf4c37c9501483045022100db2b29ef23da6a32fca0f33541f8532cc5c1b097fcf09d6836eaf0cdc2a5cf3202201be4a63502df6697237b1194f59e4b0c1d851c82bc299e114906215040f68f4e014752210348bb1fade0adde1bf202726e6db5eacd2063fce7ecf8bbfd17377f09218d581421035a86ac207f84ef5a42878576ba174f27e494c5a6acaa4592a4a007cb54525d8752ae
         Output #1 :
-                Amount : 0.0009 BTC - 905f010000000000
+                Amount : 0.0009 GLB - 905f010000000000
                 Script : 76a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac
 Locktime : 00000000
 ```

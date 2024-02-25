@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -155,8 +155,8 @@ CoinsResult AvailableCoins(const CWallet& wallet,
 
     CoinsResult result;
 
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK(phdw->cs_wallet); // LockAssertion
         return phdw->AvailableCoins(coinControl, feerate, nMinimumAmount, nMaximumAmount, nMinimumSumAmount, nMaximumCount);
     }
@@ -356,8 +356,8 @@ const CTxOut& FindNonChangeParentOutput(const CWallet& wallet, const COutPoint& 
 std::map<CTxDestination, std::vector<COutput>> ListCoins(const CWallet& wallet)
 {
     AssertLockHeld(wallet.cs_wallet);
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK(phdw->cs_wallet); // LockAssertion
         return phdw->ListCoins();
     }
@@ -543,8 +543,8 @@ std::optional<SelectionResult> ChooseSelectionResult(const CWallet& wallet, cons
 
 std::optional<SelectionResult> SelectCoins(const CWallet& wallet, CoinsResult& available_coins, const CAmount& nTargetValue, const CCoinControl& coin_control, const CoinSelectionParams& coin_selection_params)
 {
-    if (wallet.IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK(phdw->cs_wallet); // LockAssertion
         return phdw->SelectCoins(available_coins.All(), nTargetValue, coin_control, coin_selection_params);
     }
@@ -796,8 +796,8 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     CAmount nFeeRet;
     int nChangePosInOut = change_pos;
 
-    if (wallet.IsParticlWallet()) {
-        CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        CHDWallet *phdw = GetGlobeWallet(&wallet);
 
         bilingual_str error; // possible error str
         FeeCalculation feeCalc;
@@ -1122,8 +1122,8 @@ util::Result<CreatedTransactionResult> CreateTransaction(
 
 bool FundTransaction(CWallet& wallet, CMutableTransaction& tx, CAmount& nFeeRet, int& nChangePosInOut, bilingual_str& error, bool lockUnspents, const std::set<int>& setSubtractFeeFromOutputs, CCoinControl coinControl)
 {
-    if (wallet.IsParticlWallet()) {
-        CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (wallet.IsGlobeWallet()) {
+        CHDWallet *phdw = GetGlobeWallet(&wallet);
         return phdw->FundTransaction(tx, nFeeRet, nChangePosInOut, error, lockUnspents, setSubtractFeeFromOutputs, coinControl);
     }
     std::vector<CRecipient> vecSend;

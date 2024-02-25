@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -111,7 +111,7 @@ static void ListRecord(const CHDWallet *phdw, const uint256 &hash, const CTransa
         }
 
         std::string account;
-        CBitcoinAddress addr;
+        CGlobeAddress addr;
         CTxDestination dest;
         if (ExtractDestination(r.scriptPubKey, dest) && !r.scriptPubKey.IsUnspendable()) {
             addr.Set(dest);
@@ -651,11 +651,11 @@ static void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, int nM
                 entry.pushKV("involvesWatchonly", true);
             }
 
-            if (wallet.IsParticlWallet() &&
+            if (wallet.IsGlobeWallet() &&
                 r.destination.index() == DI::_PKHash) {
                 CStealthAddress sx;
                 CKeyID idK = ToKeyID(std::get<PKHash>(r.destination));
-                if (GetParticlWallet(&wallet)->GetStealthLinked(idK, sx)) {
+                if (GetGlobeWallet(&wallet)->GetStealthLinked(idK, sx)) {
                     entry.pushKV("stealth_address", sx.Encoded());
                 }
             }
@@ -665,7 +665,7 @@ static void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, int nM
                 entry.pushKV("coldstake_address", EncodeDestination(r.destStake));
             }
             const CScript *ps = nullptr;
-            if (wallet.IsParticlWallet()) {
+            if (wallet.IsGlobeWallet()) {
                 ps = wtx.tx->vpout.at(r.vout)->GetPScriptPubKey();
             } else {
                 ps = &wtx.tx->vout.at(r.vout).scriptPubKey;
@@ -679,7 +679,7 @@ static void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, int nM
                 } else if (wallet.IsTxImmatureCoinBase(wtx)) {
                     entry.pushKV("category", "immature");
                 } else {
-                    entry.pushKV("category", (fParticlMode ? "coinbase" : "generate"));
+                    entry.pushKV("category", (fGlobeMode ? "coinbase" : "generate"));
                 }
             } else {
                 entry.pushKV("category", "receive");
@@ -798,7 +798,7 @@ RPCHelpMan listtransactions()
                         {RPCResult::Type::OBJ, "", "", Cat(Cat<std::vector<RPCResult>>(
                         {
                             {RPCResult::Type::BOOL, "involvesWatchonly", /*optional=*/true, "Only returns true if imported addresses were involved in transaction."},
-                            {RPCResult::Type::STR, "address", /*optional=*/true, "The particl address of the transaction (not returned if the output does not have an address, e.g. OP_RETURN null data)."},
+                            {RPCResult::Type::STR, "address", /*optional=*/true, "The globe address of the transaction (not returned if the output does not have an address, e.g. OP_RETURN null data)."},
                             {RPCResult::Type::STR, "stealth_address", /*optional=*/true, "The stealth address the transaction was received on."},
                             {RPCResult::Type::STR, "coldstake_address", /*optional=*/true, "The address the transaction is staking on."},
                             {RPCResult::Type::STR, "type", /*optional=*/true, "anon/blind/standard."},
@@ -889,8 +889,8 @@ RPCHelpMan listtransactions()
         result.push_back(ret[i]);
     }
 
-    if (pwallet->IsParticlWallet()) {
-        const CHDWallet *phdw = GetParticlWallet(pwallet.get());
+    if (pwallet->IsGlobeWallet()) {
+        const CHDWallet *phdw = GetGlobeWallet(pwallet.get());
         LOCK(phdw->cs_wallet);
         const RtxOrdered_t &txOrdered = phdw->rtxOrdered;
 
@@ -957,7 +957,7 @@ RPCHelpMan listsinceblock()
                             {RPCResult::Type::OBJ, "", "", Cat(Cat<std::vector<RPCResult>>(
                             {
                                 {RPCResult::Type::BOOL, "involvesWatchonly", /*optional=*/true, "Only returns true if imported addresses were involved in transaction."},
-                                {RPCResult::Type::STR, "address", /*optional=*/true, "The particl address of the transaction (not returned if the output does not have an address, e.g. OP_RETURN null data)."},
+                                {RPCResult::Type::STR, "address", /*optional=*/true, "The globe address of the transaction (not returned if the output does not have an address, e.g. OP_RETURN null data)."},
                                 {RPCResult::Type::STR, "account", /*optional=*/true, "Alias of label."},
                                 {RPCResult::Type::STR, "stealth_address", /*optional=*/true, "The stealth address the transaction was received on."},
                                 {RPCResult::Type::STR, "coldstake_address", /*optional=*/true, "The address the transaction is staking on."},
@@ -1047,8 +1047,8 @@ RPCHelpMan listsinceblock()
         }
     }
 
-    if (IsParticlWallet(&wallet)) {
-        const CHDWallet *phdw = GetParticlWallet(&wallet);
+    if (IsGlobeWallet(&wallet)) {
+        const CHDWallet *phdw = GetGlobeWallet(&wallet);
         LOCK_ASSERTION(phdw->cs_wallet);
 
         for (const auto &ri : phdw->mapRecords) {
@@ -1076,8 +1076,8 @@ RPCHelpMan listsinceblock()
                 // even negative confirmation ones, hence the big negative.
                 ListTransactions(wallet, it->second, -100000000, true, removed, filter, nullptr /* filter_label */, /*include_change=*/include_change);
             } else
-            if (IsParticlWallet(&wallet)) {
-                const CHDWallet *phdw = GetParticlWallet(&wallet);
+            if (IsGlobeWallet(&wallet)) {
+                const CHDWallet *phdw = GetGlobeWallet(&wallet);
                 LOCK_ASSERTION(phdw->cs_wallet);
                 const uint256 &txhash = tx->GetHash();
                 MapRecords_t::const_iterator mri = phdw->mapRecords.find(txhash);
@@ -1130,7 +1130,7 @@ RPCHelpMan gettransaction()
                             {RPCResult::Type::OBJ, "", "",
                             {
                                 {RPCResult::Type::BOOL, "involvesWatchonly", /*optional=*/true, "Only returns true if imported addresses were involved in transaction."},
-                                {RPCResult::Type::STR, "address", /*optional=*/true, "The particl address involved in the transaction."},
+                                {RPCResult::Type::STR, "address", /*optional=*/true, "The globe address involved in the transaction."},
                                 {RPCResult::Type::STR, "stealth_address", /*optional=*/true, "The stealth address the transaction was received on."},
                                 {RPCResult::Type::STR, "coldstake_address", /*optional=*/true, "The address the transaction is staking on."},
                                 {RPCResult::Type::STR, "category", "The transaction category.\n"
@@ -1203,8 +1203,8 @@ const std::shared_ptr<const CWallet> pwallet = GetWalletForJSONRPCRequest(reques
     UniValue entry(UniValue::VOBJ);
     auto it = pwallet->mapWallet.find(hash);
     if (it == pwallet->mapWallet.end()) {
-        if (IsParticlWallet(pwallet.get())) {
-            const CHDWallet *phdw = GetParticlWallet(pwallet.get());
+        if (IsGlobeWallet(pwallet.get())) {
+            const CHDWallet *phdw = GetGlobeWallet(pwallet.get());
             LOCK_ASSERTION(phdw->cs_wallet);
             MapRecords_t::const_iterator mri = phdw->mapRecords.find(hash);
 
@@ -1278,10 +1278,10 @@ RPCHelpMan abandontransaction()
     uint256 hash(ParseHashV(request.params[0], "txid"));
 
     if (!pwallet->mapWallet.count(hash)) {
-        if (!IsParticlWallet(pwallet.get())) {
+        if (!IsGlobeWallet(pwallet.get())) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
         }
-        CHDWallet *phdw = GetParticlWallet(pwallet.get());
+        CHDWallet *phdw = GetGlobeWallet(pwallet.get());
         if (!phdw) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
         }

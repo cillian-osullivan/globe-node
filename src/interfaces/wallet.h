@@ -1,9 +1,9 @@
-// Copyright (c) 2018-2021 The Bitcoin Core developers
+// Copyright (c) 2018-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_INTERFACES_WALLET_H
-#define BITCOIN_INTERFACES_WALLET_H
+#ifndef GLOBE_INTERFACES_WALLET_H
+#define GLOBE_INTERFACES_WALLET_H
 
 #include <consensus/amount.h>
 #include <fs.h>
@@ -25,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-// Particl
+// Globe
 #include <key/stealth.h>               // For CTxDestination
 #include <key/extkey.h>                // For CTxDestination
 #include <wallet/hdwallettypes.h>
@@ -327,14 +327,14 @@ public:
     using ReservedBalanceChangedFn = std::function<void(CAmount value)>;
     virtual std::unique_ptr<Handler> handleReservedBalanceChanged(ReservedBalanceChangedFn fn) = 0;
 
-    virtual bool IsParticlWallet() = 0;
+    virtual bool IsGlobeWallet() = 0;
     virtual CAmount getReserveBalance() = 0;
     virtual bool ownDestination(const CTxDestination &dest) = 0;
     virtual bool isUnlockForStakingOnlySet() = 0;
 
     virtual CAmount getAvailableAnonBalance(const wallet::CCoinControl& coin_control) = 0;
     virtual CAmount getAvailableBlindBalance(const wallet::CCoinControl& coin_control) = 0;
-    virtual CHDWallet *getParticlWallet() = 0;
+    virtual CHDWallet *getGlobeWallet() = 0;
     virtual bool setReserveBalance(CAmount nValue) = 0;
     virtual void lockWallet() = 0;
     virtual bool setUnlockedForStaking() = 0;
@@ -443,7 +443,7 @@ struct WalletTx
     bool is_coinbase;
     bool operator<(const WalletTx& a) const { return GetHash() < a.GetHash(); }
 
-    // Particl
+    // Globe
     uint256 GetHash() const { return is_record ? irtx->first : tx->GetHash(); }
     bool is_coinstake{false};
     bool is_record{false};
@@ -484,4 +484,4 @@ std::unique_ptr<WalletLoader> MakeWalletLoader(Chain& chain, ArgsManager& args);
 
 } // namespace interfaces
 
-#endif // BITCOIN_INTERFACES_WALLET_H
+#endif // GLOBE_INTERFACES_WALLET_H

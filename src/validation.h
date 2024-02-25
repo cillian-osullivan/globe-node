@@ -1,13 +1,13 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VALIDATION_H
-#define BITCOIN_VALIDATION_H
+#ifndef GLOBE_VALIDATION_H
+#define GLOBE_VALIDATION_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/globe-config.h>
 #endif
 
 #include <arith_uint256.h>
@@ -124,7 +124,7 @@ void StartScriptCheckWorkerThreads(int threads_num);
 /** Stop all of the script checking worker threads */
 void StopScriptCheckWorkerThreads();
 
-namespace particl {
+namespace globe {
 static constexpr size_t MAX_STAKE_SEEN_SIZE = 1000;
 inline int64_t FutureDrift(int64_t nTime) { return nTime + 15; } // FutureDriftV2
 
@@ -155,7 +155,7 @@ void UpdateNumBlocksOfPeers(ChainstateManager &chainman, NodeId id, int height);
 extern bool fVerifyingDB;
 extern std::atomic_bool fSkipRangeproof;
 extern std::atomic_bool fBusyImporting;
-} // namespace particl
+} // namespace globe
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams);
 
@@ -1165,7 +1165,7 @@ bool FlushView(CCoinsViewCache *view, BlockValidationState& state, Chainstate &c
 
 
 
-namespace particl {
+namespace globe {
 
 class StakeConflict
 {
@@ -1211,6 +1211,6 @@ bool RebuildRollingIndices(ChainstateManager &chainman, CTxMemPool *mempool);
 int64_t GetSmsgFeeRate(ChainstateManager &chainman, const CBlockIndex *pindex, bool reduce_height=false) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 uint32_t GetSmsgDifficulty(ChainstateManager &chainman, uint64_t time, bool verify=false) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
-} // namespace particl
+} // namespace globe
 
-#endif // BITCOIN_VALIDATION_H
+#endif // GLOBE_VALIDATION_H

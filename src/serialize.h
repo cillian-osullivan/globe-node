@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_SERIALIZE_H
-#define BITCOIN_SERIALIZE_H
+#ifndef GLOBE_SERIALIZE_H
+#define GLOBE_SERIALIZE_H
 
 #include <compat/endian.h>
 
@@ -1184,4 +1184,4 @@ inline std::vector<uint8_t> VectorFromAmount(int64_t amount)
 
 } // namespace part
 
-#endif // BITCOIN_SERIALIZE_H
+#endif // GLOBE_SERIALIZE_H

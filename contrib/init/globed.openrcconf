@@ -1,0 +1,33 @@
+# /etc/conf.d/globed: config file for /etc/init.d/globed
+
+# Config file location
+#GLOBED_CONFIGFILE="/etc/globe/globe.conf"
+
+# What directory to write pidfile to?  (created and owned by $GLOBED_USER)
+#GLOBED_PIDDIR="/var/run/globed"
+
+# What filename to give the pidfile
+#GLOBED_PIDFILE="${GLOBED_PIDDIR}/globed.pid"
+
+# Where to write globed data (be mindful that the blockchain is large)
+#GLOBED_DATADIR="/var/lib/globed"
+
+# User and group to own globed process
+#GLOBED_USER="globe"
+#GLOBED_GROUP="globe"
+
+# Path to globed executable
+#GLOBED_BIN="/usr/bin/globed"
+
+# Nice value to run globed under
+#GLOBED_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#GLOBED_OPTS=""
+
+# The timeout in seconds OpenRC will wait for globed to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+GLOBED_SIGTERM_TIMEOUT=600

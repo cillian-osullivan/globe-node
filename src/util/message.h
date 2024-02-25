@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_MESSAGE_H
-#define BITCOIN_UTIL_MESSAGE_H
+#ifndef GLOBE_UTIL_MESSAGE_H
+#define GLOBE_UTIL_MESSAGE_H
 
 #include <uint256.h>
 
@@ -13,7 +13,7 @@
 class CKey;
 
 extern const std::string MESSAGE_MAGIC;
-extern const std::string BTC_MESSAGE_MAGIC;
+extern const std::string GLB_MESSAGE_MAGIC;
 
 /** The result of a signed message verification.
  * Message verification takes as an input:
@@ -48,7 +48,7 @@ enum class SigningResult {
 };
 
 /** Verify a signed message.
- * @param[in] address Signer's bitcoin address, it must refer to a public key.
+ * @param[in] address Signer's globe address, it must refer to a public key.
  * @param[in] signature The signature in base64 format.
  * @param[in] message The message that was signed.
  * @return result code */
@@ -77,4 +77,4 @@ uint256 MessageHash(const std::string& message, const std::string& message_magic
 
 std::string SigningResultString(const SigningResult res);
 
-#endif // BITCOIN_UTIL_MESSAGE_H
+#endif // GLOBE_UTIL_MESSAGE_H

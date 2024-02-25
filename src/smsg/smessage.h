@@ -1,10 +1,10 @@
 // Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2017-2022 The Particl Core developers
+// Copyright (c) 2017-2022 The Globe Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_SMSG_SMESSAGE_H
-#define PARTICL_SMSG_SMESSAGE_H
+#ifndef GLOBE_SMSG_SMESSAGE_H
+#define GLOBE_SMSG_SMESSAGE_H
 
 #include <sync.h>
 #include <threadinterrupt.h>
@@ -477,7 +477,7 @@ public:
 
     int AddAddress(std::string &address, std::string &publicKey);
     int AddLocalAddress(const std::string &sAddress);
-    int ImportPrivkey(const CBitcoinSecret &vchSecret, const std::string &sLabel);
+    int ImportPrivkey(const CGlobeSecret &vchSecret, const std::string &sLabel);
     int DumpPrivkey(const CKeyID &idk, CKey &key_out);
 
     bool SetWalletAddressOption(const CKeyID &idk, std::string sOption, bool fValue);
@@ -574,4 +574,4 @@ double GetDifficulty(uint32_t compact);
 
 extern smsg::CSMSG smsgModule;
 
-#endif // PARTICL_SMSG_SMESSAGE_H
+#endif // GLOBE_SMSG_SMESSAGE_H

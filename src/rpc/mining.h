@@ -1,11 +1,11 @@
-// Copyright (c) 2020 The Bitcoin Core developers
+// Copyright (c) 2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_RPC_MINING_H
-#define BITCOIN_RPC_MINING_H
+#ifndef GLOBE_RPC_MINING_H
+#define GLOBE_RPC_MINING_H
 
 /** Default max iterations to try in RPC generatetodescriptor, generatetoaddress, and generateblock. */
 static const uint64_t DEFAULT_MAX_TRIES{1000000};
 
-#endif // BITCOIN_RPC_MINING_H
+#endif // GLOBE_RPC_MINING_H

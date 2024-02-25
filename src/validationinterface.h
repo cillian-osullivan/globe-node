@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2020 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VALIDATIONINTERFACE_H
-#define BITCOIN_VALIDATIONINTERFACE_H
+#ifndef GLOBE_VALIDATIONINTERFACE_H
+#define GLOBE_VALIDATIONINTERFACE_H
 
 #include <primitives/transaction.h> // CTransaction(Ref)
 #include <sync.h>
@@ -214,7 +214,7 @@ public:
     void BlockChecked(const CBlock&, const BlockValidationState&);
     void NewPoWValidBlock(const CBlockIndex *, const std::shared_ptr<const CBlock>&);
 
-    /** Particl */
+    /** Globe */
     void TransactionAddedToWallet(const std::string &sWalletName, const CTransactionRef& tx);
     void NewSecureMessage(const smsg::SecureMessage *psmsg, const uint160 &hash);
     void LeavingIBD();
@@ -222,4 +222,4 @@ public:
 
 CMainSignals& GetMainSignals();
 
-#endif // BITCOIN_VALIDATIONINTERFACE_H
+#endif // GLOBE_VALIDATIONINTERFACE_H

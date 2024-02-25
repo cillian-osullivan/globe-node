@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -31,7 +31,7 @@
 #include <stdexcept>
 #include <utility>
 
-// Particl
+// Globe
 #include <anon.h>
 
 static constexpr double INF_FEERATE = 1e99;
@@ -617,7 +617,7 @@ void CBlockPolicyEstimator::processTransaction(const CTxMemPoolEntry& entry, boo
         return;
     }
 
-    // Feerates are stored and reported as BTC-per-kb:
+    // Feerates are stored and reported as GLB-per-kb:
     CFeeRate feeRate;
     if (!GetFeeRate(&entry, feeRate)) {
         untrackedTxs++;
@@ -654,7 +654,7 @@ bool CBlockPolicyEstimator::processBlockTx(unsigned int nBlockHeight, const CTxM
         return false;
     }
 
-    // Feerates are stored and reported as BTC-per-kb:
+    // Feerates are stored and reported as GLB-per-kb:
     CFeeRate feeRate;
     if (!GetFeeRate(entry, feeRate)) {
         return false;

@@ -1,7 +1,7 @@
 #ifndef _WORDLIST_KOREAN_H
 #define _WORDLIST_KOREAN_H 1
 
-// https://github.com/bitcoin/bips/blob/master/bip-0039/korean.txt
+// https://github.com/globe/bips/blob/master/bip-0039/korean.txt
 
 unsigned char korean_txt[] = {
   0xe1, 0x84, 0x80, 0xe1, 0x85, 0xa1, 0xe1, 0x84, 0x80, 0xe1, 0x85, 0xa7,

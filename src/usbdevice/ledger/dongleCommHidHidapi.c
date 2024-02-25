@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
-*   BTChip Bitcoin Hardware Wallet C test interface
-*   (c) 2014 BTChip - 1BTChip7VfTnrPra5jqci7ejnMguuHogTn
+*   GLBhip Globe Hardware Wallet C test interface
+*   (c) 2014 GLBhip - 1GLBhip7VfTnrPra5jqci7ejnMguuHogTn
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@
 #include "dongleCommHidHidapi.h"
 #include "ledgerLayer.h"
 
-#define BTCHIP_VID 0x2581
+#define GLBHIP_VID 0x2581
 #define LEDGER_VID 0x2C97
-#define BTCHIP_HID_PID 0x2b7c
-#define BTCHIP_HID_PID_LEDGER 0x3b7c
-#define BTCHIP_HID_PID_LEDGER_PROTON 0x4b7c
-#define BTCHIP_HID_BOOTLOADER_PID 0x1807
+#define GLBHIP_HID_PID 0x2b7c
+#define GLBHIP_HID_PID_LEDGER 0x3b7c
+#define GLBHIP_HID_PID_LEDGER_PROTON 0x4b7c
+#define GLBHIP_HID_BOOTLOADER_PID 0x1807
 #define BLUE_PID 0x0000
 #define NANOS_PID 0x0001
 

@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -95,9 +95,9 @@ static RPCHelpMan getwalletinfo()
     obj.pushKV("walletversion", pwallet->GetVersion());
     obj.pushKV("format", pwallet->GetDatabase().Format());
 
-    if (pwallet->IsParticlWallet()) {
+    if (pwallet->IsGlobeWallet()) {
         CHDWalletBalances bal;
-        GetParticlWallet(pwallet.get())->GetBalances(bal);
+        GetGlobeWallet(pwallet.get())->GetBalances(bal);
 
         obj.pushKV("total_balance",         ValueFromAmount(
             bal.nPart + bal.nPartUnconf + bal.nPartStaked + bal.nPartImmature
@@ -130,12 +130,12 @@ static RPCHelpMan getwalletinfo()
         obj.pushKV("immature_balance", ValueFromAmount(bal.m_mine_immature));
     }
 
-    int nTxCount = (int)pwallet->mapWallet.size() + (pwallet->IsParticlWallet() ? (int)GetParticlWallet(pwallet.get())->mapRecords.size() : 0);
+    int nTxCount = (int)pwallet->mapWallet.size() + (pwallet->IsGlobeWallet() ? (int)GetGlobeWallet(pwallet.get())->mapRecords.size() : 0);
     obj.pushKV("txcount",       (int)nTxCount);
 
     CKeyID seed_id;
-    if (IsParticlWallet(pwallet.get())) {
-        const CHDWallet *pwhd = GetParticlWallet(pwallet.get());
+    if (IsGlobeWallet(pwallet.get())) {
+        const CHDWallet *pwhd = GetGlobeWallet(pwallet.get());
 
         obj.pushKV("keypoololdest", pwhd->GetOldestActiveAccountTime());
         obj.pushKV("keypoolsize",   pwhd->CountActiveAccountKeys());
@@ -262,7 +262,7 @@ static RPCHelpMan loadwallet()
 {
     return RPCHelpMan{"loadwallet",
                 "\nLoads a wallet from a wallet file or directory."
-                "\nNote that all wallet command-line options used when starting particld will be"
+                "\nNote that all wallet command-line options used when starting globed will be"
                 "\napplied to the new wallet.\n",
                 {
                     {"filename", RPCArg::Type::STR, RPCArg::Optional::NO, "The wallet directory or .dat file."},
@@ -426,7 +426,7 @@ static RPCHelpMan createwallet()
     if (!request.params[4].isNull() && request.params[4].get_bool()) {
         flags |= WALLET_FLAG_AVOID_REUSE;
     }
-    bool descriptor_mode = request.params[5].isNull() ? fParticlMode ? false : true : request.params[5].get_bool();
+    bool descriptor_mode = request.params[5].isNull() ? fGlobeMode ? false : true : request.params[5].get_bool();
     //if (request.params[5].isNull() || request.params[5].get_bool()) {
     if (descriptor_mode) {
 #ifndef USE_SQLITE
@@ -513,7 +513,7 @@ static RPCHelpMan unloadwallet()
         throw JSONRPCError(RPC_MISC_ERROR, "Requested wallet already unloaded");
     }
 
-    if (wallet->IsParticlWallet()) {
+    if (wallet->IsGlobeWallet()) {
         ChainstateManager *chainman = wallet->HaveChain() ? wallet->chain().getChainman() : nullptr;
         if (chainman) {
             RestartStakingThreads(context, *chainman);
@@ -571,8 +571,8 @@ static RPCHelpMan sethdseed()
         throw JSONRPCError(RPC_WALLET_ERROR, "Cannot set an HD seed on a non-HD wallet. Use the upgradewallet RPC in order to upgrade a non-HD wallet to HD");
     }
 
-    if (IsParticlWallet(pwallet.get()))
-        throw JSONRPCError(RPC_WALLET_ERROR, "Not necessary in Particl mode.");
+    if (IsGlobeWallet(pwallet.get()))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Not necessary in Globe mode.");
 
     EnsureWalletIsUnlocked(*pwallet);
 
@@ -809,7 +809,7 @@ static RPCHelpMan migratewallet()
             std::shared_ptr<CWallet> wallet = GetWalletForJSONRPCRequest(request);
             if (!wallet) return NullUniValue;
 
-            if (wallet->IsParticlWallet()) {
+            if (wallet->IsGlobeWallet()) {
                 throw JSONRPCError(RPC_WALLET_ERROR, "TODO");
             }
 

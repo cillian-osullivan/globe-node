@@ -1,13 +1,13 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_OPTIONSMODEL_H
-#define BITCOIN_QT_OPTIONSMODEL_H
+#ifndef GLOBE_QT_OPTIONSMODEL_H
+#define GLOBE_QT_OPTIONSMODEL_H
 
 #include <cstdint>
 #include <consensus/amount.h>
-#include <qt/bitcoinunits.h>
+#include <qt/globeunits.h>
 #include <qt/guiconstants.h>
 
 #include <QAbstractListModel>
@@ -32,7 +32,7 @@ static inline int PruneMiBtoGB(int64_t mib) { return (mib * 1024 * 1024 + GB_BYT
  */
 static inline int64_t PruneGBtoMiB(int gb) { return gb * GB_BYTES / 1024 / 1024; }
 
-/** Interface from Qt to configuration data structure for Bitcoin client.
+/** Interface from Qt to configuration data structure for Globe client.
    To Qt, the options are presented as a list with the different options
    laid out vertically.
    This can be changed to a tree once the settings become sufficiently
@@ -58,7 +58,7 @@ public:
         ProxyUseTor,            // bool
         ProxyIPTor,             // QString
         ProxyPortTor,           // int
-        DisplayUnit,            // BitcoinUnit
+        DisplayUnit,            // GlobeUnit
         ThirdPartyTxUrls,       // QString
         Language,               // QString
         UseEmbeddedMonospacedFont, // bool
@@ -74,7 +74,7 @@ public:
         ShowZeroValueCoinstakes, // bool
         Listen,                 // bool
         Server,                 // bool
-        EnablePSBTControls,     // bool
+        EnablePSGLBontrols,     // bool
         ReserveBalance,         // int
         OptionIDRowCount,
     };
@@ -94,12 +94,12 @@ public:
     bool getShowTrayIcon() const { return m_show_tray_icon; }
     bool getMinimizeToTray() const { return fMinimizeToTray; }
     bool getMinimizeOnClose() const { return fMinimizeOnClose; }
-    BitcoinUnit getDisplayUnit() const { return m_display_bitcoin_unit; }
+    GlobeUnit getDisplayUnit() const { return m_display_globe_unit; }
     QString getThirdPartyTxUrls() const { return strThirdPartyTxUrls; }
     bool getUseEmbeddedMonospacedFont() const { return m_use_embedded_monospaced_font; }
     bool getCoinControlFeatures() const { return fCoinControlFeatures; }
     bool getSubFeeFromAmount() const { return m_sub_fee_from_amount; }
-    bool getEnablePSBTControls() const { return m_enable_psbt_controls; }
+    bool getEnablePSGLBontrols() const { return m_enable_psbt_controls; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
 
     /* Explicit setters */
@@ -121,7 +121,7 @@ private:
     bool fMinimizeToTray;
     bool fMinimizeOnClose;
     QString language;
-    BitcoinUnit m_display_bitcoin_unit;
+    GlobeUnit m_display_globe_unit;
     QString strThirdPartyTxUrls;
     bool m_use_embedded_monospaced_font;
     bool fCoinControlFeatures;
@@ -129,7 +129,7 @@ private:
     bool m_enable_psbt_controls;
 
     //! In-memory settings for display. These are stored persistently by the
-    //! bitcoin node but it's also nice to store them in memory to prevent them
+    //! globe node but it's also nice to store them in memory to prevent them
     //! getting cleared when enable/disable toggles are used in the GUI.
     int m_prune_size_gb;
     QString m_proxy_ip;
@@ -140,7 +140,7 @@ private:
     /* settings that were overridden by command-line */
     QString strOverriddenByCommandLine;
 
-    // Particl
+    // Globe
     bool fShowIncomingStakeNotifications;
     bool show_zero_value_coinstakes;
     CAmount nReserveBalance;
@@ -152,7 +152,7 @@ private:
     void checkAndMigrate();
 
 Q_SIGNALS:
-    void displayUnitChanged(BitcoinUnit unit);
+    void displayUnitChanged(GlobeUnit unit);
     void txnViewOptionsChanged();
     void coinControlFeaturesChanged(bool);
     void showTrayIconChanged(bool);
@@ -163,4 +163,4 @@ public Q_SLOTS:
     void updateReservedBalance(CAmount reservedBalance);
 };
 
-#endif // BITCOIN_QT_OPTIONSMODEL_H
+#endif // GLOBE_QT_OPTIONSMODEL_H

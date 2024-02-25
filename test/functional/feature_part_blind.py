@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# Copyright (c) 2017-2022 The Particl Core developers
+# Copyright (c) 2017-2022 The Globe Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-from test_framework.test_particl import ParticlTestFramework, isclose
+from test_framework.test_globe import GlobeTestFramework, isclose
 from test_framework.authproxy import JSONRPCException
 
 
-class BlindTest(ParticlTestFramework):
+class BlindTest(GlobeTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 4

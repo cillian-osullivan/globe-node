@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 The Particl Core developers
+// Copyright (c) 2017-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,7 +20,7 @@
 
 
 HDWalletTestingSetup::HDWalletTestingSetup(const std::string &chainName):
-    TestingSetup(chainName, { "-balancesindex" }, true /* fParticlMode */),
+    TestingSetup(chainName, { "-balancesindex" }, true /* fGlobeMode */),
     m_wallet_loader{interfaces::MakeWalletLoader(*m_node.chain, *Assert(m_node.args))}
 {
     pwalletMain = std::make_shared<CHDWallet>(m_node.chain.get(), "", m_args, CreateMockWalletDatabaseBDB());
@@ -38,8 +38,8 @@ HDWalletTestingSetup::~HDWalletTestingSetup()
     pwalletMain->Finalise();
     pwalletMain.reset();
 
-    particl::mapStakeSeen.clear();
-    particl::listStakeSeen.clear();
+    globe::mapStakeSeen.clear();
+    globe::listStakeSeen.clear();
 }
 
 void StakeNBlocks(CHDWallet *pwallet, size_t nBlocks)

@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Globe Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_POLICY_POLICY_H
-#define BITCOIN_POLICY_POLICY_H
+#ifndef GLOBE_POLICY_POLICY_H
+#define GLOBE_POLICY_POLICY_H
 
 #include <consensus/amount.h>
 #include <consensus/consensus.h>
@@ -114,7 +114,7 @@ bool IsStandard(const CScript& scriptPubKey, const std::optional<unsigned>& max_
 // adapting relay policy by bumping TX_MAX_STANDARD_VERSION, and then later
 // allowing the new transaction version in the wallet/RPC.
 static constexpr decltype(CTransaction::nVersion) TX_MAX_STANDARD_VERSION{2};
-static constexpr decltype(CTransaction::nVersion) TX_MAX_STANDARD_VERSION_PARTICL{0xA1};
+static constexpr decltype(CTransaction::nVersion) TX_MAX_STANDARD_VERSION_GLOBE{0xA1};
 
 /**
 * Check for standard transaction types
@@ -151,9 +151,9 @@ static inline int64_t GetVirtualTransactionInputSize(const CTxIn& tx)
     return GetVirtualTransactionInputSize(tx, 0, 0);
 }
 
-namespace particl {
+namespace globe {
 CAmount GetDustThreshold(const CTxOutStandard *txout, const CFeeRate& dustRelayFeeIn);
 bool IsDust(const CTxOutBase *txout, const CFeeRate& dustRelayFee);
-} // namespace particl
+} // namespace globe
 
-#endif // BITCOIN_POLICY_POLICY_H
+#endif // GLOBE_POLICY_POLICY_H

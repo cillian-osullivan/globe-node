@@ -9,7 +9,7 @@ define(_COPYRIGHT_YEAR, 2022)
 define(_COPYRIGHT_YEAR_GLB, 2022)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
 define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Globe Core]])
-AC_INIT([Globe Core],m4_join([.], _CLIENT_VERSION_MAJOR, _CLIENT_VERSION_MINOR, _CLIENT_VERSION_GLOBE, _CLIENT_VERSION_BUILD)m4_if(_CLIENT_VERSION_RC, [0], [], [rc]_CLIENT_VERSION_RC),[https://github.com/globe/globe-core/issues],[globe],[https://globe.io/])
+AC_INIT([Globe Core],m4_join([.], _CLIENT_VERSION_MAJOR, _CLIENT_VERSION_MINOR, _CLIENT_VERSION_GLOBE, _CLIENT_VERSION_BUILD)m4_if(_CLIENT_VERSION_RC, [0], [], [rc]_CLIENT_VERSION_RC),[https://github.com/globprojecte/globe/issues],[globe],[https://globe.io/])
 AC_CONFIG_SRCDIR([src/validation.cpp])
 AC_CONFIG_HEADERS([src/config/globe-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -434,6 +434,8 @@ if test "$use_sanitizers" != ""; then
     ]],[[]])])
 fi
 
+CPPFLAGS="$CPPFLAGS -DGLOBE_BUILD"
+
 ERROR_CXXFLAGS=
 if test "$enable_werror" = "yes"; then
   if test "$CXXFLAG_WERROR" = ""; then
@@ -485,6 +487,10 @@ if test "$CXXFLAGS_overridden" = "no"; then
   if test "$suppress_external_warnings" != "yes" ; then
     AX_CHECK_COMPILE_FLAG([-Wdeprecated-copy], [NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-deprecated-copy"], [], [$CXXFLAG_WERROR])
   fi
+  AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas],[NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-unknown-pragmas"],,[[$CXXFLAG_WERROR]])
+  AX_CHECK_COMPILE_FLAG([-Wno-strict-aliasing],[NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-strict-aliasing"],,[[$CXXFLAG_WERROR]])
+  AX_CHECK_COMPILE_FLAG([-Wno-duplicated-branches],[NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-duplicated-branches"],,[[$CXXFLAG_WERROR]])
+  AX_CHECK_COMPILE_FLAG([-Wno-c++11-narrowing],[NOWARN_CXXFLAGS="$NOWARN_CXXFLAGS -Wno-c++11-narrowing"],,[[$CXXFLAG_WERROR]])
 fi
 
 dnl Don't allow extended (non-ASCII) symbols in identifiers. This is easier for code review.
@@ -733,7 +739,7 @@ case $host in
        AC_MSG_ERROR([windres not found])
      fi
 
-     CORE_CPPFLAGS="$CORE_CPPFLAGS -D_MT -DWIN32 -D_WINDOWS -D_WIN32_WINNT=0x0601 -D_WIN32_IE=0x0501 -DWIN32_LEAN_AND_MEAN"
+     CORE_CPPFLAGS="$CORE_CPPFLAGS -D_MT -DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -D_WIN32_WINNT=0x0601 -D_WIN32_IE=0x0501 -DWIN32_LEAN_AND_MEAN"
      dnl Prevent the definition of min/max macros.
      dnl We always want to use the standard library.
      CORE_CPPFLAGS="$CORE_CPPFLAGS -DNOMINMAX"
@@ -771,6 +777,14 @@ case $host in
            AX_CHECK_PREPROC_FLAG([-Xclang -internal-isystem/usr/local/include], [CORE_CPPFLAGS="$CORE_CPPFLAGS -Xclang -internal-isystem/usr/local/include"], [], [$CXXFLAG_WERROR])
          fi
 
+         openssl_prefix=`$BREW --prefix openssl 2>/dev/null`
+         bdb_prefix=$($BREW --prefix berkeley-db4 2>/dev/null)
+         qt5_prefix=$($BREW --prefix qt5 2>/dev/null)
+         if test x$openssl_prefix != x; then
+           PKG_CONFIG_PATH="$openssl_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
+           export PKG_CONFIG_PATH
+         fi
+
          if test "$use_bdb" != "no" && $BREW list --versions berkeley-db@4 >/dev/null && test "$BDB_CFLAGS" = "" && test "$BDB_LIBS" = ""; then
            bdb_prefix=$($BREW --prefix berkeley-db@4 2>/dev/null)
            dnl This must precede the call to GLOBE_FIND_BDB48 below.
@@ -780,6 +794,13 @@ case $host in
 
          if $BREW list --versions qt@5 >/dev/null; then
            export PKG_CONFIG_PATH="$($BREW --prefix qt@5 2>/dev/null)/lib/pkgconfig:$PKG_CONFIG_PATH"
+         fi
+
+         gmp_prefix=`$BREW --prefix gmp 2>/dev/null`
+         if test x$gmp_prefix != x; then
+           GMP_CFLAGS="-I$gmp_prefix/include"
+           GMP_LIBS="-L$gmp_prefix/lib -lgmp"
+           GMPXX_LIBS="-L$gmp_prefix/lib -lgmpxx"
          fi
 
          case $host in
@@ -853,6 +874,8 @@ case $host in
      TARGET_OS=linux
      ;;
 esac
+
+LIBFF_TARGET_FLAGS=""
 
 if test "$use_extended_functional_tests" != "no"; then
   AC_SUBST(EXTENDED_FUNCTIONAL_TESTS, --extended)
@@ -1308,6 +1331,18 @@ if test "$have_any_system" != "no"; then
   AC_DEFINE([HAVE_SYSTEM], [1], [Define to 1 if std::system or ::wsystem is available.])
 fi
 
+CRYPTOPP_CPPFLAGS=
+LIBCRYPTOPP=
+AM_CONDITIONAL([EMBEDDED_CRYPTOPP],[true])
+AC_SUBST(CRYPTOPP_CPPFLAGS)
+AC_SUBST(LIBCRYPTOPP)
+
+LIBFF_CPPFLAGS=
+LIBFF=
+AM_CONDITIONAL([EMBEDDED_LIBFF],[true])
+AC_SUBST(LIBFF_CPPFLAGS)
+AC_SUBST(LIBFF)
+
 dnl SUPPRESSED_CPPFLAGS=SUPPRESS_WARNINGS([$SOME_CPPFLAGS])
 dnl Replace -I with -isystem in $SOME_CPPFLAGS to suppress warnings from
 dnl headers from its include directories and return the result.
@@ -1502,9 +1537,18 @@ if test "$use_boost" = "yes"; then
     BOOST_CPPFLAGS="$BOOST_CPPFLAGS -DBOOST_MULTI_INDEX_ENABLE_SAFE_MODE"
   fi
 
+  AX_BOOST_SYSTEM
+  AX_BOOST_FILESYSTEM
+  AX_BOOST_PROGRAM_OPTIONS
+  AX_BOOST_THREAD
+  AX_BOOST_RANDOM
+  AX_BOOST_CHRONO
+
   if test "$suppress_external_warnings" != "no"; then
     BOOST_CPPFLAGS=SUPPRESS_WARNINGS($BOOST_CPPFLAGS)
   fi
+
+  BOOST_LIBS="$BOOST_LDFLAGS $BOOST_SYSTEM_LIB $BOOST_FILESYSTEM_LIB $BOOST_PROGRAM_OPTIONS_LIB $BOOST_THREAD_LIB $BOOST_CHRONO_LIB $BOOST_RANDOM_LIB"
 fi
 
 if test "$use_external_signer" != "no"; then
@@ -1644,6 +1688,8 @@ if test x$use_libevent = xyes; then
   CXXFLAGS="$TEMP_CXXFLAGS"
 fi
 
+PKG_CHECK_MODULES([SSL], [libssl],, [AC_MSG_ERROR(openssl not found.)])
+PKG_CHECK_MODULES([CRYPTO], [libcrypto],,[AC_MSG_ERROR(libcrypto not found.)])
 dnl QR Code encoding library check
 
 if test "$use_qr" != "no"; then
@@ -1715,6 +1761,24 @@ if test "$enable_usbdevice" = "yes"; then
   fi
 fi
 
+# These packages don't provide pkgconfig config files across all
+# platforms, so we use older autoconf detection mechanisms:
+if test "x$GMP_LIBS" = "x"; then
+  AC_CHECK_HEADER([gmp.h],,AC_MSG_ERROR(libgmp headers missing))
+  AC_CHECK_LIB([gmp],[__gmpn_sub_n],GMP_LIBS=-lgmp, [AC_MSG_ERROR(libgmp missing)])
+fi
+
+if test "x$GMPXX_LIBS" = "x"; then
+  AC_CHECK_HEADER([gmpxx.h],,AC_MSG_ERROR(libgmpxx headers missing))
+  AC_CHECK_LIB([gmpxx],[main],GMPXX_LIBS=-lgmpxx, [AC_MSG_ERROR(libgmpxx missing)])
+fi
+
+save_CXXFLAGS="${CXXFLAGS}"
+CXXFLAGS="${CXXFLAGS} ${CRYPTO_CFLAGS} ${SSL_CFLAGS}"
+AC_CHECK_DECLS([EVP_MD_CTX_new],,,[AC_INCLUDES_DEFAULT
+#include <openssl/x509_vfy.h>
+])
+CXXFLAGS="${save_CXXFLAGS}"
 
 dnl libmultiprocess library check
 
@@ -2063,7 +2127,9 @@ AC_SUBST(USE_BDB)
 AC_SUBST(ENABLE_EXTERNAL_SIGNER)
 AC_SUBST(USE_UPNP)
 AC_SUBST(USE_QRCODE)
+AC_SUBST(BOOST_LIBS)
 AC_SUBST(TESTDEFS)
+AC_SUBST(CRYPTOPP_TARGET_FLAGS)
 AC_SUBST(MINIUPNPC_CPPFLAGS)
 AC_SUBST(MINIUPNPC_LIBS)
 AC_SUBST(NATPMP_CPPFLAGS)
@@ -2071,6 +2137,11 @@ AC_SUBST(NATPMP_LIBS)
 AC_SUBST(USB_LIBS)
 AC_SUBST(HIDAPI_LIBS)
 AC_SUBST(PROTOBUF_LIBS)
+AC_SUBST(CRYPTO_LIBS)
+AC_SUBST(SSL_LIBS)
+AC_SUBST(GMP_LIBS)
+AC_SUBST(GMPXX_LIBS)
+AC_SUBST(GMP_CFLAGS)
 AC_SUBST(HAVE_GMTIME_R)
 AC_SUBST(HAVE_FDATASYNC)
 AC_SUBST(HAVE_FULLFSYNC)
@@ -2115,7 +2186,7 @@ LIBS_TEMP="$LIBS"
 unset LIBS
 LIBS="$LIBS_TEMP"
 
-ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --enable-module-recovery --enable-module-schnorrsig --enable-experimental --enable-module-ecdh --enable-module-commitment --enable-module-rangeproof --enable-module-bulletproof --enable-module-generator --enable-module-mlsag --enable-endomorphism"
+ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --enable-module-recovery --enable-module-schnorrsig --enable-experimental --disable-openssl-tests --enable-module-ecdh --enable-module-commitment --enable-module-rangeproof --enable-module-bulletproof --enable-module-generator --enable-module-mlsag --enable-endomorphism"
 AC_CONFIG_SUBDIRS([src/secp256k1])
 
 AC_OUTPUT

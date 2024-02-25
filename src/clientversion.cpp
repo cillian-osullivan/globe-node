@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 The Globe Core developers
+// Copyright (c) 2012-2021 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -86,10 +86,10 @@ std::string CopyrightHolders(const std::string& strPrefix)
     const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS).translated, COPYRIGHT_HOLDERS_SUBSTITUTION);
     std::string strCopyrightHolders = strPrefix + sRange + copyright_devs;
 
-    // Make sure Globe Core copyright is not removed by accident
-    if (copyright_devs.find("Globe Core") == std::string::npos) {
+    // Make sure Bitcoin Core copyright is not removed by accident
+    if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
         sRange = strprintf(" %i-%i ", GLB_START_YEAR, COPYRIGHT_YEAR_GLB);
-        strCopyrightHolders += "\n" + strPrefix + sRange + "The Globe Core developers";
+        strCopyrightHolders += "\n" + strPrefix + sRange + "The Bitcoin Core developers";
     }
     return strCopyrightHolders;
 }

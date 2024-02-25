@@ -9,7 +9,7 @@ if RECENT_TAG="$(git describe --exact-match HEAD 2> /dev/null)"; then
 else
     VERSION="$(git rev-parse --short=12 HEAD)"
 fi
-DISTNAME="qtum-${VERSION}"
+DISTNAME="globe-${VERSION}"
 
 SRC_DIR=$PWD
 cd ../../

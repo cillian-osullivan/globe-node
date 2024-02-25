@@ -2,7 +2,7 @@
 #
 # linearize-data.py: Construct a linear, no-fork version of the chain.
 #
-# Copyright (c) 2013-2021 The Globe Core developers
+# Copyright (c) 2013-2021 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #
@@ -206,8 +206,28 @@ class BlockDataCopier:
                 continue
             inLenLE = inhdr[4:]
             su = struct.unpack("<I", inLenLE)
-            inLen = su[0] - settings['blkhdr_size'] # length without header
-            blk_hdr = self.inF.read(settings['blkhdr_size'])
+            inLen = su[0] - 180 # length without header
+            blk_hdr = self.inF.read(181)
+            sig_length = blk_hdr[-1]
+            if sig_length < 253:
+                inLen -= 1
+            elif sig_length == 253:
+                s = self.inF.read(2)
+                sig_length = struct.unpack('<H', s)[0]
+                blk_hdr += s
+                inLen -= 3
+            elif sig_length == 254:
+                s = self.inF.read(4)
+                sig_length = struct.unpack('<I', s)[0]
+                blk_hdr += s
+                inLen -= 5
+            else:
+                s = self.inF.read(8)
+                sig_length = struct.unpack('<Q', s)[0]
+                blk_hdr += s
+                inLen -= 9
+            blk_hdr += self.inF.read(sig_length)
+            inLen -= sig_length
             inExtent = BlockExtent(self.inFn, self.inF.tell(), inhdr, blk_hdr, inLen)
 
             self.hash_str = calc_hash_str(blk_hdr)

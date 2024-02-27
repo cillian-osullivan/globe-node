@@ -805,11 +805,11 @@ libglobe_common_a_SOURCES = \
   script/signingprovider.cpp \
   script/standard.cpp \
   warnings.cpp \
-  qtum/qtumutils.cpp \
-  qtum/qtumDGP.cpp \
-  qtum/qtumtoken.cpp \
-  qtum/qtumdelegation.cpp \
-  qtum/delegationutils.cpp \
+  globe/globeutils.cpp \
+  globe/globeDGP.cpp \
+  globe/globetoken.cpp \
+  globe/globedelegation.cpp \
+  globe/delegationutils.cpp \
   util/contractabi.cpp \
   libff/libff/algebra/curves/public_params.hpp \
   libff/libff/algebra/curves/curve_utils.hpp \

@@ -9,8 +9,8 @@ print-%: FORCE
 DIST_SUBDIRS = secp256k1
 
 AM_LDFLAGS = $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS) $(GPROF_LDFLAGS) $(SANITIZER_LDFLAGS) $(LTO_LDFLAGS) $(CORE_LDFLAGS)
-AM_CXXFLAGS = $(DEBUG_CXXFLAGS) $(HARDENED_CXXFLAGS) $(WARN_CXXFLAGS) $(NOWARN_CXXFLAGS) $(ERROR_CXXFLAGS) $(GPROF_CXXFLAGS) $(SANITIZER_CXXFLAGS) $(LTO_CXXFLAGS) $(CORE_CXXFLAGS)
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(HARDENED_CPPFLAGS) $(CORE_CPPFLAGS)
+AM_CXXFLAGS = $(DEBUG_CXXFLAGS) $(HARDENED_CXXFLAGS) $(WARN_CXXFLAGS) $(NOWARN_CXXFLAGS) $(ERROR_CXXFLAGS) $(GPROF_CXXFLAGS) $(SANITIZER_CXXFLAGS) $(LTO_CXXFLAGS) $(CORE_CXXFLAGS) -DETH_FATDB=1
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(HARDENED_CPPFLAGS) $(CORE_CPPFLAGS) -DGLOBE_BUILD
 AM_CFLAGS = $(AM_CXXFLAGS)
 AM_LIBTOOLFLAGS = --preserve-dup-deps
 PTHREAD_FLAGS = $(PTHREAD_CFLAGS) $(PTHREAD_LIBS)
@@ -24,7 +24,16 @@ noinst_PROGRAMS =
 TESTS =
 BENCHMARKS =
 
-GLOBE_INCLUDES=-I$(builddir) -I$(srcdir)/$(MINISKETCH_INCLUDE_DIR_INT) -I$(srcdir)/secp256k1/include -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT) $(LEVELDB_CPPFLAGS)
+GLOBE_INCLUDES=-I$(builddir) -I$(srcdir)/$(MINISKETCH_INCLUDE_DIR_INT) -I$(srcdir)/secp256k1/include -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT) $(LEVELDB_CPPFLAGS) $(BOOST_CPPFLAGS)
+
+GLOBE_INCLUDES += -I$(srcdir)/libff/libff
+GLOBE_INCLUDES += -I$(srcdir)/libff
+GLOBE_INCLUDES += -I$(srcdir)/evmone/evmc/include
+GLOBE_INCLUDES += -I$(srcdir)/evmone/include
+GLOBE_INCLUDES += -I$(srcdir)/eth_client
+GLOBE_INCLUDES += -I$(srcdir)/eth_client/utils
+GLOBE_INCLUDES += -I$(srcdir)/eth_client/utils/ethash/include
+GLOBE_INCLUDES += -I$(srcdir)/eth_client/utils/libscrypt
 
 LIBGLOBE_NODE=libglobe_node.a
 LIBGLOBE_COMMON=libglobe_common.a
@@ -36,6 +45,9 @@ LIBGLOBEQT=qt/libglobeqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 LIBGLOBE_SMSG=libglobe_smsg.a
 LIBGLOBE_MNEMONIC=libglobe_mnemonic.a
+
+LIBCRYPTOPP=cryptopp/libcryptopp.a
+LIBFF=libff/libff.a
 
 if ENABLE_ZMQ
 LIBGLOBE_ZMQ=libglobe_zmq.a
@@ -261,6 +273,7 @@ GLOBE_CORE_H = \
   rpc/server_util.h \
   rpc/util.h \
   rpc/rpcutil.h \
+  rpc/contract_util.h \
   scheduler.h \
   script/descriptor.h \
   script/keyorigin.h \
@@ -334,6 +347,10 @@ GLOBE_CORE_H = \
   util/ui_change_type.h \
   util/url.h \
   util/vector.h \
+  util/convert.h \
+  util/signstr.h \
+  util/contractabi.h \
+  util/tokenstr.h \
   validation.h \
   validationinterface.h \
   versionbits.h \
@@ -352,6 +369,9 @@ GLOBE_CORE_H = \
   wallet/receive.h \
   wallet/rpc/util.h \
   wallet/rpc/wallet.h \
+  wallet/rpc/addresses.h \
+  wallet/rpc/contract.h \
+  wallet/rpc/mining.h \
   wallet/salvage.h \
   wallet/scriptpubkeyman.h \
   wallet/spend.h \
@@ -372,6 +392,15 @@ GLOBE_CORE_H = \
   zmq/zmqpublishnotifier.h \
   zmq/zmqrpc.h \
   zmq/zmqutil.h \
+  globe/globestate.h \
+  globe/globetransaction.h \
+  globe/globeDGP.h \
+  globe/storageresults.h \
+  globe/globeutils.h \
+  globe/globedelegation.h \
+  globe/globetoken.h \
+  globe/globeledger.h \
+  globe/delegationutils.h \
   usbdevice/usbdevice.h \
   usbdevice/rpcusbdevice.h \
   insight/addressindex.h \
@@ -394,7 +423,7 @@ libglobe_util_a-clientversion.$(OBJEXT): obj/build.h
 # Contains code accessing mempool and chain state that is meant to be separated
 # from wallet and gui code (see node/README.md). Shared code should go in
 # libglobe_common or libglobe_util libraries, instead.
-libglobe_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS) $(MINIUPNPC_CPPFLAGS) $(NATPMP_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
+libglobe_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(NATPMP_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libglobe_node_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libglobe_node_a_SOURCES = \
   addrdb.cpp \
@@ -478,12 +507,17 @@ libglobe_node_a_SOURCES = \
   validation.cpp \
   validationinterface.cpp \
   versionbits.cpp \
+  globe/globestate.cpp \
+  globe/storageresults.cpp \
+  globe/globeledger.cpp \
   insight/insight.cpp \
   insight/rpc.cpp \
   $(GLOBE_CORE_H)
 
 if ENABLE_WALLET
-libglobe_node_a_SOURCES += wallet/init.cpp
+libglobe_node_a_SOURCES += wallet/init.cpp \
+  wallet/rpc/contract.cpp \
+  wallet/rpc/mining.cpp
 libglobe_node_a_CPPFLAGS += $(BDB_CPPFLAGS)
 endif
 if !ENABLE_WALLET
@@ -539,7 +573,7 @@ endif
 
 # wallet: shared between globed and globe-qt, but only linked
 # when wallet enabled
-libglobe_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS) $(BDB_CPPFLAGS) $(SQLITE_CFLAGS)
+libglobe_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BDB_CPPFLAGS) $(SQLITE_CFLAGS)
 libglobe_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libglobe_wallet_a_SOURCES = \
   wallet/rpchdwallet.cpp \
@@ -586,7 +620,7 @@ if USE_BDB
 libglobe_wallet_a_SOURCES += wallet/bdb.cpp wallet/salvage.cpp
 endif
 
-libglobe_wallet_tool_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) $(BOOST_CPPFLAGS)
+libglobe_wallet_tool_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
 libglobe_wallet_tool_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libglobe_wallet_tool_a_SOURCES = \
   wallet/wallettool.cpp \
@@ -599,8 +633,8 @@ crypto_libglobe_crypto_base_la_CPPFLAGS = $(AM_CPPFLAGS)
 # static version of this library. We don't need a dynamic version, and a dynamic
 # version can't be used on windows anyway because the library doesn't currently
 # export DLL symbols.
-crypto_libglobe_crypto_base_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libglobe_crypto_base_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libglobe_crypto_base_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static -fPIC
+crypto_libglobe_crypto_base_la_LDFLAGS = $(AM_LDFLAGS) -static -fPIC
 
 crypto_libglobe_crypto_base_la_SOURCES = \
   crypto/aes.cpp \
@@ -631,7 +665,22 @@ crypto_libglobe_crypto_base_la_SOURCES = \
   crypto/sha512.cpp \
   crypto/sha512.h \
   crypto/siphash.cpp \
-  crypto/siphash.h
+  crypto/siphash.h \
+  eth_client/utils/libscrypt/b64.c \
+  eth_client/utils/libscrypt/b64.h \
+  eth_client/utils/libscrypt/crypto-mcf.c \
+  eth_client/utils/libscrypt/crypto-scrypt-saltgen.c \
+  eth_client/utils/libscrypt/crypto_scrypt-check.c \
+  eth_client/utils/libscrypt/crypto_scrypt-hash.c \
+  eth_client/utils/libscrypt/crypto_scrypt-hexconvert.c \
+  eth_client/utils/libscrypt/crypto_scrypt-hexconvert.h \
+  eth_client/utils/libscrypt/crypto_scrypt-nosse.c \
+  eth_client/utils/libscrypt/libscrypt.h \
+  eth_client/utils/libscrypt/sha256.c \
+  eth_client/utils/libscrypt/sha256.h \
+  eth_client/utils/libscrypt/slowequals.c \
+  eth_client/utils/libscrypt/slowequals.h \
+  eth_client/utils/libscrypt/sysendian.h
 
 if USE_ASM
 crypto_libglobe_crypto_base_la_SOURCES += crypto/sha256_sse4.cpp
@@ -675,10 +724,11 @@ crypto_libglobe_crypto_arm_shani_la_SOURCES = crypto/sha256_arm_shani.cpp
 
 # consensus: shared between all executables that validate any consensus rules.
 libglobe_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
-libglobe_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fPIC
 libglobe_consensus_a_SOURCES = \
   arith_uint256.cpp \
   arith_uint256.h \
+  consensus/consensus.cpp \
   consensus/amount.h \
   consensus/merkle.cpp \
   consensus/merkle.h \
@@ -711,8 +761,9 @@ libglobe_consensus_a_SOURCES = \
   version.h
 
 # common: shared between globed, and globe-qt and non-server tools
-libglobe_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES)
+libglobe_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(GLOBE_INCLUDES) -DGLOBE_BUILD
 libglobe_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libglobe_common_a_CFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -std=c99
 libglobe_common_a_SOURCES = \
   base58.cpp \
   bech32.cpp \
@@ -746,6 +797,7 @@ libglobe_common_a_SOURCES = \
   rpc/rawtransaction_util.cpp \
   rpc/external_signer.cpp \
   rpc/util.cpp \
+  rpc/contract_util.cpp \
   scheduler.cpp \
   script/descriptor.cpp \
   script/miniscript.cpp \
@@ -753,6 +805,179 @@ libglobe_common_a_SOURCES = \
   script/signingprovider.cpp \
   script/standard.cpp \
   warnings.cpp \
+  qtum/qtumutils.cpp \
+  qtum/qtumDGP.cpp \
+  qtum/qtumtoken.cpp \
+  qtum/qtumdelegation.cpp \
+  qtum/delegationutils.cpp \
+  util/contractabi.cpp \
+  libff/libff/algebra/curves/public_params.hpp \
+  libff/libff/algebra/curves/curve_utils.hpp \
+  evmone/include/evmone/evmone.h \
+  evmone/evmc/lib/instructions/instruction_metrics.c \
+  evmone/evmc/lib/instructions/instruction_names.c \
+  evmone/evmc/include/evmc/evmc.h \
+  evmone/evmc/include/evmc/evmc.hpp \
+  evmone/evmc/include/evmc/helpers.h \
+  evmone/evmc/include/evmc/instructions.h \
+  evmone/evmc/include/evmc/loader.h \
+  evmone/evmc/include/evmc/utils.h \
+  evmone/lib/evmone/analysis.cpp \
+  evmone/lib/evmone/analysis.hpp \
+  evmone/lib/evmone/baseline.cpp \
+  evmone/lib/evmone/baseline.hpp \
+  evmone/lib/evmone/baseline_instruction_table.cpp \
+  evmone/lib/evmone/baseline_instruction_table.hpp \
+  evmone/lib/evmone/execution.cpp \
+  evmone/lib/evmone/execution.hpp \
+  evmone/lib/evmone/execution_state.hpp \
+  evmone/lib/evmone/instructions_calls.cpp \
+  evmone/lib/evmone/instructions.cpp \
+  evmone/lib/evmone/instructions.hpp \
+  evmone/lib/evmone/instruction_traits.hpp \
+  evmone/lib/evmone/limits.hpp \
+  evmone/lib/evmone/opcodes_helpers.h \
+  evmone/lib/evmone/tracing.cpp \
+  evmone/lib/evmone/tracing.hpp \
+  evmone/lib/evmone/vm.cpp \
+  evmone/lib/evmone/vm.hpp \
+  eth_client/libdevcore/Address.cpp \
+  eth_client/libdevcore/Address.h \
+  eth_client/libdevcore/Assertions.h \
+  eth_client/libdevcore/Common.cpp \
+  eth_client/libdevcore/Common.h \
+  eth_client/libdevcore/CommonData.cpp \
+  eth_client/libdevcore/CommonData.h \
+  eth_client/libdevcore/CommonIO.cpp \
+  eth_client/libdevcore/CommonIO.h \
+  eth_client/libdevcore/DBFactory.cpp \
+  eth_client/libdevcore/DBFactory.h \
+  eth_client/libdevcore/Exceptions.h \
+  eth_client/libdevcore/FileSystem.cpp \
+  eth_client/libdevcore/FileSystem.h \
+  eth_client/libdevcore/FixedHash.cpp \
+  eth_client/libdevcore/FixedHash.h \
+  eth_client/libdevcore/Guards.h \
+  eth_client/libdevcore/JsonUtils.cpp \
+  eth_client/libdevcore/JsonUtils.h \
+  eth_client/libdevcore/LevelDB.cpp \
+  eth_client/libdevcore/LevelDB.h \
+  eth_client/libdevcore/Log.cpp \
+  eth_client/libdevcore/Log.h \
+  eth_client/libdevcore/OverlayDB.cpp \
+  eth_client/libdevcore/OverlayDB.h \
+  eth_client/libdevcore/RLP.cpp \
+  eth_client/libdevcore/RLP.h \
+  eth_client/libdevcore/SHA3.cpp \
+  eth_client/libdevcore/SHA3.h \
+  eth_client/libdevcore/StateCacheDB.cpp \
+  eth_client/libdevcore/StateCacheDB.h \
+  eth_client/libdevcore/TrieCommon.cpp \
+  eth_client/libdevcore/TrieCommon.h \
+  eth_client/libdevcore/TrieDB.h \
+  eth_client/libdevcore/TrieHash.cpp \
+  eth_client/libdevcore/TrieHash.h \
+  eth_client/libdevcore/UndefMacros.h \
+  eth_client/libdevcore/db.h \
+  eth_client/libdevcore/dbfwd.h \
+  eth_client/libdevcore/vector_ref.h \
+  eth_client/libdevcrypto/Blake2.cpp \
+  eth_client/libdevcrypto/Blake2.h \
+  eth_client/libdevcrypto/Common.cpp \
+  eth_client/libdevcrypto/Common.h \
+  eth_client/libdevcrypto/CryptoPP.cpp \
+  eth_client/libdevcrypto/CryptoPP.h \
+  eth_client/libdevcrypto/Exceptions.h \
+  eth_client/libdevcrypto/Hash.cpp \
+  eth_client/libdevcrypto/Hash.h \
+  eth_client/libdevcrypto/LibSnark.cpp \
+  eth_client/libdevcrypto/LibSnark.h \
+  eth_client/libethashseal/GenesisInfo.cpp \
+  eth_client/libethashseal/GenesisInfo.h \
+  eth_client/libethashseal/genesis/qtumNetwork.cpp \
+  eth_client/libethcore/ABI.h \
+  eth_client/libethcore/BlockHeader.cpp \
+  eth_client/libethcore/BlockHeader.h \
+  eth_client/libethcore/ChainOperationParams.cpp \
+  eth_client/libethcore/ChainOperationParams.h \
+  eth_client/libethcore/Common.cpp \
+  eth_client/libethcore/Common.h \
+  eth_client/libethcore/EVMSchedule.cpp \
+  eth_client/libethcore/EVMSchedule.h \
+  eth_client/libethcore/Exceptions.h \
+  eth_client/libethcore/LogEntry.cpp \
+  eth_client/libethcore/LogEntry.h \
+  eth_client/libethcore/Precompiled.cpp \
+  eth_client/libethcore/Precompiled.h \
+  eth_client/libethcore/SealEngine.cpp \
+  eth_client/libethcore/SealEngine.h \
+  eth_client/libethcore/TransactionBase.cpp \
+  eth_client/libethcore/TransactionBase.h \
+  eth_client/libethereum/Account.cpp \
+  eth_client/libethereum/Account.h \
+  eth_client/libethereum/ChainParams.cpp \
+  eth_client/libethereum/ChainParams.h \
+  eth_client/libethereum/CodeSizeCache.h \
+  eth_client/libethereum/DatabasePaths.cpp \
+  eth_client/libethereum/DatabasePaths.h \
+  eth_client/libethereum/Executive.cpp \
+  eth_client/libethereum/Executive.h \
+  eth_client/libethereum/ExtVM.cpp \
+  eth_client/libethereum/ExtVM.h \
+  eth_client/libethereum/LastBlockHashesFace.h \
+  eth_client/libethereum/SecureTrieDB.h \
+  eth_client/libethereum/State.cpp \
+  eth_client/libethereum/State.h \
+  eth_client/libethereum/Transaction.cpp \
+  eth_client/libethereum/Transaction.h \
+  eth_client/libethereum/TransactionReceipt.cpp \
+  eth_client/libethereum/TransactionReceipt.h \
+  eth_client/libethereum/ValidationSchemes.cpp \
+  eth_client/libethereum/ValidationSchemes.h \
+  eth_client/libevm/EVMC.cpp \
+  eth_client/libevm/EVMC.h \
+  eth_client/libevm/ExtVMFace.cpp \
+  eth_client/libevm/ExtVMFace.h \
+  eth_client/libevm/VMFace.h \
+  eth_client/libevm/VMFactory.cpp \
+  eth_client/libevm/VMFactory.h \
+  eth_client/utils/ethash/include/ethash/ethash.h \
+  eth_client/utils/ethash/include/ethash/ethash.hpp \
+  eth_client/utils/ethash/include/ethash/hash_types.h \
+  eth_client/utils/ethash/include/ethash/hash_types.hpp \
+  eth_client/utils/ethash/include/ethash/keccak.h \
+  eth_client/utils/ethash/include/ethash/keccak.hpp \
+  eth_client/utils/ethash/include/ethash/progpow.hpp \
+  eth_client/utils/ethash/lib/ethash/bit_manipulation.h \
+  eth_client/utils/ethash/lib/ethash/builtins.h \
+  eth_client/utils/ethash/lib/ethash/endianness.hpp \
+  eth_client/utils/ethash/lib/ethash/ethash-internal.hpp \
+  eth_client/utils/ethash/lib/ethash/ethash.cpp \
+  eth_client/utils/ethash/lib/ethash/keccak.c \
+  eth_client/utils/ethash/lib/ethash/keccakf1600.c \
+  eth_client/utils/ethash/lib/ethash/keccakf800.c \
+  eth_client/utils/ethash/lib/ethash/kiss99.hpp \
+  eth_client/utils/ethash/lib/ethash/managed.cpp \
+  eth_client/utils/ethash/lib/ethash/primes.c \
+  eth_client/utils/ethash/lib/ethash/primes.h \
+  eth_client/utils/ethash/lib/ethash/progpow.cpp \
+  eth_client/utils/ethash/lib/ethash/support/attributes.h \
+  eth_client/utils/intx/int128.hpp \
+  eth_client/utils/intx/intx.hpp \
+  eth_client/utils/json_spirit/JsonSpiritHeaders.h \
+  eth_client/utils/json_spirit/json_spirit.h \
+  eth_client/utils/json_spirit/json_spirit.vcproj \
+  eth_client/utils/json_spirit/json_spirit_error_position.h \
+  eth_client/utils/json_spirit/json_spirit_reader.cpp \
+  eth_client/utils/json_spirit/json_spirit_reader.h \
+  eth_client/utils/json_spirit/json_spirit_reader_template.h \
+  eth_client/utils/json_spirit/json_spirit_stream_reader.h \
+  eth_client/utils/json_spirit/json_spirit_utils.h \
+  eth_client/utils/json_spirit/json_spirit_value.cpp \
+  eth_client/utils/json_spirit/json_spirit_value.h \
+  eth_client/utils/json_spirit/json_spirit_writer.cpp \
+  eth_client/utils/json_spirit/json_spirit_writer.h \
+  eth_client/utils/json_spirit/json_spirit_writer_template.h \
   $(GLOBE_CORE_H)
 
 # util: shared between all executables.
@@ -798,6 +1023,7 @@ libglobe_util_a_SOURCES = \
   util/syscall_sandbox.cpp \
   util/time.cpp \
   util/tokenpipe.cpp \
+  util/tokenstr.cpp \
   $(GLOBE_CORE_H)
 
 if USE_LIBEVENT
@@ -881,7 +1107,7 @@ globe_bin_ldadd = \
   $(LIBGLOBE_MNEMONIC) \
   $(LIBGLOBE_USBDEVICE)
 
-globe_bin_ldadd += $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
+globe_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS) $(GMP_LIBS) $(GMPXX_LIBS)
 if ENABLE_USBDEVICE
 globe_bin_ldadd += $(USB_LIBS) $(HIDAPI_LIBS) $(PROTOBUF_LIBS)
 endif
@@ -912,9 +1138,14 @@ globe_cli_LDADD = \
   $(LIBGLOBE_CLI) \
   $(LIBUNIVALUE) \
   $(LIBGLOBE_UTIL) \
-  $(LIBGLOBE_CRYPTO)
+  $(LIBGLOBE_CRYPTO) \
+  $(LIBLEVELDB) \
+  $(LIBLEVELDB_SSE42) \
+  $(LIBMEMENV) \
+  $(LIBCRYPTOPP) \
+  $(LIBSECP256K1)
 
-globe_cli_LDADD += $(EVENT_LIBS)
+globe_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
 # globe-tx binary #
@@ -933,9 +1164,13 @@ globe_tx_LDADD = \
   $(LIBGLOBE_UTIL) \
   $(LIBGLOBE_CONSENSUS) \
   $(LIBGLOBE_CRYPTO) \
+  $(LIBMEMENV) \
+  $(LIBCRYPTOPP) \
   $(LIBSECP256K1) \
   $(LIBLEVELDB) \
   $(LIBLEVELDB_SSE42)
+
+globe_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 
 #
 
@@ -961,6 +1196,8 @@ globe_wallet_LDADD = \
   $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
   $(LIBSECP256K1) \
+  $(BOOST_LIBS) \
+  $(CRYPTO_LIBS) \
   $(LIBUNIVALUE)
 globe_wallet_LDADD += $(BDB_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(MINIUPNPC_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
 if ENABLE_USBDEVICE
@@ -989,6 +1226,9 @@ globe_util_LDADD = \
   $(LIBGLOBE_CONSENSUS) \
   $(LIBGLOBE_CRYPTO) \
   $(LIBSECP256K1)
+
+globe_util_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+
 #
 
 # globe-chainstate binary #
@@ -1197,6 +1437,7 @@ $(top_srcdir)/$(subdir)/config/globe-config.h.in:  $(am__configure_deps)
 clean-local:
 	-$(MAKE) -C secp256k1 clean
 	-rm -f leveldb/*/*.gcda leveldb/*/*.gcno leveldb/helpers/memenv/*.gcda leveldb/helpers/memenv/*.gcno
+	-rm -f cryptopp/*.o libff/*.o
 	-rm -f config.h
 	-rm -rf test/__pycache__
 
@@ -1274,6 +1515,8 @@ include Makefile.minisketch.include
 include Makefile.crc32c.include
 include Makefile.leveldb.include
 
+include Makefile.cryptopp.include
+include Makefile.libff.include
 include Makefile.test_util.include
 include Makefile.test_fuzz.include
 

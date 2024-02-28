@@ -24,6 +24,66 @@
 #include <rctindex.h>
 #include <smsg/types.h>
 
+////////////////////////////////////////////////////////////////// // globe
+struct CSpentIndexKey {
+    uint256 txid;
+    unsigned int outputIndex;
+
+    SERIALIZE_METHODS(CSpentIndexKey, obj) { READWRITE(obj.txid, obj.outputIndex); }
+
+    CSpentIndexKey(uint256 t, unsigned int i) {
+        txid = t;
+        outputIndex = i;
+    }
+
+    CSpentIndexKey() {
+        SetNull();
+    }
+
+    void SetNull() {
+        txid.SetNull();
+        outputIndex = 0;
+    }
+};
+
+struct CSpentIndexValue {
+    uint256 txid;
+    unsigned int inputIndex;
+    int blockHeight;
+    CAmount satoshis;
+    int addressType;
+    uint256 addressHash;
+
+    SERIALIZE_METHODS(CSpentIndexValue, obj) { READWRITE(obj.txid, obj.inputIndex, obj.blockHeight, obj.satoshis, obj.addressType, obj.addressHash); }
+
+    CSpentIndexValue(uint256 t, unsigned int i, int h, CAmount s, int type, uint256 a) {
+        txid = t;
+        inputIndex = i;
+        blockHeight = h;
+        satoshis = s;
+        addressType = type;
+        addressHash = a;
+    }
+
+    CSpentIndexValue() {
+        SetNull();
+    }
+
+    void SetNull() {
+        txid.SetNull();
+        inputIndex = 0;
+        blockHeight = 0;
+        satoshis = 0;
+        addressType = 0;
+        addressHash.SetNull();
+    }
+
+    bool IsNull() const {
+        return txid.IsNull();
+    }
+};
+//////////////////////////////////////////////////////////////////
+
 extern bool fGlobeMode;
 
 /**
@@ -398,6 +458,16 @@ public:
     //! Calculate the size of the cache (in bytes)
     size_t DynamicMemoryUsage() const;
 
+    /**
+     * Amount of bitcoins coming in to a transaction
+     * Note that lightweight clients may not know anything besides the hash of previous transactions,
+     * so may not be able to calculate this.
+     *
+     * @param[in] tx    transaction for which we are checking input total
+     * @return  Sum of value of all inputs (scriptSigs)
+     */
+    CAmount GetValueIn(const CTransaction& tx) const;
+
     //! Check whether all prevouts of the transaction are present in the UTXO set represented by this view
     bool HaveInputs(const CTransaction& tx) const;
 
@@ -407,6 +477,8 @@ public:
     //!
     //! See: https://stackoverflow.com/questions/42114044/how-to-release-unordered-map-memory
     void ReallocateCache();
+
+    const CTxOut &GetOutputFor(const CTxIn& input) const;
 
 private:
     /**

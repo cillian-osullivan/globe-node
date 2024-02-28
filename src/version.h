@@ -15,7 +15,19 @@ static const int PROTOCOL_VERSION = 90035;
 static const int INIT_PROTO_VERSION = 209;
 
 //! disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION = 90014;
+static const int MIN_PEER_PROTO_VERSION = 90016;
+
+//! disconnect from peers older than this proto version after QIP7
+static const int MIN_PEER_PROTO_VERSION_AFTER_QIP7 = 90017;
+
+//! disconnect from peers older than this proto version after offline stake
+//static const int MIN_PEER_PROTO_VERSION_AFTER_OFFLINESTAKE = 90018;
+
+//! disconnect from peers older than this proto version after reduce block time
+static const int MIN_PEER_PROTO_VERSION_AFTER_REDUCEBLOCKTIME = 90019;
+
+//! disconnect from peers older than this proto version after evm London
+static const int MIN_PEER_PROTO_VERSION_AFTER_EVMLONDON = 90020;
 
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this

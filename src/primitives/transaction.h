@@ -264,6 +264,12 @@ public:
         return (nValue == -1);
     }
 
+    void SetEmpty()
+    {
+        nValue = 0;
+        scriptPubKey.clear();
+    }
+
     bool IsEmpty() const
     {
         return (nValue == 0 && scriptPubKey.empty());
@@ -868,6 +874,14 @@ public:
     const int32_t nVersion;
     const uint32_t nLockTime;
 
+     // Operation codes
+    enum OpCode
+    {
+        OpNone = 0,
+        OpCall = 1,
+        OpCreate = 2
+    };
+
 private:
     /** Memory only. */
     const uint256 hash;
@@ -877,8 +891,11 @@ private:
     uint256 ComputeWitnessHash() const;
 
 public:
+   /** Construct a CTransaction that qualifies as IsNull() */
+    CTransaction();
+
     /** Convert a CMutableTransaction into a CTransaction. */
-    explicit CTransaction(const CMutableTransaction& tx);
+    CTransaction(const CMutableTransaction& tx);
     explicit CTransaction(CMutableTransaction&& tx);
 
     template <typename Stream>
@@ -930,6 +947,19 @@ public:
      * @return Total transaction size in bytes
      */
     unsigned int GetTotalSize() const;
+
+//////////////////////////////////////// // globr
+    bool HasCreateOrCall() const;
+    bool HasOpSpend() const;
+////////////////////////////////////////
+    bool HasOpCreate() const;
+    bool HasOpCall() const;
+    inline int GetCreateOrCall() const
+    {
+        return (HasOpCall() ? OpCode::OpCall : 0) + (HasOpCreate() ? OpCode::OpCreate : 0);
+    }
+    bool HasOpSender() const;
+
 
     bool IsCoinBase() const
     {
@@ -1080,6 +1110,10 @@ struct CMutableTransaction
      * fly, as opposed to GetHash() in CTransaction, which uses a cached result.
      */
     uint256 GetHash() const;
+
+    bool HasOpCall() const;
+
+    bool HasOpSender() const;
 
     bool HasWitness() const
     {

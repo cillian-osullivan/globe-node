@@ -6,6 +6,7 @@
 #include <chain.h>
 #include <tinyformat.h>
 #include <util/time.h>
+#include <pubkey.h>
 
 std::string CBlockFileInfo::ToString() const
 {
@@ -177,4 +178,30 @@ const CBlockIndex* LastCommonAncestor(const CBlockIndex* pa, const CBlockIndex* 
     // Eventually all chain branches meet at the genesis block.
     assert(pa == pb);
     return pa;
+}
+
+std::vector<unsigned char> CBlockIndex::GetBlockSignature() const
+{
+    if(vchBlockSigDlgt.size() < 2 * CPubKey::COMPACT_SIGNATURE_SIZE)
+    {
+        return vchBlockSigDlgt;
+    }
+
+    return std::vector<unsigned char>(vchBlockSigDlgt.begin(), vchBlockSigDlgt.end() - CPubKey::COMPACT_SIGNATURE_SIZE );
+}
+
+std::vector<unsigned char> CBlockIndex::GetProofOfDelegation() const
+{
+    if(vchBlockSigDlgt.size() < 2 * CPubKey::COMPACT_SIGNATURE_SIZE)
+    {
+        return std::vector<unsigned char>();
+    }
+
+    return std::vector<unsigned char>(vchBlockSigDlgt.begin() + vchBlockSigDlgt.size() - CPubKey::COMPACT_SIGNATURE_SIZE, vchBlockSigDlgt.end());
+
+}
+
+bool CBlockIndex::HasProofOfDelegation() const
+{
+    return vchBlockSigDlgt.size() >= 2 * CPubKey::COMPACT_SIGNATURE_SIZE;
 }

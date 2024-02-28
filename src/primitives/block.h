@@ -30,17 +30,23 @@ public:
     uint32_t nBits;
     uint32_t nNonce;
 
+    uint256 hashStateRoot; // qtum
+    uint256 hashUTXORoot; // qtum
+    // proof-of-stake specific fields
+    std::vector<unsigned char> vchBlockSigDlgt; // The delegate is 65 bytes or 0 bytes, it can be added in the signature paramether at the end to avoid compatibility problems
+
     CBlockHeader()
     {
         SetNull();
     }
+    virtual ~CBlockHeader(){};
 
     SERIALIZE_METHODS(CBlockHeader, obj) {
         READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot);
         if (obj.IsGlobeVersion()) {
             READWRITE(obj.hashWitnessMerkleRoot);
         }
-        READWRITE(obj.nTime, obj.nBits, obj.nNonce);
+        READWRITE(obj.nTime, obj.nBits, obj.nNonce, obj.hashStateRoot, obj.hashUTXORoot, obj.vchBlockSigDlgt);
     }
 
     void SetNull()
@@ -52,6 +58,9 @@ public:
         nTime = 0;
         nBits = 0;
         nNonce = 0;
+        hashStateRoot.SetNull(); // qtum
+        hashUTXORoot.SetNull(); // qtum
+        vchBlockSigDlgt.clear();
     }
 
     bool IsNull() const
@@ -61,6 +70,10 @@ public:
 
     uint256 GetHash() const;
 
+    uint256 GetHashWithoutSign() const;
+
+    std::string GetWithoutSign() const;
+
     NodeSeconds Time() const
     {
         return NodeSeconds{std::chrono::seconds{nTime}};
@@ -69,6 +82,31 @@ public:
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
+    }
+
+    void SetBlockSignature(const std::vector<unsigned char>& vchSign);
+    std::vector<unsigned char> GetBlockSignature() const;
+
+    void SetProofOfDelegation(const std::vector<unsigned char>& vchPoD);
+    std::vector<unsigned char> GetProofOfDelegation() const;
+
+    bool HasProofOfDelegation() const;
+
+    CBlockHeader& operator=(const CBlockHeader& other) //qtum
+    {
+        if (this != &other)
+        {
+            this->nVersion       = other.nVersion;
+            this->hashPrevBlock  = other.hashPrevBlock;
+            this->hashMerkleRoot = other.hashMerkleRoot;
+            this->nTime          = other.nTime;
+            this->nBits          = other.nBits;
+            this->nNonce         = other.nNonce;
+            this->hashStateRoot  = other.hashStateRoot;
+            this->hashUTXORoot   = other.hashUTXORoot;
+            this->vchBlockSigDlgt    = other.vchBlockSigDlgt;
+        }
+        return *this;
     }
 
     bool IsGlobeVersion() const
@@ -152,6 +190,9 @@ public:
         block.nTime                 = nTime;
         block.nBits                 = nBits;
         block.nNonce                = nNonce;
+        block.hashStateRoot  = hashStateRoot; // qtum
+        block.hashUTXORoot   = hashUTXORoot; // qtum
+        block.vchBlockSigDlgt    = vchBlockSigDlgt;
         return block;
     }
 

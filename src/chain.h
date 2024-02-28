@@ -166,6 +166,9 @@ public:
     //! pointer to the index of the predecessor of this block
     CBlockIndex* pprev{nullptr};
 
+    //! pointer to the index of the successor of this block
+    CBlockIndex* pnext{nullptr};
+
     //! pointer to the index of some further predecessor of this block
     CBlockIndex* pskip{nullptr};
 
@@ -225,6 +228,10 @@ public:
     uint32_t nTime{0};
     uint32_t nBits{0};
     uint32_t nNonce{0};
+    uint256 hashStateRoot{}; // globe
+    uint256 hashUTXORoot{}; // globe
+    // block signature - proof-of-stake protect the block by signing the block using a stake holder private key
+    std::vector<unsigned char> vchBlockSigDlgt{};
 
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     int32_t nSequenceId{0};
@@ -242,7 +249,10 @@ public:
           hashWitnessMerkleRoot{block.hashWitnessMerkleRoot},
           nTime{block.nTime},
           nBits{block.nBits},
-          nNonce{block.nNonce}
+          nNonce{block.nNonce},
+          hashStateRoot{block.hashStateRoot},
+          hashUTXORoot{block.hashUTXORoot},
+          vchBlockSigDlgt{block.vchBlockSigDlgt}
     {
     }
 
@@ -279,6 +289,9 @@ public:
         block.nTime = nTime;
         block.nBits = nBits;
         block.nNonce = nNonce;
+        block.hashStateRoot = hashStateRoot; // globe
+        block.hashUTXORoot = hashUTXORoot; // globe
+        block.vchBlockSigDlgt = vchBlockSigDlgt;
         return block;
     }
 
@@ -342,6 +355,13 @@ public:
         std::sort(pbegin, pend);
         return pbegin[(pend - pbegin) / 2];
     }
+
+    std::vector<unsigned char> GetBlockSignature() const;
+
+    std::vector<unsigned char> GetProofOfDelegation() const;
+
+    bool HasProofOfDelegation() const;
+
 
     std::string ToString() const;
 
@@ -445,6 +465,9 @@ public:
         READWRITE(obj.nTime);
         READWRITE(obj.nBits);
         READWRITE(obj.nNonce);
+        READWRITE(obj.hashStateRoot); // globe
+        READWRITE(obj.hashUTXORoot); // globe
+        READWRITE(obj.vchBlockSigDlgt); // globe
     }
 
     uint256 ConstructBlockHash() const
@@ -457,6 +480,9 @@ public:
         block.nTime = nTime;
         block.nBits = nBits;
         block.nNonce = nNonce;
+        block.hashStateRoot = hashStateRoot; // qtum
+        block.hashUTXORoot = hashUTXORoot; // qtum
+        block.vchBlockSigDlgt = vchBlockSigDlgt;
         return block.GetHash();
     }
 
@@ -493,6 +519,12 @@ public:
         if (nHeight < 0 || nHeight >= (int)vChain.size())
             return nullptr;
         return vChain[nHeight];
+    }
+
+    /** Compare two chains efficiently. */
+    friend bool operator==(const CChain &a, const CChain &b) {
+        return a.vChain.size() == b.vChain.size() &&
+               a.vChain[a.vChain.size() - 1] == b.vChain[b.vChain.size() - 1];
     }
 
     /** Efficiently check whether a block is present in this chain. */

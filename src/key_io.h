@@ -33,6 +33,8 @@ CTxDestination DecodeDestination(const std::string& str, bool allow_stake_only=f
 CTxDestination DecodeDestination(const std::string& str, std::string& error_msg, std::vector<int>* error_locations = nullptr, bool allow_stake_only=false);
 bool IsValidDestinationString(const std::string& str, bool allow_stake_only=false);
 bool IsValidDestinationString(const std::string& str, const CChainParams& params, bool allow_stake_only=false);
+bool IsValidContractSenderAddressString(const std::string& str);
+bool DecodeIndexKey(const std::string& str, uint256& hashBytes, int& type);
 
 /**
  * Base class for all base58-encoded data

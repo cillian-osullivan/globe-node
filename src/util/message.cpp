@@ -11,6 +11,7 @@
 #include <uint256.h>
 #include <util/message.h>
 #include <util/strencodings.h>
+#include <util/signstr.h>
 
 #include <cassert>
 #include <optional>
@@ -22,8 +23,8 @@
  * Text used to signify that a signed message follows and to prevent
  * inadvertently signing a transaction.
  */
-const std::string MESSAGE_MAGIC = "Globe Signed Message:\n";
-const std::string GLB_MESSAGE_MAGIC = "Globe Signed Message:\n";
+const std::string MESSAGE_MAGIC = SignStr::strMessageMagic;
+const std::string GLB_MESSAGE_MAGIC = SignStr::strMessageMagic;
 
 MessageVerificationResult MessageVerify(
     const std::string& address,

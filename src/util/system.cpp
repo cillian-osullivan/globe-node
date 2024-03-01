@@ -27,6 +27,7 @@
 #include <util/string.h>
 #include <util/syserror.h>
 #include <util/translation.h>
+#include <iomanip>
 
 
 #if (defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__))
@@ -96,7 +97,7 @@ static GlobalMutex cs_dir_locks;
  */
 static std::map<std::string, std::unique_ptr<fsbridge::FileLock>> dir_locks GUARDED_BY(cs_dir_locks);
 
-bool LockDirectory(const fs::path& directory, const fs::path& lockfile_name, bool probe_only)
+bool LockDirectory(const fs::path& directory, const fs::path& lockfile_name, bool probe_only, bool try_lock)
 {
     LOCK(cs_dir_locks);
     fs::path pathLockFile = directory / lockfile_name;
@@ -110,7 +111,7 @@ bool LockDirectory(const fs::path& directory, const fs::path& lockfile_name, boo
     FILE* file = fsbridge::fopen(pathLockFile, "a");
     if (file) fclose(file);
     auto lock = std::make_unique<fsbridge::FileLock>(pathLockFile);
-    if (!lock->TryLock()) {
+    if (try_lock && !lock->TryLock()) {
         return error("Error while attempting to lock directory %s: %s", fs::PathToString(directory), lock->GetReason());
     }
     if (!probe_only) {
@@ -1149,6 +1150,40 @@ void ArgsManager::LogArgs() const
     logArgsPrefix("Command-line arg:", "", m_settings.command_line_options);
 }
 
+std::map<std::string, std::vector<std::string>> ArgsManager::getArgsList(const std::vector<std::string>& paramListType) const
+{
+    LOCK(cs_args);
+    // Get argument list
+    std::map<std::string, bool> args;
+    for (const auto& arg : m_settings.forced_settings) {
+        args[arg.first] = true;
+    }
+    for (const auto& arg : m_settings.command_line_options) {
+        args[arg.first] = true;
+    }
+    for (const auto& arg : m_settings.ro_config) {
+        for(const auto& confArg : arg.second)
+            args[confArg.first] = true;
+    }
+
+    // Fill argument list with values
+    std::map<std::string, std::vector<std::string>> ret;
+    for (const auto& arg : args) {
+        std::string paramName = '-' + arg.first;
+        std::vector<std::string> paramValue;
+        bool isList = std::find(std::begin(paramListType), std::end(paramListType), paramName) != std::end(paramListType);
+        if(isList) {
+            paramValue = GetArgs(paramName);
+        }
+        else {
+            paramValue.push_back(GetArg(paramName, ""));
+        }
+        ret[arg.first] = paramValue;
+    }
+
+    return ret;
+}
+
 bool RenameOver(fs::path src, fs::path dest)
 {
 #ifdef __MINGW64__
@@ -1429,6 +1464,14 @@ bool SetupNetworking()
 int GetNumCores()
 {
     return std::thread::hardware_concurrency();
+}
+
+bool CheckHex(const std::string& str) {
+    size_t data=0;
+    if(str.size() > 2 && (str.compare(0, 2, "0x") == 0 || str.compare(0, 2, "0X") == 0)){
+        data=2;
+    }
+    return str.size() > data && str.find_first_not_of("0123456789abcdefABCDEF", data) == std::string::npos;
 }
 
 // Obtain the application startup time (used for uptime calculation)

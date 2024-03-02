@@ -6,16 +6,24 @@
 #include <chainparams.h>
 
 #include <chainparamsseeds.h>
+#include <consensus/consensus.h>
 #include <consensus/merkle.h>
 #include <deploymentinfo.h>
 #include <hash.h> // for signet block challenge hash
 #include <script/interpreter.h>
 #include <util/string.h>
 #include <util/system.h>
+#include <util/convert.h>
 
 #include <chain/chainparamsimport.h>
 
 #include <assert.h>
+
+///////////////////////////////////////////// // globe
+#include <libdevcore/SHA3.h>
+#include <libdevcore/RLP.h>
+#include "arith_uint256.h"
+/////////////////////////////////////////////
 
 // Globe
 #include <key/keyutil.h>
@@ -140,7 +148,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
     txNew.nVersion = 1;
     txNew.vin.resize(1);
     txNew.vout.resize(1);
-    txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << std::vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
+    txNew.vin[0].scriptSig = CScript() << 00 << 488804799 << CScriptNum(4) << std::vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
     txNew.vout[0].nValue = genesisReward;
     txNew.vout[0].scriptPubKey = genesisOutputScript;
 
@@ -152,6 +160,8 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
     genesis.hashPrevBlock.SetNull();
     genesis.hashMerkleRoot = BlockMerkleRoot(genesis);
+    genesis.hashStateRoot = uint256(h256Touint(dev::h256("e965ffd002cd6ad0e2dc402b8044de833e06b23127ea8c3d80aec91410771495"))); // globe
+    genesis.hashUTXORoot = uint256(h256Touint(dev::sha3(dev::rlp("")))); // globe
     return genesis;
 }
 
@@ -439,13 +449,26 @@ public:
         strNetworkID = CBaseChainParams::MAIN;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
-        consensus.nSubsidyHalvingInterval = 210000;
+        consensus.nSubsidyHalvingInterval = 985500;
         consensus.BIP34Height = 0;
         consensus.BIP65Height = 0;
         consensus.BIP66Height = 0;
         consensus.CSVHeight = 1;
         consensus.SegwitHeight = 0;
         consensus.MinBIP9WarningHeight = 0;
+        consensus.QIP5Height = 0;
+        consensus.QIP6Height = 0;
+        consensus.QIP7Height = 0;
+        consensus.QIP9Height = 0;
+        consensus.nReduceBlocktimeHeight = 0;
+        consensus.nMuirGlacierHeight = 0;
+        consensus.nLondonHeight = 0;
+        consensus.RBTPosLimit = uint256S("0000000000003fffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.nPowTargetTimespan = 16 * 60; // 16 minutes
+        consensus.nPowTargetTimespanV2 = 4000;
+        consensus.nRBTPowTargetTimespan = 1000;
+        consensus.nPowTargetSpacing = 2 * 32;
+        consensus.nRBTPowTargetSpacing = 16;
 
         consensus.OpIsCoinstakeTime = 0x5A04EC00;       // 2017-11-10 00:00:00 UTC
         consensus.fAllowOpIsCoinstakeWithP2PKH = false;
@@ -474,8 +497,8 @@ public:
 
         consensus.powLimit = uint256S("000000000000bfffffffffffffffffffffffffffffffffffffffffffffffffff");
 
-        consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
-        consensus.nPowTargetSpacing = 10 * 60;
+        consensus.nPowTargetTimespan = 2 * 32; 
+        consensus.nPowTargetSpacing = 16;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016
@@ -487,9 +510,11 @@ public:
 
         // Deployment of Taproot (BIPs 340-342)
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartTime = 1619222400; // April 24th, 2021
-        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = 1628640000; // August 11th, 2021
-        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 709632; // Approximately November 12th, 2021
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartTime = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        // Min block number for activation, the number must be divisible by 2016
+        // Replace 0xffffc0 with the activation block number
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 2080512;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000001217ddce4920bddbc9c");
@@ -572,7 +597,7 @@ public:
         bech32Prefixes[EXT_ACC_HASH].assign         ("pea",(const char*)"pea"+3);
         bech32Prefixes[STAKE_ONLY_PKADDR].assign    ("pcs",(const char*)"pcs"+3);
 
-        bech32_hrp = "pw";
+        bech32_hrp = "glb";
         vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_main), std::end(chainparams_seed_main));
 
         fDefaultConsistencyChecks = false;
@@ -617,6 +642,20 @@ public:
             .nTxCount = 1639931,
             .dTxRate  = 0.01,
         };
+        consensus.nBlocktimeDownscaleFactor = 4;
+        consensus.nCoinbaseMaturity = 100;
+        consensus.nRBTCoinbaseMaturity = consensus.nBlocktimeDownscaleFactor*100;
+        consensus.nSubsidyHalvingIntervalV2 = consensus.nBlocktimeDownscaleFactor*985500; // globe halving every 4 years (nSubsidyHalvingInterval * nBlocktimeDownscaleFactor)
+
+        consensus.nLastPOWBlock = 5000;
+        consensus.nLastBigReward = 5000;
+        consensus.nMPoSRewardRecipients = 10;
+
+        consensus.nFixUTXOCacheHFHeight = 100000;
+        consensus.nEnableHeaderSignatureHeight = 399100;
+        consensus.nCheckpointSpan = consensus.nCoinbaseMaturity;
+        consensus.nRBTCheckpointSpan = consensus.nRBTCoinbaseMaturity;
+        consensus.delegationsAddress = uint160(ParseHex("0000000000000000000000000000000000000086")); // Delegations contract for offline staking
     }
 
     void SetOld()

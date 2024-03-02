@@ -28,6 +28,9 @@ class CMasterKey;
 class CWallet;
 class CWalletTx;
 struct WalletContext;
+class CTokenInfo;
+class CTokenTx;
+class CDelegationInfo;
 
 /**
  * Overview of wallet database classes:
@@ -87,6 +90,10 @@ extern const std::string WALLETDESCRIPTORCKEY;
 extern const std::string WALLETDESCRIPTORKEY;
 extern const std::string WATCHMETA;
 extern const std::string WATCHS;
+extern const std::string TOKEN;
+extern const std::string TOKENTX;
+extern const std::string CONTRACTDATA;
+extern const std::string DELEGATION;
 
 extern const std::string PART_EXTACC;
 extern const std::string PART_EXTKEY;
@@ -244,6 +251,15 @@ public:
     bool WriteTx(const CWalletTx& wtx);
     bool EraseTx(uint256 hash);
 
+    bool WriteToken(const CTokenInfo& wtoken);
+    bool EraseToken(uint256 hash);
+
+    bool WriteTokenTx(const CTokenTx& wTokenTx);
+    bool EraseTokenTx(uint256 hash);
+
+    bool WriteDelegation(const CDelegationInfo& wdelegation);
+    bool EraseDelegation(uint256 hash);
+
     bool WriteKeyMetadata(const CKeyMetadata& meta, const CPubKey& pubkey, const bool overwrite);
     bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata &keyMeta);
     bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata &keyMeta);
@@ -283,6 +299,11 @@ public:
 
     bool WriteActiveScriptPubKeyMan(uint8_t type, const uint256& id, bool internal);
     bool EraseActiveScriptPubKeyMan(uint8_t type, bool internal);
+
+    /// Write contract data key,value tuple to database
+    bool WriteContractData(const std::string &address, const std::string &key, const std::string &value);
+    /// Erase contract data tuple from wallet database
+    bool EraseContractData(const std::string &address, const std::string &key);
 
     DBErrors LoadWallet(CWallet* pwallet);
     DBErrors FindWalletTx(std::vector<uint256>& vTxHash, std::list<CWalletTx>& vWtx);

@@ -8,6 +8,7 @@
 
 #include <primitives/block.h>
 #include <txmempool.h>
+#include <validation.h>
 
 #include <memory>
 #include <optional>
@@ -25,6 +26,13 @@ namespace Consensus { struct Params; };
 
 namespace node {
 static const bool DEFAULT_PRINTPRIORITY = false;
+
+//Will not add any more contracts when GetAdjustedTime() >= nTimeLimit-BYTECODE_TIME_BUFFER
+//This does not affect non-contract transactions
+static const int32_t BYTECODE_TIME_BUFFER = 6;
+
+//How much time to spend trying to process transactions when using the generate RPC call
+static const int32_t POW_MINER_MAX_TIME = 60;
 
 struct CBlockTemplate
 {

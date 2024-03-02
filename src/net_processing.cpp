@@ -40,6 +40,9 @@
 #include <util/system.h>
 #include <util/trace.h>
 #include <validation.h>
+#include <clientversion.h>
+#include <consensus/merkle.h>
+#include <shutdown.h>
 
 #include <algorithm>
 #include <atomic>
@@ -192,6 +195,13 @@ static constexpr int MAX_DUPLICATE_HEADERS = 2000;
 static constexpr int64_t MAX_LOOSE_HEADER_TIME = 120;
 static constexpr int64_t MIN_DOS_STATE_TTL = 60 * 10; // seconds
 } // namespace globe
+
+struct COrphanBlock {
+    uint256 hashBlock;
+    uint256 hashPrev;
+    std::pair<COutPoint, unsigned int> stake;
+    std::vector<unsigned char> vchBlock;
+};
 
 // Internal stuff
 namespace {
@@ -507,12 +517,100 @@ struct CNodeState {
     CNodeState(CAddress address, bool is_inbound) : m_address(address), m_is_inbound(is_inbound) {}
 };
 
+class CNodeHeaders
+{
+public:
+    CNodeHeaders():
+        maxSize(0),
+        maxAvg(0)
+    {
+        maxSize = gArgs.GetIntArg("-headerspamfiltermaxsize", GefaultHeaderSpamFilterMaxSize());
+        maxAvg = gArgs.GetIntArg("-headerspamfiltermaxavg", DEFAULT_HEADER_SPAM_FILTER_MAX_AVG);
+    }
+
+    bool addHeaders(const CBlockIndex *pindexFirst, const CBlockIndex *pindexLast)
+    {
+        if(pindexFirst && pindexLast && maxSize && maxAvg)
+        {
+            // Get the begin block index
+            int nBegin = pindexFirst->nHeight;
+
+            // Get the end block index
+            int nEnd = pindexLast->nHeight;
+
+            for(int point = nBegin; point<= nEnd; point++)
+            {
+                addPoint(point);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool updateState(BlockValidationState& state, bool ret)
+    {
+        // No headers
+        size_t size = points.size();
+        if(size == 0)
+            return ret;
+
+        // Compute the number of the received headers
+        size_t nHeaders = 0;
+        for(auto point : points)
+        {
+            nHeaders += point.second;
+        }
+
+        // Compute the average value per height
+        double nAvgValue = (double)nHeaders / size;
+
+        // Ban the node if try to spam
+        bool banNode = (nAvgValue >= 1.5 * maxAvg && size >= maxAvg) ||
+                       (nAvgValue >= maxAvg && nHeaders >= maxSize) ||
+                       (nHeaders >= maxSize * 4.1);
+        if(banNode)
+        {
+            // Clear the points and ban the node
+            points.clear();
+            return state.Invalid(BlockValidationResult::BLOCK_HEADER_SPAM, "header-spam", "ban node for sending spam");
+        }
+
+        return ret;
+    }
+
+private:
+    void addPoint(int height)
+    {
+        // Erace the last element in the list
+        if(points.size() == maxSize)
+        {
+            points.erase(points.begin());
+        }
+
+        // Add the point to the list
+        int occurrence = 0;
+        auto mi = points.find(height);
+        if (mi != points.end())
+            occurrence = (*mi).second;
+        occurrence++;
+        points[height] = occurrence;
+    }
+
+private:
+    std::map<int,int> points;
+    size_t maxSize;
+    size_t maxAvg;
+};
+
 class PeerManagerImpl final : public PeerManager
 {
 public:
     PeerManagerImpl(CConnman& connman, AddrMan& addrman,
                     BanMan* banman, ChainstateManager& chainman,
                     CTxMemPool& pool, bool ignore_incoming_txs);
+    ~PeerManagerImpl();
 
     /** Overridden from CValidationInterface. */
     void BlockConnected(const std::shared_ptr<const CBlock>& pblock, const CBlockIndex* pindexConnected) override
@@ -554,6 +652,7 @@ public:
                         const std::chrono::microseconds time_received, const std::atomic<bool>& interruptMsgProc) override
         EXCLUSIVE_LOCKS_REQUIRED(!m_peer_mutex, !m_recent_confirmed_transactions_mutex, !m_most_recent_block_mutex, !m_headers_presync_mutex);
     void UpdateLastBlockAnnounceTime(NodeId node, int64_t time_in_seconds) override;
+    void InitCleanBlockIndex() override;
 
 private:
     /** Consider evicting an outbound peer based on the amount of time they've been behind our tip */
@@ -720,6 +819,28 @@ private:
     /** Send `feefilter` message. */
     void MaybeSendFeefilter(CNode& node, Peer& peer, std::chrono::microseconds current_time);
 
+     /** Process net block. */
+    void PushGetBlocks(CNode& node, const CBlockIndex* pindexBegin, const uint256& hashEnd);
+    uint256 GetOrphanRoot(const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    void PruneOrphanBlocks() EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    bool ProcessNetBlockHeaders(CNode& node, const std::vector<CBlockHeader>& block, bool min_pow_checked, BlockValidationState& state, const CBlockIndex** ppindex=nullptr);
+    bool ProcessNetBlock(const std::shared_ptr<const CBlock> pblock, bool force_processing, bool min_pow_checked, bool* new_block, CNode& node);
+
+    /** Clean block index. */
+    bool RemoveStateBlockIndex(CBlockIndex *pindex);
+    bool RemoveNetBlockIndex(CBlockIndex *pindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    bool NeedToEraseBlockIndex(const CBlockIndex *pindex, const CBlockIndex *pindexCheck) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    bool RemoveBlockIndex(CBlockIndex *pindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    void CleanBlockIndex();
+    CNodeHeaders& ServiceHeaders(const CService& address) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    void CleanAddressHeaders(const CAddress& addr) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+
+    std::map<uint256, COrphanBlock*> mapOrphanBlocks GUARDED_BY(cs_main);
+    std::multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrev GUARDED_BY(cs_main);
+    std::set<std::pair<COutPoint, unsigned int>> setStakeSeenOrphan GUARDED_BY(cs_main);
+    size_t nOrphanBlocksSize = 0;
+    boost::thread_group threadGroup;
+
     const CChainParams& m_chainparams;
     CConnman& m_connman;
     AddrMan& m_addrman;
@@ -757,6 +878,7 @@ private:
 
     /** Map maintaining per-node state. */
     std::map<NodeId, CNodeState> m_node_states GUARDED_BY(cs_main);
+    std::map<CService, CNodeHeaders> m_service_headers GUARDED_BY(cs_main);
 
     /** Get a pointer to a const CNodeState, used when not mutating the CNodeState object. */
     const CNodeState* State(NodeId pnode) const EXCLUSIVE_LOCKS_REQUIRED(cs_main);
@@ -1147,6 +1269,26 @@ static bool CanServeWitnesses(const Peer& peer)
     return peer.m_their_services & NODE_WITNESS;
 }
 
+CNodeHeaders& PeerManagerImpl::ServiceHeaders(const CService& address) EXCLUSIVE_LOCKS_REQUIRED(cs_main) {
+    unsigned short port =
+            gArgs.GetBoolArg("-headerspamfilterignoreport", DEFAULT_HEADER_SPAM_FILTER_IGNORE_PORT) ? 0 : address.GetPort();
+    CService addr(address, port);
+    return m_service_headers[addr];
+}
+
+void PeerManagerImpl::CleanAddressHeaders(const CAddress& addr) EXCLUSIVE_LOCKS_REQUIRED(cs_main) {
+    CSubNet subNet(addr);
+    for (std::map<CService, CNodeHeaders>::iterator it=m_service_headers.begin(); it!=m_service_headers.end();){
+        if(subNet.Match(it->first))
+        {
+            it = m_service_headers.erase(it);
+        }
+        else{
+            it++;
+        }
+    }
+}
+
 std::chrono::microseconds PeerManagerImpl::NextInvToInbounds(std::chrono::microseconds now,
                                                              std::chrono::seconds average_interval)
 {
@@ -1211,7 +1353,7 @@ bool PeerManagerImpl::BlockRequested(NodeId nodeid, const CBlockIndex& block, st
     RemoveBlockRequest(hash);
 
     std::list<QueuedBlock>::iterator it = state->vBlocksInFlight.insert(state->vBlocksInFlight.end(),
-            {&block, std::unique_ptr<PartiallyDownloadedBlock>(pit ? new PartiallyDownloadedBlock(&m_mempool) : nullptr)});
+            {&block, std::unique_ptr<PartiallyDownloadedBlock>(pit ? new PartiallyDownloadedBlock(&m_mempool, &m_chainman) : nullptr)});
     state->nBlocksInFlight++;
     if (state->nBlocksInFlight == 1) {
         // We're starting a block download (batch) from this peer.
@@ -1298,7 +1440,7 @@ bool PeerManagerImpl::CanDirectFetch()
     if (!m_chainman.ActiveChain().Tip()) {
         return false;
     }
-    return m_chainman.ActiveChain().Tip()->Time() > GetAdjustedTime() - m_chainparams.GetConsensus().PowTargetSpacing() * 20;
+    return m_chainman.ActiveChain().Tip()->Time() > GetAdjustedTime() - m_chainparams.GetConsensus().TargetSpacingChrono(m_chainman.ActiveChain().Height()) * 20;
 }
 
 static bool PeerHasHeader(CNodeState *state, const CBlockIndex *pindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
@@ -1355,7 +1497,7 @@ void PeerManagerImpl::FindNextBlocksToDownload(const Peer& peer, unsigned int co
     // Make sure pindexBestKnownBlock is up to date, we'll need it.
     ProcessBlockAvailability(peer.m_id);
 
-    if (state->pindexBestKnownBlock == nullptr || state->pindexBestKnownBlock->nChainWork < m_chainman.ActiveChain().Tip()->nChainWork || state->pindexBestKnownBlock->nChainWork < nMinimumChainWork) {
+    if (state->pindexBestKnownBlock == nullptr || state->pindexBestKnownBlock->nChainWork <= m_chainman.ActiveChain().Tip()->nChainWork || state->pindexBestKnownBlock->nChainWork < nMinimumChainWork) {
         // This peer has nothing interesting.
         return;
     }
@@ -1459,6 +1601,21 @@ void PeerManagerImpl::PushNodeVersion(CNode& pnode, const Peer& peer)
     } else {
         LogPrint(BCLog::NET, "send version message: version %d, blocks=%d, txrelay=%d, peer=%d\n", PROTOCOL_VERSION, nNodeStartingHeight, tx_relay, nodeid);
     }
+}
+
+bool PeerManagerImpl::ProcessNetBlockHeaders(CNode& pfrom, const std::vector<CBlockHeader>& block, bool min_pow_checked, BlockValidationState& state, const CBlockIndex** ppindex)
+{
+    const CBlockIndex *pindexFirst = nullptr;
+    bool ret = m_chainman.ProcessNewBlockHeaders(block, min_pow_checked, state, ppindex, &pindexFirst);
+    if(gArgs.GetBoolArg("-headerspamfilter", DEFAULT_HEADER_SPAM_FILTER))
+    {
+        LOCK(cs_main);
+        CNodeHeaders& headers = ServiceHeaders(pfrom.GetAddrLocal());
+        const CBlockIndex *pindexLast = ppindex == nullptr ? nullptr : *ppindex;
+        headers.addHeaders(pindexFirst, pindexLast);
+        return headers.updateState(state, ret);
+    }
+    return ret;
 }
 
 void PeerManagerImpl::AddTxAnnouncement(const CNode& node, const GenTxid& gtxid, std::chrono::microseconds current_time)
@@ -1820,6 +1977,7 @@ bool PeerManagerImpl::MaybePunishNodeForBlock(NodeId nodeid, const BlockValidati
     case BlockValidationResult::BLOCK_INVALID_HEADER:
     case BlockValidationResult::BLOCK_CHECKPOINT:
     case BlockValidationResult::BLOCK_INVALID_PREV:
+    case BlockValidationResult::BLOCK_HEADER_SPAM:
         if (peer) Misbehaving(*peer, 100, message);
         return true;
     // Conflicting (but not necessarily invalid) data or different policy:
@@ -1843,8 +2001,13 @@ bool PeerManagerImpl::MaybePunishNodeForBlock(NodeId nodeid, const BlockValidati
     case BlockValidationResult::DOS_1:
         if (peer) Misbehaving(*peer, 1, message);
         return true;
+    case BlockValidationResult::BLOCK_HEADER_SYNC:
+    case BlockValidationResult::BLOCK_GAS_EXCEEDS_LIMIT:
+        if (peer) Misbehaving(*peer, 1, message);
+        return true;
     case BlockValidationResult::BLOCK_RECENT_CONSENSUS_CHANGE:
     case BlockValidationResult::BLOCK_TIME_FUTURE:
+    case BlockValidationResult::BLOCK_HEADER_REJECT:
         break;
     }
     if (message != "") {

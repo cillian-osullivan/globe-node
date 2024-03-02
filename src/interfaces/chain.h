@@ -7,6 +7,7 @@
 
 #include <primitives/transaction.h> // For CTransactionRef
 #include <util/settings.h>          // For util::SettingsValue
+#include <netbase.h>                // For ConnectionDirection
 
 #include <functional>
 #include <memory>
@@ -15,6 +16,11 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <map>
+
+#if defined(HAVE_CONFIG_H)
+#include <config/globe-config.h>
+#endif
 
 class ArgsManager;
 class CBlock;
@@ -35,6 +41,18 @@ namespace node {
 struct NodeContext;
 struct CBlockTemplate;
 } // namespace node
+
+class ChainstateManager;
+class CTxMemPool;
+class CBlockIndex;
+class CCoinsViewCache;
+
+#ifdef ENABLE_WALLET
+namespace wallet {
+class CWallet;
+} // namespace wallet
+#endif
+struct Delegation;
 
 class CBlockIndex;
 class CCmpPubKey;
@@ -63,6 +81,8 @@ public:
     FoundBlock& time(int64_t& time) { m_time = &time; return *this; }
     FoundBlock& maxTime(int64_t& max_time) { m_max_time = &max_time; return *this; }
     FoundBlock& mtpTime(int64_t& mtp_time) { m_mtp_time = &mtp_time; return *this; }
+    //! Return whether block has delegation.
+    FoundBlock& hasDelegation(bool& has_delegation) { m_has_delegation = &has_delegation; return *this; }
     //! Return whether block is in the active (most-work) chain.
     FoundBlock& inActiveChain(bool& in_active_chain) { m_in_active_chain = &in_active_chain; return *this; }
     //! Return locator if block is in the active chain.
@@ -79,6 +99,7 @@ public:
     int64_t* m_max_time = nullptr;
     int64_t* m_mtp_time = nullptr;
     bool* m_in_active_chain = nullptr;
+    bool* m_has_delegation = nullptr;
     CBlockLocator* m_locator = nullptr;
     const FoundBlock* m_next_block = nullptr;
     CBlock* m_data = nullptr;
@@ -126,6 +147,12 @@ class Chain
 {
 public:
     virtual ~Chain() {}
+
+    //! Get chain state manager
+    virtual ChainstateManager& chainman() = 0;
+
+    //! Get mempool
+    virtual const CTxMemPool& mempool() = 0;
 
     //! Get current chain height, not including genesis block (returns 0 if
     //! chain only contains genesis block, nullopt if chain does not contain
@@ -247,6 +274,12 @@ public:
     //! Check if any block has been pruned.
     virtual bool havePruned() = 0;
 
+    //! Get reindex.
+    virtual bool getReindex() = 0;
+
+    //! Get importing.
+    virtual bool getImporting() = 0;
+
     //! Check if the node is ready to broadcast transactions.
     virtual bool isReadyToBroadcast() = 0;
 
@@ -255,6 +288,9 @@ public:
 
     //! Check if shutdown requested.
     virtual bool shutdownRequested() = 0;
+
+    //! Get adjusted time.
+    virtual int64_t getAdjustedTime() = 0;
 
     //! Send init message.
     virtual void initMessage(const std::string& message) = 0;
@@ -331,6 +367,38 @@ public:
     //! Get internal node context. Useful for testing, but not
     //! accessible across processes.
     virtual node::NodeContext* context() { return nullptr; }
+
+    //! Get chain tip
+    virtual CBlockIndex* getTip() const =  0;
+
+    //! Get unspent outputs associated with a transaction.
+    virtual bool getUnspentOutput(const COutPoint& output, Coin& coin) = 0;
+
+    //! Get coins tip.
+    virtual CCoinsViewCache& getCoinsTip() = 0;
+
+    //! Get number of connections.
+    virtual size_t getNodeCount(ConnectionDirection flags) = 0;
+
+    //! Get transaction gas fee.
+    virtual CAmount getTxGasFee(const CMutableTransaction& tx) = 0;
+
+#ifdef ENABLE_WALLET
+    //! refresh delegates.
+    virtual void refreshDelegates(wallet::CWallet *pwallet, bool myDelegates, bool stakerDelegates) = 0;
+
+    //! get contract RPC commands.
+    virtual Span<const CRPCCommand> getContractRPCCommands() = 0;
+
+    //! get mining RPC commands.
+    virtual Span<const CRPCCommand> getMiningRPCCommands() = 0;
+#endif
+
+    //! get delegation for an address.
+    virtual bool getDelegation(const uint160& address, Delegation& delegation) = 0;
+
+    //! verify delegation for an address.
+    virtual bool verifyDelegation(const uint160& address, const Delegation& delegation) = 0;
 
     //! Globe Specific
     virtual int getHeightInt() = 0;

@@ -423,6 +423,7 @@ public:
     SigningResult SignMessage(const std::string& message, const PKHash& pkhash, const std::string &message_magic, std::string& str_sig) const override;
     SigningResult SignMessage(const std::string& message, const CKeyID256& pkhash, const std::string &message_magic, std::string& str_sig) const override;
     TransactionError FillPSBT(PartiallySignedTransaction& psbt, const PrecomputedTransactionData& txdata, int sighash_type = SIGHASH_DEFAULT, bool sign = true, bool bip32derivs = false, int* n_signed = nullptr, bool finalize = true) const override;
+    bool SignTransactionOutput(CMutableTransaction& tx, int sighash, std::map<int, std::string>& output_errors) const override;
 
     uint256 GetID() const override;
 
@@ -650,6 +651,8 @@ public:
     using ScriptPubKeyMan::SignMessage;
     SigningResult SignMessage(const std::string& message, const PKHash& pkhash, const std::string &message_magic, std::string& str_sig) const override;
     TransactionError FillPSBT(PartiallySignedTransaction& psbt, const PrecomputedTransactionData& txdata, int sighash_type = SIGHASH_DEFAULT, bool sign = true, bool bip32derivs = false, int* n_signed = nullptr, bool finalize = true) const override;
+
+    bool SignTransactionOutput(CMutableTransaction& tx, int sighash, std::map<int, std::string>& output_errors) const override;
 
     uint256 GetID() const override;
 

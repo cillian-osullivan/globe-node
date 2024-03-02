@@ -102,7 +102,7 @@ static void ApplyHash(HashWriter& ss, const uint256& hash, const std::map<uint32
             default:
                 break;
         }
-        ss << it->second.out.scriptPubKey;
+        ss << *(const CScriptBase*)(&(it->second.out.scriptPubKey));
         //ss << VARINT_MODE(it->second.out.nValue, VarIntMode::NONNEGATIVE_SIGNED);
 
         if (it == std::prev(outputs.end())) {

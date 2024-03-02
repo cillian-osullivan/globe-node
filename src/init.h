@@ -80,4 +80,7 @@ bool AppInitMain(node::NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip
  */
 void SetupServerArgs(ArgsManager& argsman);
 
+/** Unlock the data directory */
+void UnlockDataDirectory();
+
 #endif // GLOBE_INIT_H

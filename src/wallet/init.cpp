@@ -10,6 +10,7 @@
 #include <net.h>
 #include <node/context.h>
 #include <node/interface_ui.h>
+#include <node/miner.h>
 #include <outputtype.h>
 #include <univalue.h>
 #include <util/check.h>
@@ -99,7 +100,9 @@ void WalletInit::AddWalletOptions(ArgsManager& argsman) const
     argsman.AddArg("-walletcrosschain", strprintf("Allow reusing wallet files across chains (default: %u)", DEFAULT_WALLETCROSSCHAIN), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::WALLET_DEBUG_TEST);
 
     argsman.AddHiddenArgs({"-zapwallettxes"});
-}
+
+    argsman.AddArg("-rpcmaxgasprice", strprintf("The max value (in satoshis) for gas price allowed through RPC (default: %u)", MAX_RPC_GAS_PRICE), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
+    argsman.AddArg("-signpsbtwithhwitool", strprintf("Sign PSBT with HWI tool"), ArgsManager::ALLOW_ANY, OptionsCategory::WALLET);
 
 bool WalletInit::ParameterInteraction() const
 {

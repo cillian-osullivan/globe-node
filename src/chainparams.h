@@ -13,7 +13,7 @@
 #include <chain.h>
 #include <protocol.h>
 #include <util/hash_type.h>
-#include <libethashseal/GenesisInfo.h>
+//#include <libethashseal/GenesisInfo.h>
 
 #include <memory>
 #include <string>

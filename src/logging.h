@@ -73,8 +73,8 @@ namespace BCLog {
         POS         = (1 << 30),
         HDWALLET    = (uint32_t)(1 << 31),
 
-        HTTPPOLL    = (1 << 32),
-        INDEX       = (1 << 33),
+        //HTTPPOLL    = (1 << 32),
+        //INDEX       = (1 << 33),
 
         ALL         = ~(uint32_t)0,
     };
